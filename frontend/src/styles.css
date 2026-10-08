@@ -395,11 +395,12 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .tl-axis { position: relative; height: 44px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
 .tl-tick { position: absolute; bottom: 0; transform: translateX(-4px); font-size: 0.78rem; font-weight: 700; color: var(--muted); border-left: 1px solid #3a3140; padding: 0 0 4px 6px; white-space: nowrap; }
 .tl-tick small { display: block; font-weight: 400; color: #8d8296; }
-.tl-row { display: flex; align-items: center; height: 42px; border-bottom: 1px solid #1d1822; }
-.tl-label { position: sticky; left: 0; z-index: 3; flex: none; width: 240px; padding: 0 12px 0 0; background: #0d0b0f; font-weight: 600; font-size: 0.9rem; line-height: 1.2; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.tl-row { display: flex; align-items: center; height: 58px; border-bottom: 1px solid #1d1822; }
+.tl-label { position: sticky; left: 0; z-index: 3; flex: none; width: var(--tl-label, 300px); padding: 0 12px 0 0; background: #0d0b0f; font-weight: 600; font-size: 0.9rem; line-height: 1.2; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+.tl-title { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; }
 .tl-label small { display: block; font-weight: 400; color: var(--muted); font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; }
-.tl-track { position: relative; flex: none; height: 42px; background: repeating-linear-gradient(90deg, transparent 0, transparent 103px, #1d1822 103px, #1d1822 104px); }
-.tl-bar { position: absolute; top: 7px; height: 28px; border: 0; border-radius: 8px; padding: 0 8px; overflow: hidden; background: #3a3140; color: var(--text); text-align: left; display: flex; align-items: center; transition: transform 0.12s, background 0.2s; }
+.tl-track { position: relative; flex: none; height: 58px; background: repeating-linear-gradient(90deg, transparent 0, transparent 103px, #1d1822 103px, #1d1822 104px); }
+.tl-bar { position: absolute; top: 15px; height: 28px; border: 0; border-radius: 8px; padding: 0 8px; overflow: hidden; background: #3a3140; color: var(--text); text-align: left; display: flex; align-items: center; transition: transform 0.12s, background 0.2s; }
 .tl-bar:hover { transform: translateY(-2px); background: #4a4152; }
 .tl-bar.kind-project { background: #2c3a4a; }
 .tl-bar.kind-cert { background: #3a3a52; }
@@ -412,7 +413,7 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .tl-marker { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--accent); z-index: 4; pointer-events: none; transition: left 0.25s linear; }
 .tl-marker span { position: absolute; top: 2px; left: 6px; background: var(--accent); color: var(--on-accent); font-size: 0.72rem; font-weight: 800; padding: 1px 8px; border-radius: 500px; white-space: nowrap; }
 .tl-foot { margin-top: 10px; }
-@media (max-width: 900px) { .tl-label { width: 150px; font-size: 0.82rem; } .tl-label small { display: none; } }
+@media (max-width: 700px) { .tl-label { font-size: 0.82rem; } .tl-label small { display: none; } }
 
 @media (max-width: 900px) { .level-badge { min-width: 120px; padding: 6px 10px; font-size: 0.75rem; } .level-badge .muted { display: none; } }
 
@@ -696,3 +697,6 @@ label { color: #f4eff7; }
 
 /* the skill tree starts small with the whole tree in view; Full screen makes it big */
 .graph.tree:not(.is-full) { height: clamp(440px, 62vh, 600px); }
+
+.tl-label { font-size: 0.98rem; }
+@media (max-width: 700px) { .tl-label { font-size: 0.8rem; } }

@@ -3,7 +3,7 @@ import { KINDS, readyByDate } from '../format.js'
 import { futureSummary } from '../graphUtils.js'
 
 const PX = 26        // pixels per week
-const LABEL = 240    // width of the step names on the left
+const labelWidth = () => (typeof window !== 'undefined' && window.innerWidth < 700 ? 140 : 300)   // width of the step names on the left: narrower on a phone
 
 // Your plan as a timeline: one bar per step, placed and sized by the planner. A marker moves through the weeks and fills the bars.
 export default function Timeline({ roadmap, plan, selectedId, onSelect }) {
@@ -25,6 +25,7 @@ export default function Timeline({ roadmap, plan, selectedId, onSelect }) {
   const weeks = Math.max(max, 4)
   const px = Math.max(PX, Math.floor(760 / weeks))      // short plans are stretched so the chart is never tiny
   const trackWidth = weeks * px
+  const LABEL = labelWidth()
   const ticks = Array.from({ length: Math.floor(weeks / 4) + 1 }, (_, i) => i * 4)
   const now = week > 0 ? futureSummary(roadmap, plan, week) : null
 
@@ -47,7 +48,7 @@ export default function Timeline({ roadmap, plan, selectedId, onSelect }) {
       </div>
 
       <div className="tl-scroll" role="region" aria-label="Timeline of your plan. Scroll sideways to see later weeks.">
-        <div className="tl-inner" style={{ width: LABEL + trackWidth + 32 }}>
+        <div className="tl-inner" style={{ width: LABEL + trackWidth + 32, '--tl-label': `${LABEL}px` }}>
           <div className="tl-axis" style={{ marginLeft: LABEL, width: trackWidth }}>
             {ticks.map((w) => <span key={w} className="tl-tick" style={{ left: w * px }}>{w === 0 ? 'Now' : `Wk ${w}`}<small>{readyByDate(w).replace(/ \d{4}$/, '')}</small></span>)}
           </div>
@@ -59,7 +60,8 @@ export default function Timeline({ roadmap, plan, selectedId, onSelect }) {
             const classes = ['tl-bar', `kind-${step.kind}`, info.critical ? 'is-critical' : '', selectedId === step.id ? 'is-selected' : '', fill >= 1 ? 'is-done' : ''].join(' ')
             return (
               <div className="tl-row" key={step.id}>
-                <span className="tl-label"><span aria-hidden="true">{kind.icon}</span> {step.title}
+                <span className="tl-label">
+                  <span className="tl-title" title={step.title}><span aria-hidden="true">{kind.icon}</span> {step.title}</span>
                   <small>{roadmap.phases[step.phase - 1] ?? `Phase ${step.phase}`}</small></span>
                 <div className="tl-track" style={{ width: trackWidth, backgroundImage: `repeating-linear-gradient(90deg, transparent 0, transparent ${px * 4 - 1}px, #1d1822 ${px * 4 - 1}px, #1d1822 ${px * 4}px)` }}>
                   <button type="button" className={classes} style={{ left: start * px, width: Math.max((end - start) * px, 34) }} onClick={() => onSelect(step.id)}
