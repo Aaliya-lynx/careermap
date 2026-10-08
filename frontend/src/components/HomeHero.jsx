@@ -16,7 +16,7 @@ export default function HomeHero() {
         <p className="hh-brand">CareerMap</p>
         <h1>Your dream job, <span className="grad">reverse-engineered.</span></h1>
         <p className="hh-lead">Tell us the exact role. We build your skill tree and tell you the date you could be ready, then it re-plans live as your hours and skills change.</p>
-        <button type="button" className="primary hh-cta" onClick={startNow}>Build my roadmap</button>
+        <button type="button" className="primary hh-cta" onClick={startNow}>Get started</button>
         <ul className="hh-points">
           <li>No sign-up</li>
           <li>Saved only in your browser</li>
