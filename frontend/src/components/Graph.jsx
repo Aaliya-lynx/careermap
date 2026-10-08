@@ -88,6 +88,14 @@ const nodeTypes = { step: StepNode, zone: ZoneNode }
 // On a phone, fitting the whole tree makes the text unreadable: start zoomed in at the first column and let the user pan.
 const narrowScreen = () => window.matchMedia('(max-width: 900px)').matches
 
+// Fitting every column on screen is only fine when the text stays readable (zoom 0.85 or more).
+// Otherwise start at a readable zoom on the first column: drag to move, and "Fit all" shows everything.
+function startView(columns, expanded) {
+  const available = expanded ? window.innerWidth - 20 : Math.min(window.innerWidth, 1500) - 60
+  if (!narrowScreen() && available / (columns * COLUMN) >= 0.85) return { fitView: true, fitViewOptions: { padding: 0.12 } }
+  return { defaultViewport: { x: 16, y: 8, zoom: narrowScreen() ? 0.8 : 0.95 } }
+}
+
 // Everything a step needs (before it) and everything it unlocks (after it).
 function relatedTo(id, nodes) {
   const byId = Object.fromEntries(nodes.map((n) => [n.id, n]))
@@ -216,7 +224,7 @@ export default function Graph({ roadmap, plan, selectedId, onSelect, expanded, o
     <div className={`graph ${expanded ? 'is-full' : ''}`} role="region"
       aria-label="Interactive roadmap. Drag to pan, scroll or pinch to zoom, and press Tab to move between steps.">
       <ReactFlow key={expanded ? 'full' : 'normal'} nodes={nodes} edges={edges} nodeTypes={nodeTypes}
-        {...(narrowScreen() ? { defaultViewport: { x: 10, y: 6, zoom: 0.8 } } : { fitView: true, fitViewOptions: { padding: 0.12 } })}
+        {...startView(new Set(roadmap.nodes.map((n) => n.phase)).size, expanded)}
         minZoom={0.15} maxZoom={1.6} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false}
         onPaneClick={() => selectedId && onSelect(null)} proOptions={{ hideAttribution: true }}>
         <Background gap={28} size={1} color="rgba(140,160,220,0.14)" />

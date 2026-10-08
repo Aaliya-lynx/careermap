@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { createRoadmap, getAdvice, replan } from './api.js'
+import { analyzeCertificates, createRoadmap, getAdvice, replan } from './api.js'
 import { downloadText, fileName, toMarkdown } from './exports.js'
 import { paceInfo, readyByDate, weeksText } from './format.js'
+import { buildNarration } from './narrate.js'
 import { loadLibrary, newId, saveLibrary, upsert } from './store.js'
 import { decodeShare, readShared, shareUrl } from './share.js'
+import Certificates from './components/Certificates.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Graph from './components/Graph.jsx'
 import Library from './components/Library.jsx'
+import Listen from './components/Listen.jsx'
 import Outline from './components/Outline.jsx'
 import SetupForm from './components/SetupForm.jsx'
 import SidePanel from './components/SidePanel.jsx'
@@ -39,6 +42,10 @@ export default function App() {
   const [hours, setHours] = useState(start?.hours ?? 8)
   const [budget, setBudget] = useState(start?.budget ?? '')
   const [plan, setPlan] = useState(start?.plan ?? null)
+  const [evidence, setEvidence] = useState(start?.evidence ?? {})        // step id -> certificate that shows it
+  const [certResult, setCertResult] = useState(start?.certResult ?? null)
+  const [certBusy, setCertBusy] = useState(false)
+  const [certError, setCertError] = useState('')
   const [busy, setBusy] = useState(false)
   const [loadingStep, setLoadingStep] = useState(0)
   const [message, setMessage] = useState('')
@@ -57,13 +64,13 @@ export default function App() {
     if (!roadmap || !activeId) return
     const summary = plan ? { weeks_needed: plan.summary.weeks_needed, percent_ready: plan.summary.percent_ready } : null
     const entry = { id: activeId, title: roadmap.title || form.goal, goal: form.goal, skills: form.skills, roadmap, known, completed,
-      startedAt, hours, budget, plan, summary, updatedAt: Date.now() }
+      evidence, certResult, startedAt, hours, budget, plan, summary, updatedAt: Date.now() }
     setLibrary((current) => {
       const next = upsert(current, entry)
       saveLibrary(next)
       return next
     })
-  }, [roadmap, activeId, known, completed, startedAt, hours, budget, plan, form.goal, form.skills])
+  }, [roadmap, activeId, known, completed, evidence, certResult, startedAt, hours, budget, plan, form.goal, form.skills])
 
   // Whenever hours, budget or known skills change, ask the server for a new plan (plain code, no AI).
   useEffect(() => {
@@ -128,6 +135,8 @@ export default function App() {
         setRoadmap({ ...shared.roadmap, nodes: data.nodes })
         setKnown(data.known)
         setCompleted({})
+        setEvidence({})
+        setCertResult(null)
         setStartedAt(Date.now())
         setHours(shared.hours)
         setBudget(shared.budget)
@@ -146,6 +155,9 @@ export default function App() {
     setRoadmap(entry.roadmap)
     setKnown(entry.known)
     setCompleted(entry.completed ?? {})
+    setEvidence(entry.evidence ?? {})
+    setCertResult(entry.certResult ?? null)
+    setCertError('')
     setStartedAt(entry.startedAt ?? entry.updatedAt ?? Date.now())
     setHours(entry.hours)
     setBudget(entry.budget)
@@ -181,6 +193,8 @@ export default function App() {
       setRoadmap(data.roadmap)
       setKnown(data.known)
       setCompleted({})
+      setEvidence({})
+      setCertResult(null)
       setStartedAt(Date.now())
       setHours(values.hours_per_week)
       setBudget(values.weeks_budget ?? '')
@@ -216,6 +230,7 @@ export default function App() {
         else delete next[id]
         return next
       })
+      if (!adding) setEvidence((e) => { const next = { ...e }; delete next[id]; return next })
       return adding ? [...current, id] : current.filter((k) => k !== id)
     })
   }, [])
@@ -228,6 +243,46 @@ export default function App() {
     } catch (error) {
       setAdvice((a) => ({ ...a, [step.id]: { error: error.message } }))
     }
+  }
+
+  // Read certificates (photos and/or typed names), mark the steps they cover as known, and show the career suggestions.
+  async function readCertificates({ certificates, images }) {
+    setCertBusy(true)
+    setCertError('')
+    try {
+      const data = await analyzeCertificates({
+        goal: roadmap.title || form.goal,
+        steps: roadmap.nodes.map((n) => ({ id: n.id, title: n.title, kind: n.kind })),
+        known_titles: roadmap.nodes.filter((n) => known.includes(n.id)).map((n) => n.title),
+        certificates, images,
+      })
+      const fresh = {}
+      for (const match of data.matches) for (const id of match.covers) if (!known.includes(id)) fresh[id] = match.certificate
+      const ids = Object.keys(fresh)
+      if (ids.length) {
+        setKnown((current) => [...new Set([...current, ...ids])])
+        setEvidence((current) => ({ ...current, ...fresh }))
+        setToast({ text: `${ids.length} step${ids.length > 1 ? 's' : ''} counted from your certificate (self-reported).` })
+      }
+      setCertResult((previous) => ({
+        read: [...new Map([...(previous?.read ?? []), ...data.read].map((r) => [r.title, r])).values()],
+        matches: [...(previous?.matches ?? []), ...data.matches],
+        careers: data.careers,
+      }))
+      return true
+    } catch (error) {
+      setCertError(error.message)
+      return false
+    } finally {
+      setCertBusy(false)
+    }
+  }
+
+  // Start a fresh roadmap for a suggested career: the goal is filled in and you press Build.
+  function useCareer(title) {
+    startOver()
+    setForm({ goal: title, skills: '', hours, budget: '' })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   async function copyShareLink() {
@@ -288,7 +343,7 @@ export default function App() {
         <main className="workspace">
           <section className="ready" aria-live="polite">
             <div>
-              <p className="eyebrow">{roadmap.title || form.goal} <span className="ai-chip" title="The roadmap and the advice are written by an AI model. Use them as a guide and confirm costs and requirements with official sources.">✨ Made with AI</span></p>
+              <p className="eyebrow">{roadmap.title || form.goal}</p>
               {summary ? (
                 <>
                   <p className="ready-date"><span className="muted-label">Ready by</span> {summary.weeks_needed === 0 ? 'today' : readyByDate(summary.weeks_needed)}</p>
@@ -309,6 +364,7 @@ export default function App() {
                 onChange={(e) => setBudget(e.target.value)} />
             </details>
             <div className="save-row">
+              <Listen getLines={() => buildNarration(roadmap, plan, hours)} disabled={!plan} />
               <button type="button" className="ghost" onClick={copyShareLink}>Copy share link</button>
               <button type="button" className="ghost" onClick={saveChecklist} disabled={!plan}>Download checklist</button>
             </div>
@@ -317,13 +373,18 @@ export default function App() {
           {message && <p className="callout warn" role="alert">{message}</p>}
 
           {plan && (
+            <div className="viewrow">
             <div className="viewbar" role="tablist" aria-label="How to see the roadmap">
               <button type="button" role="tab" aria-selected={view === 'map'} className={view === 'map' ? 'is-on' : ''} onClick={() => setView('map')}>Map</button>
               <button type="button" role="tab" aria-selected={view === 'outline'} className={view === 'outline' ? 'is-on' : ''} onClick={() => { setView('outline'); setExpanded(false) }}>Outline</button>
             </div>
+            {view === 'map' && <p className="map-tip">Drag the map to move around, scroll or pinch to zoom, and use “Fit all” to see everything.</p>}
+            </div>
           )}
 
           {plan && <Dashboard roadmap={roadmap} plan={plan} pace={pace} onSelect={setSelectedId} />}
+          {plan && <Certificates steps={roadmap.nodes} result={certResult} evidence={evidence} busy={certBusy} error={certError}
+            onAnalyze={readCertificates} onUseCareer={useCareer} />}
 
           {plan ? (
             <div className="stage">
@@ -331,7 +392,7 @@ export default function App() {
                 ? <Graph roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} expanded={expanded} onToggleExpand={() => setExpanded((v) => !v)} />
                 : <Outline roadmap={roadmap} plan={plan} known={known} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown} />}
               {step && (
-                <SidePanel step={step} info={plan.nodes[step.id]} roadmap={roadmap} known={known} completedAt={completed[step.id]}
+                <SidePanel step={step} info={plan.nodes[step.id]} roadmap={roadmap} known={known} completedAt={completed[step.id]} evidenceTitle={evidence[step.id]}
                   advice={advice[step.id] ?? {}} onClose={() => setSelectedId(null)} onToggleKnown={toggleKnown} onAdvice={loadAdvice} />
               )}
             </div>

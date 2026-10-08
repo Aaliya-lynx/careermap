@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { KINDS, STATUS_LABEL, assumedBecause } from '../format.js'
 
-export default function SidePanel({ step, info, roadmap, known, completedAt, advice, onClose, onToggleKnown, onAdvice }) {
+export default function SidePanel({ step, info, roadmap, known, completedAt, evidenceTitle, advice, onClose, onToggleKnown, onAdvice }) {
   const closeRef = useRef(null)
   useEffect(() => { closeRef.current?.focus() }, [step.id])
   useEffect(() => {
@@ -26,6 +26,7 @@ export default function SidePanel({ step, info, roadmap, known, completedAt, adv
         {info.start_week != null && ` · weeks ${Math.floor(info.start_week) + 1}–${Math.max(Math.ceil(info.end_week), Math.floor(info.start_week) + 1)}`}</p>
       {step.why && <p>{step.why}</p>}
       {prerequisites.length > 0 && <p className="muted">Needs: {prerequisites.join(', ')}</p>}
+      {evidenceTitle && <p className="callout">Counted from your certificate: <strong>{evidenceTitle}</strong> (self-reported, not verified).</p>}
       {completedAt && <p className="muted">Marked as known on {new Date(completedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}.</p>}
       {info.critical && <p className="callout">This step is on your longest chain: finishing it sooner moves your ready-by date.</p>}
       {info.status === 'stretch' && <p className="callout warn">Left out of your plan because it does not fit your weeks budget.</p>}

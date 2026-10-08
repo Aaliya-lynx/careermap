@@ -27,3 +27,4 @@ async function post(path, body, signal) {
 export const createRoadmap = (body) => post('/api/roadmap', body)
 export const replan = (body, signal) => post('/api/plan', body, signal)
 export const getAdvice = (body) => post('/api/node-advice', body)
+export const analyzeCertificates = (body) => post('/api/certificates', body)
