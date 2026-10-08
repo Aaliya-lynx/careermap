@@ -2,7 +2,7 @@
 # Leave "Root Directory" empty when creating the service by hand.
 services:
   - type: web
-    name: careermap-api
+    name: careermap
     runtime: python
     plan: free
     buildCommand: pip install -r backend/requirements.txt
