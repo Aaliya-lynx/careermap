@@ -10,7 +10,7 @@ const TOP = 80
 const NODE_W = 270
 const NODE_H = 56
 
-const LINE_COLOR = { 'edge-critical': '#d68a0c', 'edge-done': '#5db487', 'edge-stretch': '#b7bfcc', 'edge-plain': '#aab4c6' }
+const LINE_COLOR = { 'edge-critical': '#e6b450', 'edge-done': '#7fd1ae', 'edge-stretch': '#6b6073', 'edge-plain': '#5b5163' }
 
 function loadImage(url) {
   return new Promise((resolve, reject) => {
@@ -29,7 +29,7 @@ async function withLines(photoUrl, lines, view, width, height) {
   canvas.width = width
   canvas.height = height
   const g = canvas.getContext('2d')
-  g.fillStyle = '#fbfcfd'
+  g.fillStyle = '#0d0b0f'
   g.fillRect(0, 0, width, height)
   const at = (x, y) => [view.x + view.zoom * x, view.y + view.zoom * y]
   for (const line of lines) {
@@ -51,14 +51,14 @@ async function withLines(photoUrl, lines, view, width, height) {
 }
 
 function StepNode({ data }) {
-  const { step, info, selected, onSelect, onToggle, dim, startHere, sim } = data
+  const { step, info, selected, onSelect, onToggle, dim, startHere, sim, delay } = data
   const kind = KINDS[step.kind] ?? KINDS.skill
   const locked = info.status === 'todo' && !info.available
   const done = info.status === 'known' || info.status === 'implied'
   const classes = ['step', `is-${info.status}`, info.critical ? 'is-critical' : '', locked ? 'is-locked' : '', info.available ? 'is-available' : '',
     selected ? 'is-selected' : '', dim ? 'is-dim' : '', sim ? `sim-${sim}` : ''].join(' ')
   return (
-    <div className={classes}>
+    <div className={classes} style={{ '--delay': `${delay ?? 0}ms` }}>
       <Handle type="target" position={Position.Left} isConnectable={false} />
       {startHere && <span className="start-tag">Start here</span>}
       <button type="button" className="step-icon step-check" onClick={() => onToggle(step.id)} disabled={info.status === 'implied'}
@@ -189,9 +189,10 @@ function MapControls({ roadmap, plan, filter, onFilter, week, onWeek, playing, o
       </div>
       {max > 0 && (
         <div className="scrub">
-          <button type="button" className="tool" onClick={() => { if (!playing && week >= max) onWeek(0); onPlaying(!playing) }} aria-pressed={playing}>{playing ? 'Pause' : 'Play my plan'}</button>
+          <button type="button" className="play-circle" onClick={() => { if (!playing && week >= max) onWeek(0); onPlaying(!playing) }} aria-pressed={playing}
+            aria-label={playing ? 'Pause the plan' : 'Play my plan forward week by week'} title={playing ? 'Pause' : 'Play my plan'}>{playing ? '❚❚' : '▶'}</button>
           <label htmlFor="week-slider" className="scrub-label">
-            {week === 0 ? 'Drag to see your future' : `Week ${week}`}
+            {week === 0 ? 'Play my plan, or drag' : `Week ${week}`}
           </label>
           <input id="week-slider" type="range" min="0" max={max} value={week} onChange={(e) => { onPlaying(false); onWeek(Number(e.target.value)) }} />
           <span className="scrub-readout" aria-live="polite">
@@ -264,6 +265,7 @@ export default function Graph({ roadmap, plan, selectedId, onSelect, onToggleKno
     const startId = plan.order.find((id) => plan.nodes[id].available)
 
     const flowNodes = []
+    let delayCount = 0
     const spot = {}
     phaseNumbers.forEach((p, column) => {
       const done = plan.phases.find((x) => x.phase === p)
@@ -278,7 +280,7 @@ export default function Graph({ roadmap, plan, selectedId, onSelect, onToggleKno
           id: step.id, type: 'step', position: { x: column * COLUMN, y: TOP + row * ROW }, draggable: false,
           data: { step, info: plan.nodes[step.id], selected: step.id === selectedId, onSelect, onToggle: onToggleKnown,
             dim: (related ? !related.has(step.id) : false) || (filter !== 'all' && step.kind !== filter),
-            startHere: step.id === startId && week === 0, sim: simFor(plan.nodes[step.id], week) },
+            startHere: step.id === startId && week === 0, sim: simFor(plan.nodes[step.id], week), delay: Math.min(delayCount++ * 28, 700) },
         })
       })
     })
@@ -312,7 +314,7 @@ export default function Graph({ roadmap, plan, selectedId, onSelect, onToggleKno
         {...startView(new Set(roadmap.nodes.map((n) => n.phase)).size, Math.max(...Object.values(roadmap.nodes.reduce((c, n) => ({ ...c, [n.phase]: (c[n.phase] || 0) + 1 }), {}))), expanded)}
         minZoom={0.15} maxZoom={1.6} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false}
         onPaneClick={() => selectedId && onSelect(null)} proOptions={{ hideAttribution: true }}>
-        <Background gap={28} size={1.2} color="#e3e8f0" />
+        <Background gap={28} size={1.2} color="#2a232f" />
         <Controls showInteractive={false} />
         <Tools title={roadmap.title} box={box} lines={lines} expanded={expanded} onToggleExpand={onToggleExpand} />
         {expanded && (
