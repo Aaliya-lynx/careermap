@@ -162,7 +162,7 @@ export default function SkillTree({ roadmap, plan, selectedId, onSelect, onToggl
           minZoom={0.15} maxZoom={1.6} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false}
           zoomOnScroll={expanded} preventScrolling={expanded} zoomActivationKeyCode={['Control', 'Meta']} panOnDrag={expanded || !touchScreen()}
           onPaneClick={() => selectedId && onSelect(null)} proOptions={{ hideAttribution: true }}>
-          <Background gap={32} size={1.6} color="#7a5792" />
+          <Background gap={32} size={1.6} color="#e3d3ee" />
           <Controls showInteractive={false} />
           <Tools expanded={expanded} onToggleExpand={onToggleExpand} />
           <Panel position="bottom-right" className="level-badge">

@@ -8,7 +8,6 @@ export default function Certificates({ steps, result, evidence, busy, error, onA
   const [images, setImages] = useState([])        // small JPEG data URLs, kept only in this page until they are read
   const [typed, setTyped] = useState([])
   const [title, setTitle] = useState('')
-  const [issuer, setIssuer] = useState('')
   const [problem, setProblem] = useState('')
 
   async function addFiles(event) {
@@ -29,9 +28,8 @@ export default function Certificates({ steps, result, evidence, busy, error, onA
   function addTyped(event) {
     event.preventDefault()
     if (title.trim().length < 2 || typed.length >= 8) return
-    setTyped((current) => [...current, { title: title.trim(), issuer: issuer.trim() }])
+    setTyped((current) => [...current, { title: title.trim() }])
     setTitle('')
-    setIssuer('')
   }
 
   async function read() {
@@ -54,7 +52,6 @@ export default function Certificates({ steps, result, evidence, busy, error, onA
         </label>
         <form onSubmit={addTyped} className="cert-typed">
           <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Or type a certificate name" maxLength={120} aria-label="Certificate name" />
-          <input value={issuer} onChange={(e) => setIssuer(e.target.value)} placeholder="Issuer (optional)" maxLength={80} aria-label="Issuer" />
           <button type="submit" className="secondary" disabled={title.trim().length < 2}>Add</button>
         </form>
       </div>
@@ -68,7 +65,7 @@ export default function Certificates({ steps, result, evidence, busy, error, onA
               <button type="button" className="ghost" onClick={() => setImages((c) => c.filter((_, j) => j !== i))}>Remove</button></li>
           ))}
           {typed.map((t, i) => (
-            <li key={t.title + i}><span>🎓 {t.title}{t.issuer ? ` · ${t.issuer}` : ''}</span>
+            <li key={t.title + i}><span>🎓 {t.title}</span>
               <button type="button" className="ghost" onClick={() => setTyped((c) => c.filter((_, j) => j !== i))}>Remove</button></li>
           ))}
         </ul>
