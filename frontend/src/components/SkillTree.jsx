@@ -5,7 +5,7 @@ import { relatedTo } from '../graphUtils.js'
 
 const SLOT = 176     // horizontal room for one medallion
 const TIER = 210     // vertical room for one tier
-const ORB_W = 150
+const ORB_W = 170
 const TOP_PAD = 84   // headroom for the level badge
 
 // A step as a game-style medallion. Locked steps show a padlock, ready ones pulse, finished ones are ticked.
@@ -162,7 +162,7 @@ export default function SkillTree({ roadmap, plan, selectedId, onSelect, onToggl
           minZoom={0.15} maxZoom={1.6} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false}
           zoomOnScroll={expanded} preventScrolling={expanded} zoomActivationKeyCode={['Control', 'Meta']} panOnDrag={expanded || !touchScreen()}
           onPaneClick={() => selectedId && onSelect(null)} proOptions={{ hideAttribution: true }}>
-          <Background gap={32} size={1.4} color="#2a232f" />
+          <Background gap={32} size={1.6} color="#3b3243" />
           <Controls showInteractive={false} />
           <Tools expanded={expanded} onToggleExpand={onToggleExpand} />
           <Panel position="bottom-right" className="level-badge">

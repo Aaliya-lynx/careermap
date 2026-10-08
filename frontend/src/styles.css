@@ -7,7 +7,7 @@
   --line: #2f2834;
   --line-strong: #4a4150;
   --text: #f4eff7;
-  --muted: #b4a9bb;
+  --muted: #c6bccd;
   --accent: #c99be0;
   --accent-hover: #dbb4ec;
   --accent-deep: #8a5aa3;
@@ -599,4 +599,79 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .stretch-note { margin: 0; color: var(--muted); font-size: 0.82rem; }
 
 /* the skill tree starts compact with the whole tree in view; Full screen makes it big */
-.graph.tree:not(.is-full) { height: clamp(400px, 58vh, 560px); }
+.graph.tree:not(.is-full) { height: clamp(440px, 64vh, 620px); }
+
+/* ---------- legibility: the visual views stand out from the page and the text is easy to read ---------- */
+.graph, .tl-scroll { background: #1c1722; border: 1px solid #50455a; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
+.graph.is-full { border: 0; box-shadow: none; }
+.tier, .zone { background: #2a2231; border: 1px solid #473c52; }
+.tier.is-complete, .zone.is-complete { background: #1f3429; border-color: #347255; }
+.tier-label { font-size: 1.15rem; color: #f0e7f6; letter-spacing: 0.01em; }
+.zone-label { font-size: 1.02rem; color: #f0e7f6; }
+.tier.is-complete .tier-label, .zone.is-complete .zone-label { color: #8fe0bd; }
+
+/* skill tree steps */
+.orb { width: 170px; gap: 5px; }
+.orb-core { width: 90px; height: 90px; border-width: 4px; font-size: 2.2rem; background: #382e41; border-color: #7a6b86; }
+.orb.is-locked .orb-core { background: #2b2332; border-color: #6a5c76; font-size: 1.8rem; }
+.orb.is-available .orb-core { background: #44304f; }
+.orb-label { font-size: 1.06rem; font-weight: 800; color: #ffffff; line-height: 1.2; max-width: 158px; }
+.orb-meta { font-size: 0.95rem; color: #ddd3e3; }
+.orb.is-locked .orb-label { opacity: 0.88; }
+.orb.is-locked .orb-meta { opacity: 0.8; }
+.orb-tick { top: 58px; left: calc(50% + 28px); width: 30px; height: 30px; }
+.edge-plain .react-flow__edge-path { stroke: #8f8199; stroke-width: 1.8; opacity: 0.75; }
+.edge-done .react-flow__edge-path { stroke-width: 2.4; opacity: 1; }
+.edge-critical .react-flow__edge-path { stroke-width: 3; }
+.level-badge { background: #332a3b; border: 1px solid #5a4d64; font-size: 0.92rem; }
+.level-badge strong { font-size: 1.1rem; }
+
+/* map steps */
+.step { background: #382e41; border: 1px solid #5a4d64; }
+.step:hover { background: #46394f; }
+.step-title { font-size: 1.08rem; font-weight: 800; color: #ffffff; }
+.step-meta { font-size: 0.9rem; color: #ddd3e3; }
+.step.is-locked { color: #ffffff; }
+.step.is-known, .step.is-implied { background: #1f3d31; border-color: #347255; }
+.step.is-stretch { background: #231d29; border-color: #8a7d94; }
+.step-icon { background: #4c4056; }
+
+/* timeline */
+.tl-label { background: #1c1722; font-size: 1rem; font-weight: 700; color: #ffffff; }
+.tl-label small { font-size: 0.85rem; color: #ddd3e3; }
+.tl-tick { font-size: 0.86rem; color: #e4dbe9; border-left-color: #5a4d64; }
+.tl-tick small { color: #c6bccd; }
+.tl-row { border-bottom-color: #2f2637; }
+.tl-track { background: repeating-linear-gradient(90deg, transparent 0, transparent 103px, #2f2637 103px, #2f2637 104px); }
+.tl-bar { background: #54465f; }
+.tl-bar.kind-project { background: #34507a; }
+.tl-bar.kind-cert { background: #4f4f86; }
+.tl-bar.kind-role { background: #7a5a30; }
+.tl-text { font-size: 0.88rem; color: #ffffff; }
+
+/* outline */
+.outline-phase { background: #2a2231; border: 1px solid #473c52; }
+.outline-phase.is-complete { background: #1f3429; border-color: #347255; }
+.outline-phase h3 { font-size: 1.1rem; color: #f0e7f6; }
+.outline-title { font-size: 1.04rem; color: #ffffff; }
+.outline-meta { font-size: 0.9rem; color: #ddd3e3; }
+.outline-step { padding: 8px 10px; }
+.outline-step.is-stretch { opacity: 0.8; }
+.orb-label, .orb-meta { text-shadow: 0 0 3px #2a2231, 0 0 3px #2a2231, 0 0 8px #2a2231; }
+
+/* ---------- form fields stand out from their cards ---------- */
+input[type='text'], input[type='number'], input:not([type]), .about select, .field select, .cmp-pick select {
+  background: #362d3f; border: 1.5px solid #8a7b96; color: #ffffff;
+}
+input:hover, .about select:hover, .field select:hover { border-color: #b59ec5; }
+input:focus, .about select:focus, .field select:focus, .cmp-pick select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(201, 155, 224, 0.35); }
+input::placeholder { color: #b6aabf; }
+label { color: #f4eff7; }
+.setup { background: #221c28; border: 1px solid #4d4157; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.4); }
+.setup #goal { font-size: 1.08rem; padding: 15px 16px; }
+.setup > .field:first-child > label { font-size: 1.12rem; }
+.chip { background: #3d3346; border: 1px solid #6a5c76; color: #ffffff; }
+.chip:hover { background: #4d4059; border-color: var(--accent); }
+.about { background: #2a2231; border: 1px solid #4d4157; }
+.about summary { color: #ffffff; }
+.optional { color: #cfc5d6; }
