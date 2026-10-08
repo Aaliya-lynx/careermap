@@ -19,7 +19,7 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 **Done and working**
 - AI-generated roadmap for any typed target job, with real tools, certifications, roles and projects. The model's answer is validated in code before it is used (no cycles, no broken links, size limits).
 - The roadmap page is split into five parts so nothing is repeated or crowded: **Roadmap** (the views below), **Certificates**, **Progress**, **About you** and **Explore** (typical paths and comparing two roles). Each part shows only its own content.
-- Six ways to see the plan. **Skill tree**: a game-style tree of round medallions in tiers that you climb from the bottom (it opens in a compact frame with the whole tree in view, and "Full screen" makes it big), with locked, ready and unlocked states, power lines that light up, an unlock animation when you tick a step, and a level and XP badge. **Map**: left-to-right columns by phase. **Timeline**: weeks across the page with a bar per step, a moving "now" marker and bars that fill as you play your plan forward. **Outline**: a plain list. **Paths**: typical routes into the job. **Compare**: put two dream roles side by side (a saved roadmap or a new job) and see which steps are really the same skill, with the shared hours counted, so you can do the overlap first.
+- Six ways to see the plan. **Skill tree**: a fan that opens upward from a "You are here" start node. Each phase is an arc, every step is a numbered medallion in the colour of its kind (skill, project, certification, role), and a step sits near the steps it builds on. Locked, ready and unlocked states, lines that light up, an unlock animation when you tick a step, and a level and XP badge. It opens in a compact frame with the whole fan in view, and "Full screen" makes it big. **Map**: left-to-right columns by phase. **Timeline**: weeks across the page with a bar per step, a moving "now" marker and bars that fill as you play your plan forward. **Outline**: a plain list. **Paths**: typical routes into the job. **Compare**: put two dream roles side by side (a saved roadmap or a new job) and see which steps are really the same skill, with the shared hours counted, so you can do the overlap first.
 - All visual views: zoom, pan, click, keyboard focus, full screen, a "Start here" tag, and highlighting of what a step needs and unlocks. The map also has filters by type.
 - "Tell us about yourself": optional dropdowns for education, year, field, projects and hackathons, plus a GitHub profile link. The AI uses the choices to skip what you already have and writes a "Where you are now" card (already have, strengthen, recommended next). The GitHub link is only kept in your browser: the app does not open it, and nothing the AI says claims to have read it. A roadmap that already exists can be rebuilt with these details from its "Add details about me" button. The details are remembered in your browser so you only fill them in once, with a "Forget my details" link for shared computers. The start page opens with a banner (the CareerMap title, the headline, a "Get started" button and a small tiled picture drawn in the app) above the form. The app opens on it and the plan sits on a second page next to it: swipe sideways on a phone, use the arrow buttons or a sideways trackpad swipe on a laptop, or tap "Start" and "My roadmap" at the bottom. Swipes that begin on the map, the timeline or a slider are left to those controls. Nothing is lost when you switch.
 - Live re-planning: hours per week, a weeks deadline and "I already know this" re-route the map and the ready-by date instantly, with no AI call. The summary at the top of the roadmap shows the ready-by date, a progress bar and a "Plan settings" card (hours with quick choices, an optional deadline). If a deadline is too short, a small note in the settings card offers one tap to set it to the weeks the plan really needs or to remove it.
@@ -30,7 +30,7 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 - "Listen to my plan": the plan read aloud with the browser's voice. If the device has no voice or the tab is muted, the app says so instead of staying silent.
 - "People who took this path": three typical routes into the job, each a short timeline of roles, rough timing and side projects. They are AI-written patterns, clearly labelled as not real people, and each has a button that highlights its steps on your map.
 - "My roadmaps": every roadmap is saved in the browser, with download as a picture or a PDF (or plain text) checklist, and a short share link (about 45 characters) that opens the roadmap for anyone, with no account. If short links are unavailable, it copies a longer link that carries the whole roadmap in the address instead.
-- 128 automated backend tests, all passing, using a fake AI so they cost nothing.
+- 147 automated backend tests and 26 skill-tree layout tests, all passing, using a fake AI so they cost nothing.
 
 **Left for the next 16 hours, honestly**
 - Checked in desktop Chrome and in a phone-sized window. A pass on a real Android phone (touch gestures, the camera, the voice) is still to do.
@@ -107,7 +107,7 @@ cd backend
 python -m venv venv
 source venv/bin/activate            # Windows: venv\Scripts\activate
 pip install -r requirements-dev.txt
-pytest                              # 83 tests, no AI key needed
+pytest                              # 147 tests, no AI key needed
 cp ../.env.example .env             # then add at least one provider key
 uvicorn main:app --reload           # http://localhost:8000/health
 
@@ -115,6 +115,7 @@ uvicorn main:app --reload           # http://localhost:8000/health
 cd frontend
 npm install
 npm run dev                         # http://localhost:5173
+npm test                            # 26 tests of the skill-tree layout, no extra packages
 ```
 
 - `.env.example` lists every setting. At least one provider (`AZURE_*`, `GEMINI_*` or `GROQ_*`) needs a key, and `LLM_CHAIN` names the models in the order they are tried.
