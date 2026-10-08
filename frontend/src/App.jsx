@@ -485,7 +485,6 @@ export default function App() {
               ) : <p className="muted">Planning…</p>}
               <div className="ready-actions">
                 <Listen getLines={() => buildNarration(roadmap, plan, hours)} disabled={!plan} />
-                <span className="ready-label">Save or share</span>
                 <button type="button" className="ghost" onClick={copyShareLink}>Copy share link</button>
                 <button type="button" className="ghost" onClick={savePdf} disabled={!plan}>Download PDF</button>
                 <button type="button" className="ghost" onClick={saveText} disabled={!plan}>Download text</button>
@@ -512,7 +511,7 @@ export default function App() {
               </div>
               </div>
               {summary && !summary.within_budget && (
-                <div className="callout warn fix" role="alert">
+                <div className="callout fix" role="status">
                   <p><strong>{summary.weeks_budget} weeks is too short.</strong> This plan needs about {summary.weeks_needed} at {hours} h a week.</p>
                   <div className="fix-actions">
                     <button type="button" className="ghost" onClick={() => setBudget(String(summary.weeks_needed))}>Use {summary.weeks_needed} weeks</button>
