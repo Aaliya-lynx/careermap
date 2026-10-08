@@ -9,6 +9,7 @@ import Certificates from './components/Certificates.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Graph from './components/Graph.jsx'
 import Compare from './components/Compare.jsx'
+import HomePreview from './components/HomePreview.jsx'
 import Library from './components/Library.jsx'
 import Listen from './components/Listen.jsx'
 import Outline from './components/Outline.jsx'
@@ -403,7 +404,7 @@ export default function App() {
   const pace = roadmap && plan ? paceInfo({ startedAt, completed, nodes: roadmap.nodes, hours, plan }) : null
 
   return (
-    <div className={`app ${expanded ? 'has-full' : ''}`}>
+    <div className={`app ${expanded ? 'has-full' : ''} ${showHome ? 'on-home' : ''}`}>
       <header className="top">
         <a className="brand" href="/" aria-label="CareerMap home" onClick={goHome}><span className="logo" aria-hidden="true">◈</span> CareerMap</a>
         <nav className="top-actions" aria-label="Main">
@@ -416,6 +417,8 @@ export default function App() {
       <div className={roadmap ? `pager-track ${showHome ? 'at-home' : 'at-plan'}` : undefined}>
       <div className={roadmap ? 'pager-page' : undefined} inert={roadmap && !showHome ? true : undefined}>
         <main className="hero">
+          <div className="hero-main">
+          <p className="wordmark"><span className="logo" aria-hidden="true">◈</span> CareerMap</p>
           <h1>Your dream job, <span className="grad">reverse-engineered.</span></h1>
           <p className="lead">Tell us the exact role. We build your skill tree and tell you the date you could be ready, then it re-plans live as your hours and skills change.</p>
           {library.length > 0 && (
@@ -436,6 +439,8 @@ export default function App() {
           <SetupForm key={`${formKey}-${roadmap ? 'fresh' : activeId ?? 'new'}`} busy={busy} onSubmit={build} onForget={forgetMe} initial={roadmap ? freshForm() : form} />
           {busy && <p className="loading" role="status">{LOADING_STEPS[loadingStep]}</p>}
           {message && <p className="callout warn" role="alert">{message}</p>}
+          </div>
+          <aside className="hero-aside"><HomePreview /></aside>
         </main>
       </div>
 
