@@ -693,3 +693,6 @@ label { color: #f4eff7; }
 /* a small hint that the pages can be swiped; it goes away once you have switched pages */
 .pager-hint { position: fixed; left: 50%; bottom: 62px; transform: translateX(-50%); margin: 0; padding: 3px 12px; border-radius: 999px; background: rgba(26, 22, 29, 0.92); border: 1px solid #4a3f52;
   color: #d9cfe0; font-size: 0.75rem; font-weight: 600; white-space: nowrap; pointer-events: none; }
+
+/* the skill tree starts small with the whole tree in view; Full screen makes it big */
+.graph.tree:not(.is-full) { height: clamp(440px, 62vh, 600px); }

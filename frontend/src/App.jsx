@@ -87,6 +87,7 @@ export default function App() {
   const swipe = useRef(null)
   const [knowsSwipe, setKnowsSwipe] = useState(() => { try { return localStorage.getItem('careermap.switched') === '1' } catch { return false } })   // the swipe hint goes away once you have switched pages
   const wheelLock = useRef(0)
+  const [hintTimedOut, setHintTimedOut] = useState(false)       // on a laptop the swipe hint only stays for 3 seconds
   const [page, setPage] = useState('home')          // 'home' = the start page, 'roadmap' = the plan; switching never loses either
   const skipReplan = useRef(false)
   const completedPhases = useRef(null)   // phases that were complete last time: a new one triggers a celebration
@@ -448,6 +449,14 @@ export default function App() {
   }
 
   const showHome = page === 'home' || !roadmap
+  // On a laptop the swipe hint is only a nudge (the arrow buttons are there too): show it for 3 seconds. On a touch screen it stays until you switch pages.
+  const hasRoadmap = Boolean(roadmap)
+  useEffect(() => {
+    if (!hasRoadmap || knowsSwipe || window.matchMedia('(pointer: coarse)').matches) return undefined
+    const timer = setTimeout(() => setHintTimedOut(true), 3000)
+    return () => clearTimeout(timer)
+  }, [hasRoadmap, knowsSwipe])
+
   const goPage = (next) => {
     if (next === 'roadmap' && !roadmap) return
     if (!knowsSwipe) { setKnowsSwipe(true); try { localStorage.setItem('careermap.switched', '1') } catch { /* blocked storage: the hint comes back next visit */ } }
@@ -673,7 +682,7 @@ export default function App() {
           {showHome
             ? <button type="button" className="pager-arrow right" aria-label="Go to my roadmap" title="My roadmap" onClick={() => goPage('roadmap')}>›</button>
             : <button type="button" className="pager-arrow left" aria-label="Go to the start page" title="Start page" onClick={() => goPage('home')}>‹</button>}
-          {!knowsSwipe && (
+          {!knowsSwipe && !hintTimedOut && (
             <p className="pager-hint">↔ Swipe left or right to switch pages</p>
           )}
           <div className="pager-dots">
