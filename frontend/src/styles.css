@@ -357,9 +357,12 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
   .careers li { flex-direction: column; align-items: stretch; }
   .scrub { flex-basis: 100%; flex-wrap: wrap; }
   .scrub-readout { flex-basis: 100%; }
-  .map-tip { display: none; }
+  .map-tip { display: block; flex-basis: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+.tip-phone { display: none; }
+@media (pointer: coarse) { .tip-desktop { display: none; } .tip-phone { display: inline; } }

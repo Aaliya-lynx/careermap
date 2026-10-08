@@ -378,7 +378,10 @@ export default function App() {
               <button type="button" role="tab" aria-selected={view === 'map'} className={view === 'map' ? 'is-on' : ''} onClick={() => setView('map')}>Map</button>
               <button type="button" role="tab" aria-selected={view === 'outline'} className={view === 'outline' ? 'is-on' : ''} onClick={() => { setView('outline'); setExpanded(false) }}>Outline</button>
             </div>
-            {view === 'map' && <p className="map-tip">Drag the map to move around, scroll or pinch to zoom, and use “Fit all” to see everything.</p>}
+            {view === 'map' && <p className="map-tip">
+              <span className="tip-desktop">Drag the map to move it. Scroll the page as usual; hold Ctrl and scroll (or pinch) to zoom, and use “Fit all” to see everything.</span>
+              <span className="tip-phone">One finger scrolls the page. Use two fingers to move or zoom the map, or tap Full screen.</span>
+            </p>}
             </div>
           )}
 

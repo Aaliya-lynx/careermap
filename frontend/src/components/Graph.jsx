@@ -99,6 +99,9 @@ const nodeTypes = { step: StepNode, zone: ZoneNode }
 // On a phone, fitting the whole tree makes the text unreadable: start zoomed in at the first column and let the user pan.
 const narrowScreen = () => window.matchMedia('(max-width: 900px)').matches
 
+// On a touch screen, one finger must scroll the page: the map is moved and zoomed with two fingers (or in full screen).
+const touchScreen = () => window.matchMedia('(pointer: coarse)').matches
+
 // Fitting every column on screen is only fine when the text stays readable (zoom 0.85 or more).
 // Otherwise start at a readable zoom on the first column: drag to move, and "Fit all" shows everything.
 function startView(columns, rows, expanded) {
@@ -309,10 +312,12 @@ export default function Graph({ roadmap, plan, selectedId, onSelect, onToggleKno
           <MapControls roadmap={roadmap} plan={plan} filter={filter} onFilter={setFilter} week={week} onWeek={setWeek} playing={playing} onPlaying={setPlaying} /></details>
       : <MapControls roadmap={roadmap} plan={plan} filter={filter} onFilter={setFilter} week={week} onWeek={setWeek} playing={playing} onPlaying={setPlaying} />)}
     <div className={`graph ${expanded ? 'is-full' : ''}`} role="region"
-      aria-label="Interactive roadmap. Drag to pan, scroll or pinch to zoom, and press Tab to move between steps.">
+      aria-label="Interactive roadmap. Drag to pan, hold Control and scroll or pinch to zoom, and press Tab to move between steps.">
       <ReactFlow key={expanded ? 'full' : 'normal'} nodes={nodes} edges={edges} nodeTypes={nodeTypes}
         {...startView(new Set(roadmap.nodes.map((n) => n.phase)).size, Math.max(...Object.values(roadmap.nodes.reduce((c, n) => ({ ...c, [n.phase]: (c[n.phase] || 0) + 1 }), {}))), expanded)}
         minZoom={0.15} maxZoom={1.6} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false}
+        zoomOnScroll={expanded} preventScrolling={expanded} zoomActivationKeyCode={['Control', 'Meta']}
+        panOnDrag={expanded || !touchScreen()}
         onPaneClick={() => selectedId && onSelect(null)} proOptions={{ hideAttribution: true }}>
         <Background gap={28} size={1.2} color="#2a232f" />
         <Controls showInteractive={false} />
