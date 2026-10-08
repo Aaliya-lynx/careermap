@@ -302,7 +302,10 @@ export default function Graph({ roadmap, plan, selectedId, onSelect, onToggleKno
 
   return (
     <div className="graph-wrap">
-    {!expanded && <MapControls roadmap={roadmap} plan={plan} filter={filter} onFilter={setFilter} week={week} onWeek={setWeek} playing={playing} onPlaying={setPlaying} />}
+    {!expanded && (narrowScreen()
+      ? <details className="mapbar-fold"><summary>Filters and time travel</summary>
+          <MapControls roadmap={roadmap} plan={plan} filter={filter} onFilter={setFilter} week={week} onWeek={setWeek} playing={playing} onPlaying={setPlaying} /></details>
+      : <MapControls roadmap={roadmap} plan={plan} filter={filter} onFilter={setFilter} week={week} onWeek={setWeek} playing={playing} onPlaying={setPlaying} />)}
     <div className={`graph ${expanded ? 'is-full' : ''}`} role="region"
       aria-label="Interactive roadmap. Drag to pan, scroll or pinch to zoom, and press Tab to move between steps.">
       <ReactFlow key={expanded ? 'full' : 'normal'} nodes={nodes} edges={edges} nodeTypes={nodeTypes}

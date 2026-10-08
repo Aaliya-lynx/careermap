@@ -350,3 +350,8 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .dash { order: 2; }
 .certs { order: 3; }
 .footer-note { order: 4; }
+
+.mapbar-fold { margin-bottom: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; }
+.mapbar-fold summary { cursor: pointer; font-weight: 600; }
+.mapbar-fold .mapbar { margin: 10px 0 2px; }
+@media (max-width: 900px) { .map-tip { display: none; } }

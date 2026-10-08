@@ -1,67 +1,121 @@
 # CareerMap
 
+**Live app:** https://careermap-neon.vercel.app · **API health check:** https://careermap-2a7e.onrender.com/health
+
+![The roadmap map with the ready-by date](docs/screenshot-map.jpg)
+
 ## What it does
 
-CareerMap turns a specific dream job (for example "Full Stack Developer at a climate tech startup") into an interactive skill-tree roadmap. You enter the role, the skills you already have and the hours you can study each week; the AI builds the tree, and plain code works out a live "ready by" date that updates as you change anything. Click a step to get a concrete project idea and interview questions for it.
+CareerMap turns a specific dream job (for example "UI/UX Designer for fintech apps") into an interactive skill-tree roadmap. You enter the role, the skills you already have and the hours you can study each week. An AI model builds the tree, and plain code works out a live "ready by" date that updates as you change your hours, tick off steps or add a certificate. Click any step to get a weekend project idea and interview questions for it.
 
 Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 
 ## Done / Left / Plan
 
-_Draft: to be filled with the real status at the freeze._
+**Done and working**
+- AI-generated roadmap for any typed target job, with real tools, certifications, roles and projects. The model's answer is validated in code before it is used (no cycles, no broken links, size limits).
+- Interactive map: zoom, pan, click, keyboard focus, full screen, filters by type, click a phase title to centre on it, a "Start here" tag, and highlighting of what a step needs and unlocks.
+- Live re-planning: hours per week, a weeks deadline and "I already know this" re-route the map and the ready-by date instantly, with no AI call.
+- Per-step advice from the AI (a weekend project, interview questions, search phrases).
+- Progress: percentage ready, a phase-complete celebration, this week's focus, a 4-week timeline, charts, and a pace card that compares the hours you finished with the hours you planned.
+- Time travel: a slider and a Play button show which steps you would have finished by week N if you keep to the plan.
+- Certificates: upload a photo or screenshot (or type a name). The AI reads it, counts matching steps as known (self-reported, not verified) and suggests careers that fit.
+- "Listen to my plan": the plan read aloud with the browser's voice.
+- "My roadmaps": every roadmap is saved in the browser, with download as a picture or a Markdown checklist, and a share link that needs no account or server storage.
+- 83 automated backend tests, all passing, using a fake AI so they cost nothing.
+
+**Left, honestly**
+- Checked in desktop Chrome and in a phone-sized window. A pass on a real Android phone (touch gestures, the camera, the voice) is still to do.
+- Only the first model in the chain (Azure `gpt-5-mini`) has been exercised with real calls; the Gemini and Groq fallbacks are configured but not yet tried live.
+- Certificates cannot be verified, and PDFs are not read (a screenshot works).
+- The voice depends on the voices installed on the device.
+- Comparing two roles side by side and a timeline view are not built.
+
+**Plan**
+1. Real-phone testing and fixes.
+2. Exercise the fallback models, and move off the free hosting tier so the first request does not wait for the server to wake.
+3. Add a timeline view and a two-role comparison.
+4. Optional accounts, so saved roadmaps follow a student across devices.
 
 ## Architecture and why
-
-Build status: the validator, the planner, the model chain and all three API routes (`/api/roadmap`, `/api/plan`, `/api/node-advice`) are built and tested with a fake AI. The web app (setup form, interactive skill tree, live ready-by date, step details) is built and checked in a desktop browser and a phone-sized window with a stand-in for the AI. The dashboard (progress ring with a phase-complete celebration, this week's focus, a 4-week timeline, hours-by-phase and path-mix charts) and the no-server share link are built too. Roadmaps are saved in a "My roadmaps" list in the browser, can be downloaded as a picture or a checklist, and progress is tracked against the real hours you finish. A "Listen to my plan" button reads the plan aloud with the browser's voice, and certificates (a photo, a scan or a typed name) are read by the AI, counted toward matching steps as self-reported progress, and used to suggest careers that fit. Deployment comes next.
 
 ```mermaid
 flowchart LR
     U[Student on phone or laptop] --> F[React app on Vercel]
     F -->|goal, skills, hours| R[POST /api/roadmap]
-    F -->|nodes, known skills, hours| P[POST /api/plan]
-    F -->|clicked node| A[POST /api/node-advice]
+    F -->|nodes, known, hours, deadline| P[POST /api/plan]
+    F -->|clicked step| A[POST /api/node-advice]
+    F -->|photo or name| C[POST /api/certificates]
     subgraph Backend [FastAPI backend on Render]
-        R --> L[llm.py: model chain]
+        L[limiter.py: per-visitor request limit]
+        R --> L
         A --> L
-        L --> V[roadmap.py: validate the AI JSON]
-        V --> PL[planner.py: schedule, ready-by date, stretch nodes]
+        C --> L
+        L --> M[llm.py: model chain]
+        M --> V[roadmap.py: validate the AI JSON]
         P --> V
+        V --> PL[planner.py: schedule, ready-by date, stretch steps, longest chain]
     end
-    L -. tries in order, next on failure .-> M[Azure gpt-5-mini, Gemini, Groq]
+    M -. tries in order, next on failure .-> X[Azure gpt-5-mini, then Gemini, then Groq]
     PL --> F
-    F --> G[React Flow skill tree + dashboard]
-    F --> S[(Browser storage: progress and saved roadmaps)]
+    F --> G[React Flow skill tree and dashboard]
+    F --> S[(Browser storage: saved roadmaps and progress)]
 ```
 
-How a request flows:
-
-1. The browser sends the goal, the skills you have and your hours per week to `/api/roadmap`.
-2. `llm.py` asks an AI model for a roadmap as JSON: steps, prerequisites, estimated hours, essential or optional, and which steps you already know. If a model is rate-limited or fails, the next model in the chain is tried.
-3. `roadmap.py` does not trust that JSON. It keeps only valid values, drops links to steps that do not exist, breaks cycles and limits the size.
-4. `planner.py` (plain Python, no AI) schedules the remaining steps in prerequisite order at your weekly hours, and calculates the ready-by date, the percentage ready, the longest chain and which optional steps no longer fit your time budget.
-5. Changing hours, the weeks budget or marking a skill as known calls `/api/plan`, which runs only steps 3 and 4. It is instant and uses no AI.
-6. Clicking a step calls `/api/node-advice`, which returns a project idea, interview questions and search terms for that step.
+How it works:
+1. The browser sends the goal, your skills and your hours to `/api/roadmap`.
+2. `llm.py` asks an AI model for the roadmap as JSON. If a model is rate-limited, down or answers with unusable JSON, the next model in the chain is tried.
+3. `roadmap.py` does not trust that JSON: it keeps only valid values, drops links to steps that do not exist, breaks cycles and limits the size.
+4. `planner.py` (plain Python, no AI) schedules the remaining steps in prerequisite order at your weekly hours and works out the ready-by date, the percentage ready, the longest chain, and which optional steps no longer fit your deadline.
+5. Changing hours, the deadline or a known step calls `/api/plan`, which runs only steps 3 and 4. It is instant and costs no AI call.
+6. Certificates go to `/api/certificates`: the browser first shrinks the image (which also strips hidden metadata), the AI reads it once, and nothing is stored.
 
 Why these choices:
-
-- **The AI creates the roadmap; code makes the decisions.** The AI is good at knowing what a role needs. Dates, ordering and re-routing are arithmetic, so they are done in tested code. The result is explainable, instant and cheap.
-- **Stateless server.** No accounts and no stored user data. Progress and saved roadmaps stay in the browser; a share link carries the roadmap in the URL.
-- **A chain of models across three providers.** Each free tier has its own daily limit, so a long chain keeps the app available.
-- **React Flow** for the tree because it supports zoom, pan, click and keyboard focus out of the box.
-- **FastAPI + React (Vite).** Quick to build, free to host (Render and Vercel).
+- **The AI proposes, code decides.** The AI knows what a role needs. Dates, ordering and re-routing are arithmetic, so they are done in tested code. Results are explainable, instant and cheap, and a confused AI answer cannot crash the planner.
+- **Stateless server.** No accounts and no stored user data. Roadmaps and progress stay in the browser. A share link carries the roadmap in the URL.
+- **A chain of models across three providers.** Each free tier has its own daily limit, so a chain keeps the app available. As a last resort, if every model is busy, a saved real example is shown for the three example roles, and the screen says so.
+- **A per-visitor request limit** on the AI routes protects the budget.
+- **React Flow** for the map, because it gives zoom, pan, click and keyboard focus. The exported picture draws the connecting lines itself, because browsers cannot photograph thin SVG lines.
+- **FastAPI and React (Vite)**: fast to build and free to host (Render and Vercel).
 
 ## What we added
 
-_Draft: to be filled at the freeze._
+Beyond the brief: the ready-by planner with a weekly-hours slider and deadline (optional steps become dashed "stretch" steps); live pace tracking against what you actually finished; time travel with Play; certificate reading with career suggestions; voice narration; saved roadmaps; downloads as a picture and a checklist; a share link; an Outline view as a plain-list alternative to the map; a legend that explains every line and colour; filters; and a phase-complete celebration. Each makes the roadmap something a student can come back to, not a one-time answer.
 
 ## How to run it
 
-_Draft: to be filled at the freeze (setup steps, `.env.example`, live URL)._
+Needs Python 3.11+, Node 22+ and Git.
+
+```bash
+# backend
+cd backend
+python -m venv venv
+source venv/bin/activate            # Windows: venv\Scripts\activate
+pip install -r requirements-dev.txt
+pytest                              # 83 tests, no AI key needed
+cp ../.env.example .env             # then add at least one provider key
+uvicorn main:app --reload           # http://localhost:8000/health
+
+# frontend (second terminal)
+cd frontend
+npm install
+npm run dev                         # http://localhost:5173
+```
+
+- `.env.example` lists every setting. At least one provider (`AZURE_*`, `GEMINI_*` or `GROQ_*`) needs a key, and `LLM_CHAIN` names the models in the order they are tried.
+- `frontend/.env.example`: `VITE_API_URL` is the backend address (the default is `http://localhost:8000`).
+- No login is needed. **Live URL:** https://careermap-neon.vercel.app. The free backend sleeps when idle, so the very first request after a quiet period can take up to a minute.
+- Deploy: `render.yaml` describes the backend (Render). The frontend is a Vite app (Vercel, root directory `frontend`).
 
 ## Tools and AI used
 
-_Draft: to be filled at the freeze. The app tells users that the roadmap and the advice are written by AI and should be checked._
+- **Backend:** Python, FastAPI, Uvicorn, Pydantic, the OpenAI Python SDK (used as a generic client for OpenAI-compatible providers), python-dotenv, pytest, httpx.
+- **Frontend:** React 19, Vite, `@xyflow/react` (React Flow), `html-to-image`, and the browser's Web Speech API for the voice.
+- **Models:** Azure OpenAI `gpt-5-mini` first, then Google Gemini (`gemini-2.5-flash`, `gemini-2.5-flash-lite`), then Groq (`openai/gpt-oss-20b`, `openai/gpt-oss-120b`). The same models write the roadmap, the step advice and the certificate reading.
+- **AI coding assistance** was used to help write the code.
+- **How users are told it is AI:** a line under the roadmap ("Made with AI: use it as a guide and confirm costs and requirements with official sources"), a note on the start form, a note in the advice panel, and a note on the certificate card. Certificates are labelled "self-reported, not verified".
+- **Privacy:** the server stores nothing about users. Typed goals and skills, and certificate images, are sent to an AI provider to produce the answer, and the app tells users to leave out private details and to cover their name and ID numbers on certificates. Provider terms differ: do not enter private data.
 
 ## Who it is for
 
-_Draft: to be filled at the freeze._
+Students and early-career changers who have a specific job in mind and a limited number of hours each week. They come back because the roadmap is theirs: it is saved in their browser, it re-plans when their hours or skills change, the pace card tells them whether they are on track, and each finished step moves the date closer.
