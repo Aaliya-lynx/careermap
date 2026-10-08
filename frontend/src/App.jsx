@@ -85,6 +85,7 @@ export default function App() {
   const [expanded, setExpanded] = useState(false)
   const [showLibrary, setShowLibrary] = useState(false)
   const swipe = useRef(null)
+  const [knowsSwipe, setKnowsSwipe] = useState(() => { try { return localStorage.getItem('careermap.switched') === '1' } catch { return false } })   // the swipe hint goes away once you have switched pages
   const wheelLock = useRef(0)
   const [page, setPage] = useState('home')          // 'home' = the start page, 'roadmap' = the plan; switching never loses either
   const skipReplan = useRef(false)
@@ -427,6 +428,7 @@ export default function App() {
   const showHome = page === 'home' || !roadmap
   const goPage = (next) => {
     if (next === 'roadmap' && !roadmap) return
+    if (!knowsSwipe) { setKnowsSwipe(true); try { localStorage.setItem('careermap.switched', '1') } catch { /* blocked storage: the hint comes back next visit */ } }
     setExpanded(false)
     setPage(next)
     window.scrollTo({ top: 0 })
@@ -650,6 +652,12 @@ export default function App() {
           {showHome
             ? <button type="button" className="pager-arrow right" aria-label="Go to my roadmap" title="My roadmap" onClick={() => goPage('roadmap')}>›</button>
             : <button type="button" className="pager-arrow left" aria-label="Go to the start page" title="Start page" onClick={() => goPage('home')}>‹</button>}
+          {!knowsSwipe && (
+            <p className="pager-hint">
+              <span className="hint-touch">↔ Swipe left or right to switch pages</span>
+              <span className="hint-mouse">↔ Use the arrows or swipe to switch pages</span>
+            </p>
+          )}
           <div className="pager-dots">
             <button type="button" className={showHome ? 'is-on' : ''} aria-current={showHome ? 'page' : undefined} onClick={() => goPage('home')}>Start</button>
             <button type="button" className={showHome ? '' : 'is-on'} aria-current={showHome ? undefined : 'page'} onClick={() => goPage('roadmap')}>My roadmap</button>
