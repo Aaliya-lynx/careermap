@@ -608,7 +608,6 @@ export default function App() {
               )}
             </>
           ) : <p className="loading" role="status">Loading your plan…</p>}
-          <p className="notice footer-note">Use it as a guide and confirm costs and requirements with official sources. Your roadmaps are saved only in this browser.</p>
         </main>
         </div>
       )}

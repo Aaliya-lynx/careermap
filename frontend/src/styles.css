@@ -224,7 +224,6 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .advice h4 { margin-top: 12px; font-size: 0.92rem; color: var(--text); }
 .advice ol, .terms { padding-left: 20px; margin: 0 0 8px; }
 .terms { list-style: disc; }
-.footer-note { margin-top: 14px; }
 
 /* ---------- header actions, saved roadmaps, views ---------- */
 .top-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
@@ -320,7 +319,6 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .stage { order: 1; }
 .dash { order: 2; }
 .certs { order: 3; }
-.footer-note { order: 4; }
 
 /* ---------- phones ---------- */
 @media (max-width: 900px) {
@@ -694,3 +692,9 @@ label { color: #f4eff7; }
 .graph.tree .level-badge .muted { color: #f3eaf8; }
 .graph.tree .react-flow__controls button { background: #3a2349; color: #ffffff; border-color: #6a4a80; }
 .graph.tree .react-flow__controls button svg { fill: #ffffff; }
+
+/* compare: pick the second role one way or the other */
+.cmp-step-label { margin: 4px 0 -4px; color: var(--muted); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.cmp-mode { margin-bottom: 0; }
+.cmp-pick { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; width: 100%; max-width: 560px; }
+.cmp-pick .notice { margin: 0; }

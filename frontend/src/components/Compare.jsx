@@ -16,6 +16,7 @@ function StepCard({ step, side }) {
 
 // Two dream roles side by side. The AI says which steps are really the same skill; the counting is plain code.
 export default function Compare({ roadmap, others, hours }) {
+  const [mode, setMode] = useState(others.length > 0 ? 'saved' : 'typed')    // which way to pick the second role: one choice, never both
   const [otherId, setOtherId] = useState('')
   const [typed, setTyped] = useState('')
   const [other, setOther] = useState(null)       // { title, nodes } of the second role
@@ -38,11 +39,11 @@ export default function Compare({ roadmap, others, hours }) {
     if (busy) return
     setError('')
     try {
-      if (typed.trim().length >= 3) {
+      if (mode === 'typed') {
         setBusy('Building the second roadmap (about 20 seconds)…')
         const built = await createRoadmap({ goal: typed.trim(), known_skills: [], hours_per_week: Number(hours) || 8, weeks_budget: null })
         await run({ title: built.roadmap.title || typed.trim(), nodes: built.roadmap.nodes })
-      } else if (otherId) {
+      } else {
         const entry = others.find((e) => e.id === otherId)
         await run({ title: entry.roadmap.title || entry.goal, nodes: entry.roadmap.nodes })
       }
@@ -53,7 +54,7 @@ export default function Compare({ roadmap, others, hours }) {
     }
   }
 
-  const ready = (typed.trim().length >= 3 || otherId) && !busy
+  const ready = (mode === 'typed' ? typed.trim().length >= 3 : Boolean(otherId)) && !busy
   const a = roadmap.nodes
   const b = other?.nodes ?? []
   const pairs = result ? result.shared.filter((p) => a.some((n) => n.id === p.a) && b.some((n) => n.id === p.b)) : []
@@ -73,24 +74,31 @@ export default function Compare({ roadmap, others, hours }) {
       <form className="card cmp-form" onSubmit={go}>
         <h3>Compare two dream roles</h3>
         <p className="muted">See where two paths overlap, so you can do the shared steps first. Compare <strong>{roadmap.title}</strong> with another role.</p>
-        <div className="cmp-pick">
-          {others.length > 0 && (
-            <div>
-              <label htmlFor="cmp-saved">One of your saved roadmaps</label>
-              <select id="cmp-saved" value={otherId} onChange={(e) => { setOtherId(e.target.value); setTyped('') }}>
-                <option value="">Choose…</option>
-                {others.map((e) => <option key={e.id} value={e.id}>{e.title || e.goal}</option>)}
-              </select>
-            </div>
-          )}
-          <div>
-            <label htmlFor="cmp-typed">{others.length > 0 ? 'Or type another job' : 'Type the other job'}</label>
-            <input id="cmp-typed" value={typed} onChange={(e) => { setTyped(e.target.value); setOtherId('') }} maxLength={200} placeholder="e.g. Data Scientist" autoComplete="off" />
+        <p className="cmp-step-label">Pick the second role, in one of two ways</p>
+        {others.length > 0 && (
+          <div className="viewbar cmp-mode" role="tablist" aria-label="How to pick the second role">
+            <button type="button" role="tab" aria-selected={mode === 'saved'} className={mode === 'saved' ? 'is-on' : ''} onClick={() => setMode('saved')}>From my saved roadmaps</button>
+            <button type="button" role="tab" aria-selected={mode === 'typed'} className={mode === 'typed' ? 'is-on' : ''} onClick={() => setMode('typed')}>Type a new job</button>
           </div>
-        </div>
+        )}
+        {mode === 'saved' ? (
+          <div className="cmp-pick">
+            <label htmlFor="cmp-saved">Choose one of your saved roadmaps</label>
+            <select id="cmp-saved" value={otherId} onChange={(e) => setOtherId(e.target.value)}>
+              <option value="">Choose a roadmap…</option>
+              {others.map((e) => <option key={e.id} value={e.id}>{e.title || e.goal}</option>)}
+            </select>
+            <p className="notice">Uses a roadmap you already made, so there is nothing new to build.</p>
+          </div>
+        ) : (
+          <div className="cmp-pick">
+            <label htmlFor="cmp-typed">Type the other job</label>
+            <input id="cmp-typed" value={typed} onChange={(e) => setTyped(e.target.value)} maxLength={200} placeholder="e.g. Data Scientist" autoComplete="off" />
+            <p className="notice">We build a second roadmap for it first, which takes about 20 seconds.</p>
+          </div>
+        )}
         <button type="submit" className="primary" disabled={!ready}>{busy || 'Compare the two paths'}</button>
         {error && <p className="callout warn" role="alert">{error}</p>}
-        <p className="notice">Typing a new job builds a second roadmap first, which takes about 20 seconds.</p>
       </form>
 
       {result && (
