@@ -37,6 +37,7 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 - The three providers have each answered a real roadmap (Azure, Gemini and Groq); the automatic switch between them under real load has not been stress-tested.
 - Certificates cannot be verified, and PDFs are not read (a screenshot works).
 - The voice depends on the voices installed on the device.
+- On the free host the first request after a quiet spell can take up to a minute. If the connection fails, the app waits 5 seconds and tries once more before showing a message.
 - Short links need the Cloudflare KV settings (`CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID`, `CF_API_TOKEN`) on the host; without them the app copies the long link.
 - The comparison pairs steps with one AI call, so two roles with very different wording may be paired slightly differently on each try.
 

@@ -3,10 +3,22 @@ const BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8000').trim().re
 
 export class ApiError extends Error {}
 
+// If the connection fails (often the free server waking up or restarting), wait a few seconds and try once more before giving up.
+const RETRY_AFTER_MS = 5000
+async function send(url, options) {
+  try {
+    return await fetch(url, options)
+  } catch (error) {
+    if (error.name === 'AbortError') throw error
+    await new Promise((resolve) => setTimeout(resolve, RETRY_AFTER_MS))
+    return fetch(url, options)
+  }
+}
+
 async function post(path, body, signal) {
   let response
   try {
-    response = await fetch(`${BASE}${path}`, {
+    response = await send(`${BASE}${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -27,7 +39,7 @@ async function post(path, body, signal) {
 async function get(path) {
   let response
   try {
-    response = await fetch(`${BASE}${path}`)
+    response = await send(`${BASE}${path}`, {})
   } catch {
     throw new ApiError('Could not reach the server. Check your connection and try again. The server may be waking up, which can take a minute.')
   }
