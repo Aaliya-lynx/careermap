@@ -158,11 +158,11 @@ export default function App() {
       if (!hash.startsWith('#r=') && !hash.startsWith('#s=')) return
       let shared = null
       if (hash.startsWith('#s=')) {
-        try { shared = readShared(await getShare(hash.slice(3))) } catch (error) { window.history.replaceState(null, '', window.location.pathname); setMessage(error.message); return }
+        try { shared = readShared(await getShare(hash.slice(3))) } catch (error) { window.history.replaceState(window.history.state, '', window.location.pathname); setMessage(error.message); return }
       } else {
         shared = readShared(await decodeShare(hash.slice(3)))
       }
-      window.history.replaceState(null, '', window.location.pathname)
+      window.history.replaceState(window.history.state, '', window.location.pathname)
       if (!shared) { setMessage('That share link could not be opened.'); return }
       try {
         const data = await replan({ nodes: shared.roadmap.nodes, known: shared.known, hours_per_week: shared.hours, weeks_budget: shared.budget ? Number(shared.budget) : null })
@@ -189,6 +189,28 @@ export default function App() {
     openFromHash()
     window.addEventListener('hashchange', openFromHash)      // a link pasted into a tab that is already open
     return () => { cancelled = true; window.removeEventListener('hashchange', openFromHash) }
+  }, [])
+
+  // The browser's Back button (and the phone's back gesture) steps back through the pages, the sections, Full screen and the
+  // "My roadmaps" list, instead of leaving the site. Each of those changes adds one entry to the browser history.
+  useEffect(() => {
+    const here = { cm: 1, page, section, full: expanded, lib: showLibrary }
+    const saved = window.history.state
+    if (saved?.cm && saved.page === here.page && saved.section === here.section && saved.full === here.full && saved.lib === here.lib) return
+    if (saved?.cm) window.history.pushState(here, '')
+    else window.history.replaceState(here, '')             // the first screen: describe where we are, so Back can return to it
+  }, [page, section, expanded, showLibrary])
+  useEffect(() => {
+    const onBack = (event) => {
+      const s = event.state
+      if (!s?.cm) return
+      setPage(s.page)
+      setSection(s.section)
+      setExpanded(s.full)
+      setShowLibrary(s.lib)
+    }
+    window.addEventListener('popstate', onBack)
+    return () => window.removeEventListener('popstate', onBack)
   }, [])
 
   function openEntry(entry) {
