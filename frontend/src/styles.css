@@ -698,3 +698,10 @@ label { color: #f4eff7; }
 .cmp-mode { margin-bottom: 0; }
 .cmp-pick { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; width: 100%; max-width: 560px; }
 .cmp-pick .notice { margin: 0; }
+
+/* warnings: a rose tone that fits the mauve theme */
+.callout.warn { background: #4a2538; border: 1px solid #e0809f; color: #ffffff; }
+.callout.warn strong { color: #ffffff; }
+.callout.warn .ghost { background: rgba(255, 255, 255, 0.08); border-color: #f0a3bb; color: #ffffff; }
+.callout.warn .ghost:hover { background: #e0809f; border-color: #e0809f; color: #2a0f1a; }
+.callout.warn .muted { color: #f3d3dd; }
