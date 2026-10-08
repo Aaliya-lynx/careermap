@@ -166,3 +166,31 @@ def test_no_backup_for_other_goals_or_when_the_user_lists_skills(client, monkeyp
     fake(monkeypatch, llm.RateLimited())
     assert client.post("/api/roadmap", json={"goal": "Chef", "hours_per_week": 10}).status_code == 429
     assert client.post("/api/roadmap", json={"goal": "Frontend Engineer", "known_skills": ["HTML"], "hours_per_week": 10}).status_code == 429
+
+
+@pytest.mark.parametrize("goal", ["???", "12345", "!!! ---", "a b", "    ...   "])
+def test_goals_without_real_words_are_refused_before_any_ai_call(client, monkeypatch, goal):
+    fake(monkeypatch, RuntimeError("the AI must not be called"))
+    r = client.post("/api/roadmap", json={"goal": goal, "hours_per_week": 5})
+    assert r.status_code == 422
+
+
+def test_the_ai_can_say_the_goal_is_not_a_job(client, monkeypatch):
+    fake(monkeypatch, {"error": "not_a_job"})
+    r = client.post("/api/roadmap", json={"goal": "asdfghjkl qwerty", "hours_per_week": 5})
+    assert r.status_code == 422
+    assert "job" in r.json()["detail"].lower() and "for example" in r.json()["detail"].lower()
+
+
+def test_not_a_job_falls_back_to_nothing_even_with_a_saved_example(client, monkeypatch, tmp_path):
+    saved_cache(monkeypatch, tmp_path)
+    fake(monkeypatch, {"error": "not_a_job"})
+    r = client.post("/api/roadmap", json={"goal": "qwertyuiop asdf", "hours_per_week": 5})
+    assert r.status_code == 422
+
+
+@pytest.mark.parametrize("goal", ["डेटा एनालिस्ट (स्वास्थ्य सेवा में)", "Analyste de données en santé", "データアナリスト", "مهندس برمجيات"])
+def test_real_job_titles_in_other_scripts_are_not_refused(client, monkeypatch, goal):
+    fake(monkeypatch, good_roadmap())
+    r = client.post("/api/roadmap", json={"goal": goal, "hours_per_week": 5})
+    assert r.status_code == 200

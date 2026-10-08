@@ -9,7 +9,7 @@ services:
     startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: LLM_CHAIN
-        value: azure=gpt-5-mini,gemini=gemini-2.5-flash,gemini=gemini-2.5-flash-lite,groq=openai/gpt-oss-20b,groq=openai/gpt-oss-120b
+        value: azure=gpt-5-mini,gemini=gemini-3.5-flash-lite,gemini=gemini-3.1-flash-lite,groq=openai/gpt-oss-20b,groq=openai/gpt-oss-120b
       - key: AZURE_BASE_URL
         sync: false
       - key: AZURE_API_KEY

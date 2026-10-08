@@ -10,6 +10,7 @@ The server stores nothing about users.
 """
 import json
 import os
+import unicodedata
 from pathlib import Path
 from typing import List, Optional
 
@@ -31,6 +32,7 @@ MESSAGES = {
     "unavailable": "The AI helper is not available right now. Please try again in a little while.",
     "bad_roadmap": "That roadmap could not be read.",
     "too_fast": "You are going a little fast. Please wait a minute and try again.",
+    "not_a_job": "That does not look like a job we can map. Try a specific role, for example: Data Analyst in healthcare.",
     "no_certs": "We could not read a certificate there. Try a clearer, well-lit photo of the whole page, or type the name instead.",
 }
 
@@ -109,7 +111,9 @@ ROADMAP_SYSTEM = (
     "time spent working in the job. "
     "'essential' means nearly every entry-level posting for this job asks for it; advanced tools, extra "
     "certifications and stretch projects must be essential=false (use it for at least 4 nodes). "
-    "Never invent certifications or companies."
+    "Never invent certifications or companies. "
+    'If the target is not a real job or career (random characters, a question, an instruction, a joke, or nothing to do with work), '
+    'reply ONLY with {"error": "not_a_job"}.'
 )
 
 ADVICE_SYSTEM = (
@@ -143,6 +147,8 @@ def demo_lookup(goal):
 
 @app.post("/api/roadmap")
 def make_roadmap(req: RoadmapRequest, request: Request):
+    if sum(1 for ch in req.goal if unicodedata.category(ch)[0] in "LM") < 3:     # at least 3 letters, in any script
+        return problem(422, "not_a_job")
     own_skills = bool(req.known_skills)       # a saved roadmap knows nothing about the user's own skills
     saved = None if own_skills else demo_lookup(req.goal)
     from_cache = saved is not None
@@ -155,6 +161,8 @@ def make_roadmap(req: RoadmapRequest, request: Request):
             try:
                 skills = [" ".join(s.split())[:60] for s in req.known_skills if s.strip()]
                 raw = llm.ask_json(ROADMAP_SYSTEM, json.dumps({"target_job": req.goal.strip(), "current_skills": skills}))
+                if raw.get("error") == "not_a_job":
+                    return problem(422, "not_a_job")
                 cleaned, known = roadmap.clean_roadmap(raw), raw.get("already_known")
             except (llm.RateLimited, llm.Unavailable):
                 backup = None if own_skills else cached_roadmap(req.goal)

@@ -51,6 +51,7 @@ export default function SidePanel({ step, info, roadmap, known, completedAt, evi
           <>
             <h4>Weekend project: {advice.data.project.title}</h4>
             <p>{advice.data.project.description}</p>
+            <p><a href={`https://github.com/search?q=${encodeURIComponent(advice.data.project.title)}&type=repositories`} target="_blank" rel="noreferrer">Find example projects on GitHub</a></p>
             {advice.data.interview_questions.length > 0 && (
               <>
                 <h4>Interview questions</h4>

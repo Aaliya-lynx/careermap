@@ -24,15 +24,15 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 - "My roadmaps": every roadmap is saved in the browser, with download as a picture or a Markdown checklist, and a share link that needs no account or server storage.
 - 83 automated backend tests, all passing, using a fake AI so they cost nothing.
 
-**Left, honestly**
+**Left for the next 16 hours, honestly**
 - Checked in desktop Chrome and in a phone-sized window. A pass on a real Android phone (touch gestures, the camera, the voice) is still to do.
-- Only the first model in the chain (Azure `gpt-5-mini`) has been exercised with real calls; the Gemini and Groq fallbacks are configured but not yet tried live.
+- The three providers have each answered a real roadmap (Azure, Gemini and Groq); the automatic switch between them under real load has not been stress-tested.
 - Certificates cannot be verified, and PDFs are not read (a screenshot works).
 - The voice depends on the voices installed on the device.
 - Comparing two roles side by side and a timeline view are not built.
 
-**Plan**
-1. Real-phone testing and fixes.
+**Plan to finish**
+1. Real-phone testing and fixes (first).
 2. Exercise the fallback models, and move off the free hosting tier so the first request does not wait for the server to wake.
 3. Add a timeline view and a two-role comparison.
 4. Optional accounts, so saved roadmaps follow a student across devices.
@@ -111,7 +111,7 @@ npm run dev                         # http://localhost:5173
 
 - **Backend:** Python, FastAPI, Uvicorn, Pydantic, the OpenAI Python SDK (used as a generic client for OpenAI-compatible providers), python-dotenv, pytest, httpx.
 - **Frontend:** React 19, Vite, `@xyflow/react` (React Flow), `html-to-image`, and the browser's Web Speech API for the voice.
-- **Models:** Azure OpenAI `gpt-5-mini` first, then Google Gemini (`gemini-2.5-flash`, `gemini-2.5-flash-lite`), then Groq (`openai/gpt-oss-20b`, `openai/gpt-oss-120b`). The same models write the roadmap, the step advice and the certificate reading.
+- **Models:** Azure OpenAI `gpt-5-mini` first, then Google Gemini (`gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`), then Groq (`openai/gpt-oss-20b`, `openai/gpt-oss-120b`). The same models write the roadmap, the step advice and the certificate reading.
 - **AI coding assistance** was used to help write the code.
 - **How users are told it is AI:** a line under the roadmap ("Made with AI: use it as a guide and confirm costs and requirements with official sources"), a note on the start form, a note in the advice panel, and a note on the certificate card. Certificates are labelled "self-reported, not verified".
 - **Privacy:** the server stores nothing about users. Typed goals and skills, and certificate images, are sent to an AI provider to produce the answer, and the app tells users to leave out private details and to cover their name and ID numbers on certificates. Provider terms differ: do not enter private data.
