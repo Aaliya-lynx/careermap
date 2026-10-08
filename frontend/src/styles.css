@@ -700,3 +700,16 @@ label { color: #f4eff7; }
 
 .tl-label { font-size: 0.98rem; }
 @media (max-width: 700px) { .tl-label { font-size: 0.8rem; } }
+
+/* plan settings: a mauve card, so it stands out from the dark summary around it */
+.plan-settings { background: #3a2b52; border: 1px solid #7d5ca0; box-shadow: 0 8px 24px rgba(20, 8, 32, 0.45); }
+.plan-settings h3, .plan-settings label strong { color: #ffffff; }
+.plan-settings label { color: #e6d9f2; }
+.plan-settings input[type='number'] { background: #261a36; border-color: #a483c4; }
+.plan-settings .hours-presets .chip { background: #523a72; border-color: #8a68ae; color: #ffffff; }
+.plan-settings .hours-presets .chip:hover { background: #65488a; }
+.plan-settings .hours-presets .chip.is-on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.plan-settings .optional, .plan-settings .muted { color: #d9c9ea; }
+.plan-settings .linklike { color: #f0d6fb; }
+.plan-settings .callout.fix { background: #241a36; border-color: #c99be0; }
+.plan-settings .stretch-note { color: #e6d9f2; }
