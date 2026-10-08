@@ -90,7 +90,7 @@ export default function Compare({ roadmap, others, hours }) {
         </div>
         <button type="submit" className="primary" disabled={!ready}>{busy || 'Compare the two paths'}</button>
         {error && <p className="callout warn" role="alert">{error}</p>}
-        <p className="notice">✨ The pairing is AI-written. Typing a new job builds a second roadmap first (one extra AI call).</p>
+        <p className="notice">Typing a new job builds a second roadmap first, which takes about 20 seconds.</p>
       </form>
 
       {result && (

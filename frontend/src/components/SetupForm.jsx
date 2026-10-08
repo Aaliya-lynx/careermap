@@ -79,7 +79,7 @@ export default function SetupForm({ busy, onSubmit, initial }) {
       <button className="primary" type="submit" disabled={busy || githubBad}>
         {busy ? 'Building your roadmap…' : 'Build my roadmap'}
       </button>
-      <p className="notice">✨ Your plan is made with AI: use it as a guide and confirm costs and requirements with official sources. Your answers are sent to an AI service to build it, so please leave out private details.</p>
+      <p className="notice">Use your plan as a guide and confirm costs and requirements with official sources. Your answers are sent to an AI service to build it, so please leave out private details.</p>
     </form>
   )
 }

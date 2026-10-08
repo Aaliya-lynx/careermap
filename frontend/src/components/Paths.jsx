@@ -8,7 +8,7 @@ export default function Paths({ paths, busy, error, onLoad, onShowOnMap }) {
         <p className="muted">See three typical routes people take into this job: the roles in between, roughly how long each stage takes, and the side projects behind each step.</p>
         <button type="button" className="primary" onClick={onLoad} disabled={busy}>{busy ? 'Looking at typical routes…' : 'Show typical routes'}</button>
         {error && <p className="callout warn" role="alert">{error}</p>}
-        <p className="notice">✨ These are illustrative routes written by AI, not real people. Use them for ideas, and confirm details with official sources.</p>
+        <p className="notice">These are illustrative routes, not real people. Use them for ideas, and confirm details with official sources.</p>
       </section>
     )
   }
@@ -33,7 +33,7 @@ export default function Paths({ paths, busy, error, onLoad, onShowOnMap }) {
         </article>
       ))}
       <div className="paths-foot">
-        <p className="notice">✨ Illustrative routes written by AI, not real people.</p>
+        <p className="notice">Illustrative routes, not real people.</p>
         <button type="button" className="ghost" onClick={onLoad} disabled={busy}>{busy ? 'Looking…' : 'Show different routes'}</button>
         {error && <p className="callout warn" role="alert">{error}</p>}
       </div>

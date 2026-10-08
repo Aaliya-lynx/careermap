@@ -123,7 +123,7 @@ npm run dev                         # http://localhost:5173
 - **Frontend:** React 19, Vite, `@xyflow/react` (React Flow), `html-to-image`, and the browser's Web Speech API for the voice.
 - **Models:** Azure OpenAI `gpt-5-mini` first, then Google Gemini (`gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`), then Groq (`openai/gpt-oss-20b`, `openai/gpt-oss-120b`). The same models write the roadmap, the step advice and the certificate reading.
 - **AI coding assistance** was used to help write the code.
-- **How users are told it is AI:** a line under the roadmap ("Made with AI: use it as a guide and confirm costs and requirements with official sources"), a note on the start form, a note in the advice panel, and a note on the certificate card. Certificates are labelled "self-reported, not verified".
+- **What users are told:** the start form says answers are sent to an AI service, so private details should be left out. Results carry plain cautions: confirm costs and requirements with official sources, routes are illustrative and not real people, and certificates are self-reported and not verified.
 - **Privacy:** the server stores nothing about users. Typed goals and skills, and certificate images, are sent to an AI provider to produce the answer, and the app tells users to leave out private details and to cover their name and ID numbers on certificates. Provider terms differ: do not enter private data.
 
 ## Who it is for

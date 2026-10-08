@@ -36,6 +36,6 @@ export function buildNarration(roadmap, plan, hours) {
   if (!s.within_budget) lines.push(`Heads up: the essential steps need ${s.weeks_needed} weeks, more than your ${s.weeks_budget} week limit.`)
   if (s.stretch_ids.length) lines.push(`${s.stretch_ids.length} optional ${s.stretch_ids.length === 1 ? 'step is' : 'steps are'} left out to fit your deadline.`)
 
-  lines.push('Tap any step to see what it needs, and to get a project idea. This plan was made with AI, so check costs and requirements on official sites.')
+  lines.push('Tap any step to see what it needs, and to get a project idea. Use it as a guide, and check costs and requirements on official sites.')
   return lines
 }

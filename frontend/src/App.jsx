@@ -432,7 +432,7 @@ export default function App() {
                 </div>
               )}
               {form.profile?.github && <p className="muted">GitHub: <a href={form.profile.github} target="_blank" rel="noreferrer noopener">{form.profile.github.replace('https://', '')}</a></p>}
-              {roadmap.where_you_are && <p className="notice">✨ AI-written from the choices you made. Self-reported, so check it matches what you really have.</p>}
+              {roadmap.where_you_are && <p className="notice">Based on the choices you made. Self-reported, so check it matches what you really have.</p>}
               <button type="button" className="ghost" onClick={() => startOver(true)}>{roadmap.where_you_are ? 'Change my details' : 'Add details about me'}</button>
             </section>
 
@@ -478,7 +478,7 @@ export default function App() {
               )}
             </div>
           ) : <p className="loading" role="status">Loading your plan…</p>}
-          <p className="notice footer-note">✨ Made with AI: use it as a guide and confirm costs and requirements with official sources. Your roadmaps are saved only in this browser.</p>
+          <p className="notice footer-note">Use it as a guide and confirm costs and requirements with official sources. Your roadmaps are saved only in this browser.</p>
         </main>
       )}
 

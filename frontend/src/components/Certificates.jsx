@@ -100,7 +100,7 @@ export default function Certificates({ steps, result, evidence, busy, error, onA
               </li>
             ))}
           </ul>
-          <p className="notice">✨ These are AI suggestions, not a verdict. Use them to explore, and confirm requirements with official sources.</p>
+          <p className="notice">These are suggestions, not a verdict. Use them to explore, and confirm requirements with official sources.</p>
         </div>
       )}
     </section>

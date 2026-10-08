@@ -68,7 +68,7 @@ export default function SidePanel({ step, info, roadmap, known, completedAt, evi
                 </ul>
               </>
             )}
-            <p className="notice">✨ AI suggestion: confirm details with official sources.</p>
+            <p className="notice">Suggestion only: confirm details with official sources.</p>
           </>
         )}
       </div>

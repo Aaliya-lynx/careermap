@@ -24,7 +24,7 @@ const readyLine = (plan, hours) => {
   const s = plan.summary
   return `Ready by ${s.weeks_needed === 0 ? 'today' : readyByDate(s.weeks_needed)} at ${hours} hours a week (${s.percent_ready}% ready, ${s.remaining_hours} hours to go)`
 }
-const DISCLAIMER = 'Made with CareerMap. The plan is AI-generated: use it as a guide and confirm costs and requirements with official sources.'
+const DISCLAIMER = 'Made with CareerMap. Use it as a guide and confirm costs and requirements with official sources.'
 const phasesOf = (roadmap) => [...new Set(roadmap.nodes.map((n) => n.phase))].sort((a, b) => a - b)
 
 // What to show for one step, shared by the PDF and the text file.
