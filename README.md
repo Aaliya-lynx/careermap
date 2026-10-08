@@ -12,7 +12,7 @@ _Draft: to be filled with the real status at the freeze._
 
 ## Architecture and why
 
-Build status: the validator, the planner, the model chain and all three API routes (`/api/roadmap`, `/api/plan`, `/api/node-advice`) are built and tested with a fake AI. The web app (setup form, interactive skill tree, live ready-by date, step details) is built and checked in a desktop browser and a phone-sized window with a stand-in for the AI. The dashboard (progress ring with a phase-complete celebration, this week's focus, a 4-week timeline, hours-by-phase and path-mix charts) and the no-server share link are built too. Deployment comes next.
+Build status: the validator, the planner, the model chain and all three API routes (`/api/roadmap`, `/api/plan`, `/api/node-advice`) are built and tested with a fake AI. The web app (setup form, interactive skill tree, live ready-by date, step details) is built and checked in a desktop browser and a phone-sized window with a stand-in for the AI. The dashboard (progress ring with a phase-complete celebration, this week's focus, a 4-week timeline, hours-by-phase and path-mix charts) and the no-server share link are built too. Roadmaps are saved in a "My roadmaps" list in the browser, can be downloaded as a picture or a checklist, and progress is tracked against the real hours you finish. Deployment comes next.
 
 ```mermaid
 flowchart LR

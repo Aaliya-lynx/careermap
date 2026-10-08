@@ -1,4 +1,4 @@
-import { KINDS } from '../format.js'
+import { KINDS, readyByDate } from '../format.js'
 
 function Ring({ percent }) {
   const radius = 44
@@ -18,7 +18,7 @@ function StepButton({ step, onSelect, children }) {
   return <button type="button" className="mini-step" onClick={() => onSelect(step.id)}>{children ?? step.title}</button>
 }
 
-export default function Dashboard({ roadmap, plan, onSelect }) {
+export default function Dashboard({ roadmap, plan, pace, onSelect }) {
   const byId = Object.fromEntries(roadmap.nodes.map((n) => [n.id, n]))
   const counted = roadmap.nodes.filter((n) => plan.nodes[n.id].status !== 'stretch')
   const doneCount = counted.filter((n) => ['known', 'implied'].includes(plan.nodes[n.id].status)).length
@@ -39,6 +39,19 @@ export default function Dashboard({ roadmap, plan, onSelect }) {
           </p>
         </div>
       </article>
+
+      {pace && (
+        <article className={`card card-pace is-${pace.status}`}>
+          <h3>Your pace</h3>
+          <p className="pace-line">Started {pace.started} · {pace.doneCount} step{pace.doneCount === 1 ? '' : 's'} finished since ({pace.doneHours} h)</p>
+          {pace.status === 'new' && <p className="muted">Tick steps off as you finish them. Each week we compare the hours you really did with the hours you planned, and update your date.</p>}
+          {pace.status === 'on-track' && <p className="pace-good">On track: you have done {pace.doneHours} h and the plan expected {pace.planned} h by now.</p>}
+          {pace.status === 'behind' && (
+            <p className="pace-warn">A little behind: {pace.doneHours} h done, {pace.planned} h expected by now.
+              {pace.projectedWeeks != null && <> At your real pace you would be ready by <strong>{readyByDate(pace.projectedWeeks)}</strong>.</>}</p>
+          )}
+        </article>
+      )}
 
       <article className="card">
         <h3>This week</h3>

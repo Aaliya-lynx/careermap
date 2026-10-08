@@ -48,3 +48,18 @@ export const EXAMPLES = [
   'UI/UX Designer for fintech apps',
   'Data Analyst in healthcare',
 ]
+
+// How you are really doing: hours of steps you finished since you started, against what your plan expected by now.
+export function paceInfo({ startedAt, completed, nodes, hours, plan }) {
+  const weeks = Math.max((Date.now() - startedAt) / (7 * 86400000), 0)
+  const done = nodes.filter((n) => completed[n.id])
+  const doneHours = done.reduce((sum, n) => sum + n.hours, 0)
+  const planned = Math.round(hours * weeks)
+  const settled = weeks >= 0.5
+  const status = !settled ? 'new' : doneHours >= planned * 0.9 ? 'on-track' : 'behind'
+  const projectedWeeks = settled && doneHours > 0 ? Math.ceil(plan.summary.remaining_hours / (doneHours / weeks)) : null
+  return {
+    status, doneHours, doneCount: done.length, planned, projectedWeeks,
+    started: new Date(startedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
+  }
+}

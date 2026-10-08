@@ -53,7 +53,7 @@ export default function SetupForm({ busy, onSubmit, initial }) {
       <button className="primary" type="submit" disabled={busy}>
         {busy ? 'Building your roadmap…' : 'Build my roadmap'}
       </button>
-      <p className="notice">The roadmap and the advice are written by AI, so check roles, certifications and costs before you rely on them. Your input is sent to an AI service to create the roadmap; do not enter private details.</p>
+      <p className="notice">✨ Your plan is made with AI: use it as a guide and confirm costs and requirements with official sources. Your answers are sent to an AI service to build it, so please leave out private details.</p>
     </form>
   )
 }
