@@ -13,11 +13,12 @@ import os
 from pathlib import Path
 from typing import List, Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+import limiter
 import llm
 import planner
 import roadmap
@@ -29,6 +30,7 @@ MESSAGES = {
     "rate_limit": "Many people are using the AI right now. Please wait a minute and try again.",
     "unavailable": "The AI helper is not available right now. Please try again in a little while.",
     "bad_roadmap": "That roadmap could not be read.",
+    "too_fast": "You are going a little fast. Please wait a minute and try again.",
 }
 
 app = FastAPI(title="CareerMap API")
@@ -41,6 +43,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+ai_limiter = limiter.Limiter(per_visitor=8, overall=60, window=60)   # protects the AI budget
+
+
+def too_fast(request: Request):
+    """True if this visitor (or the whole app) is over the AI request limit."""
+    who = limiter.client_id(request.headers.get("x-forwarded-for"), request.client.host if request.client else None)
+    return not ai_limiter.allow(who)
 
 
 def problem(status, key):
@@ -120,8 +131,10 @@ def demo_lookup(goal):
 
 
 @app.post("/api/roadmap")
-def make_roadmap(req: RoadmapRequest):
+def make_roadmap(req: RoadmapRequest, request: Request):
     saved = demo_lookup(req.goal)
+    if not saved and too_fast(request):
+        return problem(429, "too_fast")
     try:
         if saved:
             cleaned, known = roadmap.clean_roadmap(saved["roadmap"]), saved.get("known", [])
@@ -173,7 +186,9 @@ def clean_advice(raw):
 
 
 @app.post("/api/node-advice")
-def node_advice(req: AdviceRequest):
+def node_advice(req: AdviceRequest, request: Request):
+    if too_fast(request):
+        return problem(429, "too_fast")
     try:
         raw = llm.ask_json(ADVICE_SYSTEM, json.dumps({"target_job": req.goal.strip(), "step": req.node.model_dump()}))
     except llm.RateLimited:
