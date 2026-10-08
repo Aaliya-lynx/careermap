@@ -675,10 +675,7 @@ export default function App() {
             ? <button type="button" className="pager-arrow right" aria-label="Go to my roadmap" title="My roadmap" onClick={() => goPage('roadmap')}>›</button>
             : <button type="button" className="pager-arrow left" aria-label="Go to the start page" title="Start page" onClick={() => goPage('home')}>‹</button>}
           {!knowsSwipe && (
-            <p className="pager-hint">
-              <span className="hint-touch">↔ Swipe left or right to switch pages</span>
-              <span className="hint-mouse">↔ Use the arrows or swipe to switch pages</span>
-            </p>
+            <p className="pager-hint">↔ Swipe left or right to switch pages</p>
           )}
           <div className="pager-dots">
             <button type="button" className={showHome ? 'is-on' : ''} aria-current={showHome ? 'page' : undefined} onClick={() => goPage('home')}>Start</button>
