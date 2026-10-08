@@ -525,22 +525,24 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 @media (prefers-reduced-motion: reduce) { .pager-page:first-child { transition: none; } }
 
 /* ---------- start page banner ---------- */
-.home-hero { display: grid; gap: 28px; align-items: center; margin-bottom: 28px; padding: clamp(22px, 4vw, 44px); border-radius: 28px; border: 1px solid var(--line);
-  background: radial-gradient(circle at 85% 20%, rgba(201, 155, 224, 0.22), transparent 55%), linear-gradient(135deg, #261d2c, #17131a 70%);
+.home-hero { display: grid; gap: 22px; align-items: center; margin-bottom: 26px; padding: clamp(18px, 3vw, 30px) clamp(20px, 4vw, 40px); border-radius: 24px;
+  background: linear-gradient(120deg, #d9b3ec, #b784d0 70%); color: #1a0f21; box-shadow: 0 14px 40px rgba(201, 155, 224, 0.22);
   position: relative; overflow: hidden; }
-.home-hero::before { content: ''; position: absolute; inset: 0; opacity: 0.35; pointer-events: none;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px); background-size: 38px 38px;
+.home-hero::before { content: ''; position: absolute; inset: 0; opacity: 0.5; pointer-events: none;
+  background-image: linear-gradient(rgba(26, 15, 33, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(26, 15, 33, 0.07) 1px, transparent 1px); background-size: 38px 38px;
   mask-image: radial-gradient(circle at 30% 40%, #000, transparent 75%); -webkit-mask-image: radial-gradient(circle at 30% 40%, #000, transparent 75%); }
 .home-hero > * { position: relative; }
 @media (min-width: 900px) { .home-hero { grid-template-columns: 1.15fr 0.85fr; } }
-.hh-pill { display: inline-flex; gap: 8px; align-items: center; margin: 0 0 14px; padding: 6px 14px; border-radius: 999px; background: rgba(201, 155, 224, 0.14); border: 1px solid rgba(201, 155, 224, 0.35); color: var(--accent); font-size: 0.82rem; font-weight: 700; }
-.hh-brand { margin: 0 0 6px; font-size: clamp(1.6rem, 3.4vw, 2.1rem); font-weight: 800; letter-spacing: -0.02em; color: var(--muted); }
-.home-hero h1 { margin: 0 0 14px; font-size: clamp(2rem, 5vw, 3.3rem); line-height: 1.05; letter-spacing: -0.03em; font-weight: 800; }
-.hh-lead { color: var(--muted); font-size: 1.05rem; margin: 0 0 22px; max-width: 52ch; }
-.hh-cta { padding: 14px 30px; font-size: 1rem; }
-.hh-points { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 20px 0 0; padding: 0; color: var(--muted); font-size: 0.88rem; }
-.hh-points li::before { content: '✓'; color: var(--ok); font-weight: 800; margin-right: 6px; }
-.hh-art { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 84px; gap: 10px; max-width: 380px; width: 100%; justify-self: center; }
+.hh-pill { display: inline-flex; gap: 8px; align-items: center; margin: 0 0 14px; padding: 6px 14px; border-radius: 999px; background: rgba(26, 15, 33, 0.14); border: 1px solid rgba(26, 15, 33, 0.25); color: #1a0f21; font-size: 0.82rem; font-weight: 700; }
+.hh-brand { margin: 0 0 4px; font-size: clamp(1.7rem, 3.6vw, 2.3rem); font-weight: 800; letter-spacing: -0.02em; color: #1a0f21; }
+.home-hero h1 { margin: 0 0 10px; color: #1a0f21; font-size: clamp(1.6rem, 3.8vw, 2.5rem); line-height: 1.05; letter-spacing: -0.03em; font-weight: 800; }
+.home-hero .grad { color: #4a1f66; }
+.hh-lead { color: rgba(26, 15, 33, 0.82); font-size: 1rem; margin: 0 0 18px; max-width: 52ch; }
+.home-hero .hh-cta { padding: 13px 28px; font-size: 1rem; background: #1a0f21; color: #f4eff7; }
+.home-hero .hh-cta:hover { background: #2e1b3a; }
+.hh-points { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 16px 0 0; padding: 0; color: rgba(26, 15, 33, 0.85); font-size: 0.88rem; font-weight: 600; }
+.hh-points li::before { content: '✓'; color: #1a0f21; font-weight: 800; margin-right: 6px; }
+.hh-art { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 66px; gap: 9px; max-width: 330px; width: 100%; justify-self: center; }
 .hh-tile { border-radius: 18px; display: grid; place-items: center; padding: 8px; background: #2c2333; border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35); }
 .hh-tile svg { width: 100%; height: 100%; }
 .t-ring { grid-column: 1; grid-row: 1 / span 2; background: #34273c; }
@@ -548,7 +550,7 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .t-tree { grid-column: 3; grid-row: 1 / span 3; background: #3a2b46; }
 .t-bars { grid-column: 2; grid-row: 2; }
 .t-lock { grid-column: 1; grid-row: 3; background: #241e29; }
-.t-goal { grid-column: 2; grid-row: 3; background: var(--accent); }
+.t-goal { grid-column: 2; grid-row: 3; background: #f4eff7; }
 .hh-ring-bg { fill: none; stroke: #4a3b54; stroke-width: 8; }
 .hh-ring-fg { fill: none; stroke: var(--accent); stroke-width: 8; stroke-linecap: round; }
 .hh-ring-num { fill: var(--text); font-size: 18px; font-weight: 800; }
@@ -564,5 +566,13 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .t-lock path { fill: none; stroke: #6d6075; stroke-width: 5; }
 .t-goal .g1 { fill: #1a0f21; } .t-goal .g2 { fill: var(--accent); } .t-goal .g3 { fill: #1a0f21; }
 .t-goal path { fill: none; stroke: #1a0f21; stroke-width: 5; stroke-linecap: round; }
-@media (max-width: 899px) { .hh-art { grid-auto-rows: 72px; max-width: 320px; } }
+@media (max-width: 899px) { .hh-art { grid-auto-rows: 62px; max-width: 300px; } }
 .on-home .top .brand { visibility: hidden; }
+
+/* ---------- parts of the roadmap page ---------- */
+.sections { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 16px; padding: 6px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; }
+.sections button { flex: 1 1 auto; background: transparent; color: var(--muted); border: 0; border-radius: 12px; padding: 11px 18px; font: inherit; font-weight: 800; }
+.sections button:hover { background: var(--soft); color: var(--text); }
+.sections button.is-on { background: var(--accent); color: var(--on-accent); }
+@media (max-width: 640px) { .sections { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .sections::-webkit-scrollbar { display: none; } .sections button { flex: none; padding: 10px 16px; white-space: nowrap; } }
+@media (max-width: 640px) { .hh-art { display: none; } }

@@ -28,6 +28,8 @@ const LOADING_STEPS = [
   'Almost there…',
 ]
 
+const SECTIONS = [['roadmap', 'Roadmap'], ['certs', 'Certificates'], ['progress', 'Progress'], ['you', 'About you'], ['explore', 'Explore']]
+const VIEWS = [['tree', 'Skill tree'], ['map', 'Map'], ['timeline', 'Timeline'], ['outline', 'Outline']]
 const narrowScreen = () => window.matchMedia('(max-width: 900px)').matches
 
 export default function App() {
@@ -63,7 +65,9 @@ export default function App() {
   const [selectedId, setSelectedId] = useState(null)
   const [advice, setAdvice] = useState({})
   const [toast, setToast] = useState(null)
-  const [view, setView] = useState('tree')
+  const [view, setView] = useState('tree')                     // how the roadmap is drawn: tree, map, timeline or outline
+  const [section, setSection] = useState('roadmap')            // which part of the roadmap page is showing
+  const [explore, setExplore] = useState('paths')              // inside Explore: paths or compare
   const [expanded, setExpanded] = useState(false)
   const [showLibrary, setShowLibrary] = useState(false)
   const swipe = useRef(null)
@@ -335,9 +339,16 @@ export default function App() {
     }
   }
 
+  function openSection(key) {
+    setSection(key)
+    setExpanded(false)
+    setSelectedId(null)
+  }
+
   function showRouteOnMap(path) {
     setHighlight({ name: path.name, ids: path.steps_used })
     setView('map')
+    setSection('roadmap')
     setTimeout(() => document.querySelector('.graph')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60)
   }
 
@@ -474,6 +485,53 @@ export default function App() {
 
           {message && <p className="callout warn" role="alert">{message}</p>}
 
+          {plan ? (
+            <>
+              <nav className="sections" role="tablist" aria-label="Parts of your roadmap">
+                {SECTIONS.map(([key, label]) => (
+                  <button key={key} type="button" role="tab" aria-selected={section === key} className={section === key ? 'is-on' : ''} onClick={() => openSection(key)}>{label}</button>
+                ))}
+              </nav>
+
+              {section === 'roadmap' && (
+                <>
+                  <div className="viewrow">
+                    <div className="viewbar" role="tablist" aria-label="How to see the roadmap">
+                      {VIEWS.map(([key, label]) => (
+                        <button key={key} type="button" role="tab" aria-selected={view === key} className={view === key ? 'is-on' : ''} onClick={() => { setView(key); if (key !== 'tree' && key !== 'map') setExpanded(false) }}>{label}</button>
+                      ))}
+                    </div>
+                    {(view === 'map' || view === 'tree') && <p className="map-tip">
+                      <span className="tip-desktop">Drag the map to move it. Scroll the page as usual; hold Ctrl and scroll (or pinch) to zoom, and use “Fit all” to see everything.</span>
+                      <span className="tip-phone">One finger scrolls the page. Use two fingers to move or zoom the map, or tap Full screen.</span>
+                    </p>}
+                  </div>
+                  <div className="stage">
+                    {view === 'tree'
+                      ? <SkillTree roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown}
+                          highlight={highlight} onClearHighlight={() => setHighlight(null)} expanded={expanded} onToggleExpand={() => setExpanded((v) => !v)} />
+                      : view === 'timeline'
+                        ? <Timeline roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} />
+                        : view === 'map'
+                          ? <Graph roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown}
+                              highlight={highlight} onClearHighlight={() => setHighlight(null)} expanded={expanded} onToggleExpand={() => setExpanded((v) => !v)} />
+                          : <Outline roadmap={roadmap} plan={plan} known={known} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown} />}
+                    {step && (
+                      <SidePanel step={step} info={plan.nodes[step.id]} roadmap={roadmap} known={known} completedAt={completed[step.id]} evidenceTitle={evidence[step.id]}
+                        advice={advice[step.id] ?? {}} onClose={() => setSelectedId(null)} onToggleKnown={toggleKnown} onAdvice={loadAdvice} />
+                    )}
+                  </div>
+                </>
+              )}
+
+              {section === 'certs' && (
+                <Certificates steps={roadmap.nodes} result={certResult} evidence={evidence} busy={certBusy} error={certError}
+                  onAnalyze={readCertificates} onUseCareer={useCareer} />
+              )}
+
+              {section === 'progress' && <Dashboard roadmap={roadmap} plan={plan} pace={pace} onSelect={(id) => { setSelectedId(id); setSection('roadmap') }} />}
+
+              {section === 'you' && (
           <section className="where card" aria-label="Where you are now">
               <h3>Where you are now</h3>
               {!roadmap.where_you_are && !form.profile?.github && <p className="muted">This roadmap was built without knowing about you, so it assumes you are starting fresh.</p>}
@@ -493,48 +551,20 @@ export default function App() {
               {roadmap.where_you_are && <p className="notice">Based on the choices you made. Self-reported, so check it matches what you really have.</p>}
               <button type="button" className="ghost" onClick={() => startOver(true)}>{roadmap.where_you_are ? 'Change my details' : 'Add details about me'}</button>
             </section>
-
-          {plan && (
-            <div className="viewrow">
-            <div className="viewbar" role="tablist" aria-label="How to see the roadmap">
-              <button type="button" role="tab" aria-selected={view === 'tree'} className={view === 'tree' ? 'is-on' : ''} onClick={() => setView('tree')}>Skill tree</button>
-              <button type="button" role="tab" aria-selected={view === 'map'} className={view === 'map' ? 'is-on' : ''} onClick={() => setView('map')}>Map</button>
-              <button type="button" role="tab" aria-selected={view === 'timeline'} className={view === 'timeline' ? 'is-on' : ''} onClick={() => { setView('timeline'); setExpanded(false) }}>Timeline</button>
-              <button type="button" role="tab" aria-selected={view === 'compare'} className={view === 'compare' ? 'is-on' : ''} onClick={() => { setView('compare'); setExpanded(false) }}>Compare</button>
-              <button type="button" role="tab" aria-selected={view === 'outline'} className={view === 'outline' ? 'is-on' : ''} onClick={() => { setView('outline'); setExpanded(false) }}>Outline</button>
-              <button type="button" role="tab" aria-selected={view === 'paths'} className={view === 'paths' ? 'is-on' : ''} onClick={() => { setView('paths'); setExpanded(false) }}>Paths</button>
-            </div>
-            {(view === 'map' || view === 'tree') && <p className="map-tip">
-              <span className="tip-desktop">Drag the map to move it. Scroll the page as usual; hold Ctrl and scroll (or pinch) to zoom, and use “Fit all” to see everything.</span>
-              <span className="tip-phone">One finger scrolls the page. Use two fingers to move or zoom the map, or tap Full screen.</span>
-            </p>}
-            </div>
-          )}
-
-          {plan && <Dashboard roadmap={roadmap} plan={plan} pace={pace} onSelect={setSelectedId} />}
-          {plan && <Certificates steps={roadmap.nodes} result={certResult} evidence={evidence} busy={certBusy} error={certError}
-            onAnalyze={readCertificates} onUseCareer={useCareer} />}
-
-          {plan ? (
-            <div className="stage">
-              {view === 'tree'
-                ? <SkillTree roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown}
-                    highlight={highlight} onClearHighlight={() => setHighlight(null)} expanded={expanded} onToggleExpand={() => setExpanded((v) => !v)} />
-                : view === 'compare'
-                ? <Compare roadmap={roadmap} others={library.filter((e) => e.id !== activeId)} hours={hours} />
-                : view === 'timeline'
-                  ? <Timeline roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} />
-                  : view === 'map'
-                ? <Graph roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown}
-                    highlight={highlight} onClearHighlight={() => setHighlight(null)} expanded={expanded} onToggleExpand={() => setExpanded((v) => !v)} />
-                : view === 'paths'
-                  ? <Paths paths={paths} busy={pathBusy} error={pathError} onLoad={loadPaths} onShowOnMap={showRouteOnMap} />
-                  : <Outline roadmap={roadmap} plan={plan} known={known} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown} />}
-              {step && (
-                <SidePanel step={step} info={plan.nodes[step.id]} roadmap={roadmap} known={known} completedAt={completed[step.id]} evidenceTitle={evidence[step.id]}
-                  advice={advice[step.id] ?? {}} onClose={() => setSelectedId(null)} onToggleKnown={toggleKnown} onAdvice={loadAdvice} />
               )}
-            </div>
+
+              {section === 'explore' && (
+                <>
+                  <div className="viewbar" role="tablist" aria-label="Explore">
+                    <button type="button" role="tab" aria-selected={explore === 'paths'} className={explore === 'paths' ? 'is-on' : ''} onClick={() => setExplore('paths')}>Typical paths</button>
+                    <button type="button" role="tab" aria-selected={explore === 'compare'} className={explore === 'compare' ? 'is-on' : ''} onClick={() => setExplore('compare')}>Compare two roles</button>
+                  </div>
+                  {explore === 'paths'
+                    ? <Paths paths={paths} busy={pathBusy} error={pathError} onLoad={loadPaths} onShowOnMap={showRouteOnMap} />
+                    : <Compare roadmap={roadmap} others={library.filter((e) => e.id !== activeId)} hours={hours} />}
+                </>
+              )}
+            </>
           ) : <p className="loading" role="status">Loading your plan…</p>}
           <p className="notice footer-note">Use it as a guide and confirm costs and requirements with official sources. Your roadmaps are saved only in this browser.</p>
         </main>
