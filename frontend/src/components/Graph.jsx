@@ -5,7 +5,7 @@ import { KINDS, STATUS_LABEL, readyByDate } from '../format.js'
 import { download, fileName } from '../exports.js'
 
 const COLUMN = 340
-const ROW = 104
+const ROW = 120
 const TOP = 80
 const NODE_W = 270
 const NODE_H = 56
@@ -51,12 +51,12 @@ async function withLines(photoUrl, lines, view, width, height) {
 }
 
 function StepNode({ data }) {
-  const { step, info, selected, onSelect, onToggle, dim, startHere, sim, delay } = data
+  const { step, info, selected, onSelect, onToggle, dim, match, startHere, sim, delay } = data
   const kind = KINDS[step.kind] ?? KINDS.skill
   const locked = info.status === 'todo' && !info.available
   const done = info.status === 'known' || info.status === 'implied'
   const classes = ['step', `is-${info.status}`, info.critical ? 'is-critical' : '', locked ? 'is-locked' : '', info.available ? 'is-available' : '',
-    selected ? 'is-selected' : '', dim ? 'is-dim' : '', sim ? `sim-${sim}` : ''].join(' ')
+    selected ? 'is-selected' : '', dim ? 'is-dim' : '', match ? 'is-match' : '', sim ? `sim-${sim}` : ''].join(' ')
   return (
     <div className={classes} style={{ '--delay': `${delay ?? 0}ms` }}>
       <Handle type="target" position={Position.Left} isConnectable={false} />
@@ -180,7 +180,7 @@ function futureSummary(roadmap, plan, week) {
   return { percent: total ? Math.round((100 * done) / total) : 0, finished }
 }
 
-function MapControls({ roadmap, plan, filter, onFilter, week, onWeek, playing, onPlaying }) {
+function MapControls({ roadmap, plan, filter, matchCount, onFilter, week, onWeek, playing, onPlaying }) {
   const max = plan.summary.weeks_needed
   const now = week > 0 ? futureSummary(roadmap, plan, week) : null
   return (
@@ -190,6 +190,7 @@ function MapControls({ roadmap, plan, filter, onFilter, week, onWeek, playing, o
           <button key={key} type="button" className={`filter-chip ${filter === key ? 'is-on' : ''}`} aria-pressed={filter === key} onClick={() => onFilter(key)}>{label}</button>
         ))}
       </div>
+      {filter !== 'all' && <span className="filter-count" role="status">{matchCount} of {roadmap.nodes.length} steps match</span>}
       {max > 0 && (
         <div className="scrub">
           <button type="button" className="play-circle" onClick={() => { if (!playing && week >= max) onWeek(0); onPlaying(!playing) }} aria-pressed={playing}
@@ -239,7 +240,7 @@ function Tools({ title, box, lines, expanded, onToggleExpand }) {
   )
 }
 
-export default function Graph({ roadmap, plan, selectedId, onSelect, onToggleKnown, expanded, onToggleExpand }) {
+export default function Graph({ roadmap, plan, selectedId, onSelect, onToggleKnown, highlight, onClearHighlight, expanded, onToggleExpand }) {
   const [filter, setFilter] = useState('all')
   const [week, setWeek] = useState(0)
   const [playing, setPlaying] = useState(false)
@@ -265,6 +266,8 @@ export default function Graph({ roadmap, plan, selectedId, onSelect, onToggleKno
     const tallest = Math.max(...phaseNumbers.map((p) => byPhase[p].length))
     const height = TOP + tallest * ROW + 10
     const related = selectedId ? relatedTo(selectedId, roadmap.nodes) : null
+    const lit = highlight ? new Set(highlight.ids) : null      // the steps a chosen route leans on
+    const matchSet = filter !== 'all' ? new Set(roadmap.nodes.filter((n) => n.kind === filter).map((n) => n.id)) : null   // the steps a type filter picks
     const startId = plan.order.find((id) => plan.nodes[id].available)
 
     const flowNodes = []
@@ -282,7 +285,7 @@ export default function Graph({ roadmap, plan, selectedId, onSelect, onToggleKno
         flowNodes.push({
           id: step.id, type: 'step', position: { x: column * COLUMN, y: TOP + row * ROW }, draggable: false,
           data: { step, info: plan.nodes[step.id], selected: step.id === selectedId, onSelect, onToggle: onToggleKnown,
-            dim: (related ? !related.has(step.id) : false) || (filter !== 'all' && step.kind !== filter),
+            dim: (related ? !related.has(step.id) : false) || (matchSet ? !matchSet.has(step.id) : false) || (lit ? !lit.has(step.id) : false), match: matchSet ? matchSet.has(step.id) : false,
             startHere: step.id === startId && week === 0, sim: simFor(plan.nodes[step.id], week), delay: Math.min(delayCount++ * 28, 700) },
         })
       })
@@ -299,18 +302,19 @@ export default function Graph({ roadmap, plan, selectedId, onSelect, onToggleKno
       const stretch = plan.nodes[n.id].status === 'stretch'
       const kind = critical ? 'edge-critical' : finished ? 'edge-done' : stretch ? 'edge-stretch' : 'edge-plain'
       const focus = related ? (related.has(r) && related.has(n.id) ? 'edge-focus' : 'edge-dim') : ''
+      const filtered = matchSet && !(matchSet.has(r) && matchSet.has(n.id)) ? 'edge-dim' : ''
       flowLines.push({ kind, from: { x: spot[r].x + NODE_W, y: spot[r].y + NODE_H / 2 }, to: { x: spot[n.id].x, y: spot[n.id].y + NODE_H / 2 } })
-      flowEdges.push({ id: `${r}->${n.id}`, source: r, target: n.id, type: 'smoothstep', animated: critical, className: `${kind} ${focus}` })
+      flowEdges.push({ id: `${r}->${n.id}`, source: r, target: n.id, type: 'smoothstep', animated: critical, className: `${kind} ${focus} ${filtered}` })
     }))
     return { nodes: flowNodes, edges: flowEdges, box: { x: -14, y: 0, width: phaseNumbers.length * COLUMN - 26, height }, lines: flowLines }
-  }, [roadmap, plan, selectedId, onSelect, onToggleKnown, filter, week])
+  }, [roadmap, plan, selectedId, onSelect, onToggleKnown, filter, week, highlight])
 
   return (
     <div className="graph-wrap">
     {!expanded && (narrowScreen()
       ? <details className="mapbar-fold"><summary>Filters and time travel</summary>
-          <MapControls roadmap={roadmap} plan={plan} filter={filter} onFilter={setFilter} week={week} onWeek={setWeek} playing={playing} onPlaying={setPlaying} /></details>
-      : <MapControls roadmap={roadmap} plan={plan} filter={filter} onFilter={setFilter} week={week} onWeek={setWeek} playing={playing} onPlaying={setPlaying} />)}
+          <MapControls roadmap={roadmap} plan={plan} filter={filter} matchCount={roadmap.nodes.filter((n) => n.kind === filter).length} onFilter={setFilter} week={week} onWeek={setWeek} playing={playing} onPlaying={setPlaying} /></details>
+      : <MapControls roadmap={roadmap} plan={plan} filter={filter} matchCount={roadmap.nodes.filter((n) => n.kind === filter).length} onFilter={setFilter} week={week} onWeek={setWeek} playing={playing} onPlaying={setPlaying} />)}
     <div className={`graph ${expanded ? 'is-full' : ''}`} role="region"
       aria-label="Interactive roadmap. Drag to pan, hold Control and scroll or pinch to zoom, and press Tab to move between steps.">
       <ReactFlow key={expanded ? 'full' : 'normal'} nodes={nodes} edges={edges} nodeTypes={nodeTypes}
@@ -324,11 +328,15 @@ export default function Graph({ roadmap, plan, selectedId, onSelect, onToggleKno
         <Tools title={roadmap.title} box={box} lines={lines} expanded={expanded} onToggleExpand={onToggleExpand} />
         {expanded && (
           <Panel position="bottom-center" className="mapbar-overlay">
-            <MapControls roadmap={roadmap} plan={plan} filter={filter} onFilter={setFilter} week={week} onWeek={setWeek} playing={playing} onPlaying={setPlaying} />
+            <MapControls roadmap={roadmap} plan={plan} filter={filter} matchCount={roadmap.nodes.filter((n) => n.kind === filter).length} onFilter={setFilter} week={week} onWeek={setWeek} playing={playing} onPlaying={setPlaying} />
           </Panel>
         )}
       </ReactFlow>
       {expanded && <Legend overlay />}
+      {highlight && (
+        <p className="path-banner" role="status">Route: <strong>{highlight.name}</strong>
+          <button type="button" className="tool" onClick={onClearHighlight}>Show all steps</button></p>
+      )}
       {selectedId && <p className="focus-hint" role="status">Showing what this step needs and what it unlocks. Tap empty space to clear.</p>}
     </div>
     {!expanded && <Legend />}

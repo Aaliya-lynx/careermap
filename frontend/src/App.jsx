@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { analyzeCertificates, createRoadmap, getAdvice, replan } from './api.js'
+import { analyzeCertificates, createRoadmap, getAdvice, getPaths, replan } from './api.js'
 import { downloadText, fileName, toMarkdown } from './exports.js'
 import { paceInfo, readyByDate, weeksText } from './format.js'
 import { buildNarration } from './narrate.js'
@@ -11,6 +11,7 @@ import Graph from './components/Graph.jsx'
 import Library from './components/Library.jsx'
 import Listen from './components/Listen.jsx'
 import Outline from './components/Outline.jsx'
+import Paths from './components/Paths.jsx'
 import SetupForm from './components/SetupForm.jsx'
 import SidePanel from './components/SidePanel.jsx'
 import Toast from './components/Toast.jsx'
@@ -46,6 +47,10 @@ export default function App() {
   const [certResult, setCertResult] = useState(start?.certResult ?? null)
   const [certBusy, setCertBusy] = useState(false)
   const [certError, setCertError] = useState('')
+  const [paths, setPaths] = useState(start?.paths ?? null)         // typical routes into the job (AI, illustrative)
+  const [pathBusy, setPathBusy] = useState(false)
+  const [pathError, setPathError] = useState('')
+  const [highlight, setHighlight] = useState(null)                  // a route shown on the map
   const [busy, setBusy] = useState(false)
   const [loadingStep, setLoadingStep] = useState(0)
   const [message, setMessage] = useState('')
@@ -64,13 +69,13 @@ export default function App() {
     if (!roadmap || !activeId) return
     const summary = plan ? { weeks_needed: plan.summary.weeks_needed, percent_ready: plan.summary.percent_ready } : null
     const entry = { id: activeId, title: roadmap.title || form.goal, goal: form.goal, skills: form.skills, roadmap, known, completed,
-      evidence, certResult, startedAt, hours, budget, plan, summary, updatedAt: Date.now() }
+      evidence, certResult, paths, startedAt, hours, budget, plan, summary, updatedAt: Date.now() }
     setLibrary((current) => {
       const next = upsert(current, entry)
       saveLibrary(next)
       return next
     })
-  }, [roadmap, activeId, known, completed, evidence, certResult, startedAt, hours, budget, plan, form.goal, form.skills])
+  }, [roadmap, activeId, known, completed, evidence, certResult, paths, startedAt, hours, budget, plan, form.goal, form.skills])
 
   // Whenever hours, budget or known skills change, ask the server for a new plan (plain code, no AI).
   useEffect(() => {
@@ -137,6 +142,7 @@ export default function App() {
         setCompleted({})
         setEvidence({})
         setCertResult(null)
+        setPaths(null)
         setStartedAt(Date.now())
         setHours(shared.hours)
         setBudget(shared.budget)
@@ -158,6 +164,9 @@ export default function App() {
     setEvidence(entry.evidence ?? {})
     setCertResult(entry.certResult ?? null)
     setCertError('')
+    setPaths(entry.paths ?? null)
+    setPathError('')
+    setHighlight(null)
     setStartedAt(entry.startedAt ?? entry.updatedAt ?? Date.now())
     setHours(entry.hours)
     setBudget(entry.budget)
@@ -195,6 +204,8 @@ export default function App() {
       setCompleted({})
       setEvidence({})
       setCertResult(null)
+      setPaths(null)
+      setHighlight(null)
       setStartedAt(Date.now())
       setHours(values.hours_per_week)
       setBudget(values.weeks_budget ?? '')
@@ -212,6 +223,7 @@ export default function App() {
   // "New roadmap" only clears the screen: everything you built stays in "My roadmaps".
   function startOver() {
     completedPhases.current = null
+    setHighlight(null)
     setActiveId(null)
     setRoadmap(null)
     setPlan(null)
@@ -283,6 +295,25 @@ export default function App() {
     startOver()
     setForm({ goal: title, skills: '', hours, budget: '' })
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  async function loadPaths() {
+    setPathBusy(true)
+    setPathError('')
+    try {
+      const data = await getPaths({ goal: roadmap.title || form.goal, steps: roadmap.nodes.map((n) => ({ id: n.id, title: n.title, kind: n.kind })) })
+      setPaths(data.paths)
+    } catch (error) {
+      setPathError(error.message)
+    } finally {
+      setPathBusy(false)
+    }
+  }
+
+  function showRouteOnMap(path) {
+    setHighlight({ name: path.name, ids: path.steps_used })
+    setView('map')
+    setTimeout(() => document.querySelector('.graph')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60)
   }
 
   async function copyShareLink() {
@@ -377,6 +408,7 @@ export default function App() {
             <div className="viewbar" role="tablist" aria-label="How to see the roadmap">
               <button type="button" role="tab" aria-selected={view === 'map'} className={view === 'map' ? 'is-on' : ''} onClick={() => setView('map')}>Map</button>
               <button type="button" role="tab" aria-selected={view === 'outline'} className={view === 'outline' ? 'is-on' : ''} onClick={() => { setView('outline'); setExpanded(false) }}>Outline</button>
+              <button type="button" role="tab" aria-selected={view === 'paths'} className={view === 'paths' ? 'is-on' : ''} onClick={() => { setView('paths'); setExpanded(false) }}>Paths</button>
             </div>
             {view === 'map' && <p className="map-tip">
               <span className="tip-desktop">Drag the map to move it. Scroll the page as usual; hold Ctrl and scroll (or pinch) to zoom, and use “Fit all” to see everything.</span>
@@ -392,8 +424,11 @@ export default function App() {
           {plan ? (
             <div className="stage">
               {view === 'map'
-                ? <Graph roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown} expanded={expanded} onToggleExpand={() => setExpanded((v) => !v)} />
-                : <Outline roadmap={roadmap} plan={plan} known={known} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown} />}
+                ? <Graph roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown}
+                    highlight={highlight} onClearHighlight={() => setHighlight(null)} expanded={expanded} onToggleExpand={() => setExpanded((v) => !v)} />
+                : view === 'paths'
+                  ? <Paths paths={paths} busy={pathBusy} error={pathError} onLoad={loadPaths} onShowOnMap={showRouteOnMap} />
+                  : <Outline roadmap={roadmap} plan={plan} known={known} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown} />}
               {step && (
                 <SidePanel step={step} info={plan.nodes[step.id]} roadmap={roadmap} known={known} completedAt={completed[step.id]} evidenceTitle={evidence[step.id]}
                   advice={advice[step.id] ?? {}} onClose={() => setSelectedId(null)} onToggleKnown={toggleKnown} onAdvice={loadAdvice} />

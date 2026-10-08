@@ -366,3 +366,32 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 
 .tip-phone { display: none; }
 @media (pointer: coarse) { .tip-desktop { display: none; } .tip-phone { display: inline; } }
+
+/* ---------- people who took this path ---------- */
+.paths { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; align-items: start; }
+.paths-empty { display: grid; gap: 10px; justify-items: start; max-width: 640px; }
+.path h3 { font-size: 1.1rem; margin-bottom: 4px; }
+.stages { list-style: none; margin: 14px 0; padding: 0 0 0 4px; }
+.stages li { position: relative; padding: 0 0 16px 24px; border-left: 2px solid #4a4150; margin-left: 6px; }
+.stages li:last-child { border-left-color: transparent; padding-bottom: 4px; }
+.stages li::before { content: ''; position: absolute; left: -8px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 3px solid var(--card); }
+.stages li:last-child::before { background: var(--ok); }
+.stages p { margin: 2px 0 0; font-size: 0.9rem; color: var(--muted); }
+.stages .stage-project { color: var(--text); }
+.path .secondary { width: 100%; }
+.paths-foot { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.path-banner { position: absolute; left: 12px; top: 10px; z-index: 6; margin: 0; display: flex; align-items: center; gap: 10px; background: #2b2531; border-radius: 500px; padding: 5px 6px 5px 16px; font-size: 0.85rem; color: var(--text); max-width: calc(100% - 24px); }
+
+.listen-note { flex-basis: 100%; margin: 4px 0 0; font-size: 0.88rem; }
+
+/* ---------- no see-through steps, tidy titles, a filter you can see ---------- */
+.step-title { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.98rem; }
+.step.is-dim, .step.sim-later { opacity: 1; background: #17131b; border-color: transparent; box-shadow: none; }
+.step.is-dim > *, .step.sim-later > * { opacity: 0.3; }
+.step.sim-later > * { opacity: 0.5; }
+.step.is-dim:hover { transform: none; }
+.step.is-stretch { background: #17131b; }
+.step.is-implied { opacity: 1; }
+.step.is-match { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent), 0 8px 20px rgba(201, 155, 224, 0.28); }
+.edge-plain .react-flow__edge-path { stroke: #4a4152; stroke-width: 1.6; }
+.filter-count { color: var(--accent); font-weight: 700; font-size: 0.88rem; white-space: nowrap; }

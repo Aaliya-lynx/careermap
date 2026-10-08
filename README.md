@@ -24,7 +24,8 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 - Progress: percentage ready, a phase-complete celebration, this week's focus, a 4-week timeline, charts, and a pace card that compares the hours you finished with the hours you planned.
 - Time travel: a slider and a Play button show which steps you would have finished by week N if you keep to the plan.
 - Certificates: upload a photo or screenshot (or type a name). The AI reads it, counts matching steps as known (self-reported, not verified) and suggests careers that fit.
-- "Listen to my plan": the plan read aloud with the browser's voice.
+- "Listen to my plan": the plan read aloud with the browser's voice. If the device has no voice or the tab is muted, the app says so instead of staying silent.
+- "People who took this path": three typical routes into the job, each a short timeline of roles, rough timing and side projects. They are AI-written patterns, clearly labelled as not real people, and each has a button that highlights its steps on your map.
 - "My roadmaps": every roadmap is saved in the browser, with download as a picture or a Markdown checklist, and a share link that needs no account or server storage.
 - 83 automated backend tests, all passing, using a fake AI so they cost nothing.
 
@@ -50,11 +51,13 @@ flowchart LR
     F -->|nodes, known, hours, deadline| P[POST /api/plan]
     F -->|clicked step| A[POST /api/node-advice]
     F -->|photo or name| C[POST /api/certificates]
+    F -->|typical routes| T[POST /api/paths]
     subgraph Backend [FastAPI backend on Render]
         L[limiter.py: per-visitor request limit]
         R --> L
         A --> L
         C --> L
+        T --> L
         L --> M[llm.py: model chain]
         M --> V[roadmap.py: validate the AI JSON]
         P --> V
@@ -84,7 +87,7 @@ Why these choices:
 
 ## What we added
 
-Beyond the brief: the ready-by planner with a weekly-hours slider and deadline (optional steps become dashed "stretch" steps); live pace tracking against what you actually finished; time travel with Play; certificate reading with career suggestions; voice narration; saved roadmaps; downloads as a picture and a checklist; a share link; an Outline view as a plain-list alternative to the map; a legend that explains every line and colour; filters; and a phase-complete celebration. Each makes the roadmap something a student can come back to, not a one-time answer.
+Beyond the brief: the ready-by planner with a weekly-hours slider and deadline (optional steps become dashed "stretch" steps); live pace tracking against what you actually finished; time travel with Play; certificate reading with career suggestions; voice narration; typical routes into the job (illustrative, AI-written); saved roadmaps; downloads as a picture and a checklist; a share link; an Outline view as a plain-list alternative to the map; a legend that explains every line and colour; filters; and a phase-complete celebration. Each makes the roadmap something a student can come back to, not a one-time answer.
 
 ## How to run it
 
