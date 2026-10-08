@@ -2,27 +2,38 @@ import { useEffect, useRef, useState } from 'react'
 
 const supported = () => typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
 
-// Voices load a moment after the page opens on some browsers: wait for them (up to a second) before choosing one.
+// Voices load a moment after the page opens on some browsers (Chrome only starts loading them when asked). Ask early and remember them,
+// so that pressing "Listen" does not have to wait.
+let known = []
+function warmUp() {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
+  known = window.speechSynthesis.getVoices()
+  window.speechSynthesis.addEventListener('voiceschanged', () => { known = window.speechSynthesis.getVoices() })
+}
+if (typeof window !== 'undefined') warmUp()
+
 function loadVoices() {
   return new Promise((resolve) => {
     const now = window.speechSynthesis.getVoices()
     if (now.length) return resolve(now)
+    if (known.length) return resolve(known)
     const done = () => {
       window.speechSynthesis.removeEventListener('voiceschanged', done)
       resolve(window.speechSynthesis.getVoices())
     }
     window.speechSynthesis.addEventListener('voiceschanged', done)
-    setTimeout(done, 1200)
+    setTimeout(done, 600)
   })
 }
 
 // The speech engine pauses between every queued item, so many short sentences sound choppy.
 // Join sentences into a few longer chunks (kept short enough that Chrome does not cut a long utterance off).
-function joinLines(lines, limit = 200) {
+function joinLines(lines, limit = 200, firstLimit = 90) {
   const chunks = []
   for (const line of lines) {
     const last = chunks.length - 1
-    if (last >= 0 && chunks[last].length + line.length < limit) chunks[last] += ' ' + line
+    const room = last === 0 ? firstLimit : limit
+    if (last >= 0 && chunks[last].length + line.length < room) chunks[last] += ' ' + line
     else chunks.push(line)
   }
   return chunks
@@ -70,7 +81,7 @@ export default function Listen({ getLines, disabled }) {
   function speakWith(chunks, voice, id) {
     return new Promise((resolve) => {
       let started = false
-      timer.current = setTimeout(() => resolve(false), 2500)
+      timer.current = setTimeout(() => resolve(false), 2000)
       chunks.forEach((text, i) => {
         const utterance = new SpeechSynthesisUtterance(text)
         if (voice) { utterance.voice = voice; utterance.lang = voice.lang }
@@ -93,6 +104,7 @@ export default function Listen({ getLines, disabled }) {
     setNote('')
     const id = run.current + 1
     run.current = id
+    const busy = window.speechSynthesis.speaking || window.speechSynthesis.pending
     window.speechSynthesis.cancel()
     window.speechSynthesis.resume()
     setPlaying(true)
@@ -104,8 +116,11 @@ export default function Listen({ getLines, disabled }) {
       return
     }
     const chunks = joinLines(getLines())
+    let first = true
     for (const voice of chooseVoices(voices)) {
-      await new Promise((resolve) => setTimeout(resolve, 80))   // Chrome can drop a speak() that comes straight after cancel()
+      // Chrome can drop a speak() that comes straight after cancel(), so wait a moment, but only when something was cancelled
+      if (!first || busy) await new Promise((resolve) => setTimeout(resolve, 80))
+      first = false
       if (run.current !== id) return
       if (await speakWith(chunks, voice, id)) return            // this voice started: done
       window.speechSynthesis.cancel()                           // silent: try the next voice
