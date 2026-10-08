@@ -40,6 +40,7 @@ export default function App() {
   const start = first.current.entry
   const [me, setMe] = useState(loadMe)           // details remembered from last time
   const [formKey, setFormKey] = useState(0)
+  const [prefill, setPrefill] = useState(null)     // set when you choose "change my details": the start form opens with this roadmap's job and details
   const [library, setLibrary] = useState(first.current.library)
   const [activeId, setActiveId] = useState(start?.id ?? null)
   const [form, setForm] = useState({ goal: start?.goal ?? '', skills: start?.skills ?? me.skills ?? '', hours: start?.hours ?? me.hours ?? 8, budget: start?.budget ?? '', profile: start?.profile ?? me.profile ?? {} })
@@ -224,6 +225,7 @@ export default function App() {
       completedPhases.current = null
       setPage('roadmap')
       setFormKey((k) => k + 1)             // the start page gets a fresh form: job blank, your details kept
+      setPrefill(null)
       setActiveId(newId())
       setForm({ goal: values.goal, skills: values.skills, hours: values.hours_per_week, budget: values.weeks_budget ?? '', profile: values.profile })
       setRoadmap(data.roadmap)
@@ -258,7 +260,8 @@ export default function App() {
     setFormKey((k) => k + 1)
   }
 
-  function startOver(keepDetails = false) {
+  function startOver() {
+    setPrefill(null)
     completedPhases.current = null
     setHighlight(null)
     setActiveId(null)
@@ -267,7 +270,14 @@ export default function App() {
     setSelectedId(null)
     setExpanded(false)
     setMessage('')
-    setForm(keepDetails === true ? { ...form, hours, budget } : freshForm())
+    setForm(freshForm())
+  }
+
+  // "Add / change my details": go to the start page with this roadmap's job and details filled in. The roadmap stays loaded, so you can switch back.
+  function editDetails() {
+    setPrefill({ ...form, hours, budget: budget ?? '' })
+    setFormKey((k) => k + 1)
+    goPage('home')
   }
 
   const toggleKnown = useCallback((id) => {
@@ -460,7 +470,7 @@ export default function App() {
               </ul>
             </section>
           )}
-          <SetupForm key={`${formKey}-${roadmap ? 'fresh' : activeId ?? 'new'}`} busy={busy} onSubmit={build} onForget={forgetMe} initial={roadmap ? freshForm() : form} />
+          <SetupForm key={`${formKey}-${roadmap ? 'fresh' : activeId ?? 'new'}`} busy={busy} onSubmit={build} onForget={forgetMe} initial={prefill ?? (roadmap ? freshForm() : form)} />
           {busy && <p className="loading" role="status">{LOADING_STEPS[loadingStep]}</p>}
           {message && <p className="callout warn" role="alert">{message}</p>}
         </main>
@@ -590,7 +600,7 @@ export default function App() {
               )}
               {form.profile?.github && <p className="muted">GitHub: <a href={form.profile.github} target="_blank" rel="noreferrer noopener">{form.profile.github.replace('https://', '')}</a></p>}
               {roadmap.where_you_are && <p className="notice">Based on the choices you made. Self-reported, so check it matches what you really have.</p>}
-              <button type="button" className="ghost" onClick={() => startOver(true)}>{roadmap.where_you_are ? 'Change my details' : 'Add details about me'}</button>
+              <button type="button" className="ghost" onClick={editDetails}>{roadmap.where_you_are ? 'Change my details' : 'Add details about me'}</button>
             </section>
               )}
 
