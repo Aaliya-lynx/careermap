@@ -2,13 +2,17 @@
 
 **Live app:** https://careermap-neon.vercel.app · **API health check:** https://careermap-2a7e.onrender.com/health
 
-![The roadmap map with the ready-by date](docs/screenshot-map.jpg)
+![The ready-by date and the start of the skill tree](docs/screenshot-home.jpg)
 
 ## What it does
 
 CareerMap turns a specific dream job (for example "UI/UX Designer for fintech apps") into an interactive skill-tree roadmap. You enter the role, the skills you already have and the hours you can study each week. An AI model builds the tree, and plain code works out a live "ready by" date that updates as you change your hours, tick off steps or add a certificate. Click any step to get a weekend project idea and interview questions for it.
 
 Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
+
+| The skill tree | The dashboard | On a phone |
+|---|---|---|
+| ![The skill tree with the player bar for time travel](docs/screenshot-map.jpg) | ![Progress, pace, this week, hours by phase and certificates](docs/screenshot-dashboard.jpg) | ![The phone layout](docs/screenshot-phone.jpg) |
 
 ## Done / Left / Plan
 
