@@ -99,10 +99,15 @@ ROADMAP_SYSTEM = (
     '   "phase": <1-5>, "hours": <realistic study hours, 5-120>, "requires": ["<ids of earlier nodes>"],\n'
     '   "essential": <true|false>, "why": "<one sentence on why this step matters for THIS job>"}],\n'
     ' "already_known": ["<ids of nodes the person already has, judging from their skills>"]}\n'
-    "Rules: 14 to 20 nodes. Be specific to the exact job and industry, not generic: name real tools, "
+    "Rules: 14 to 18 nodes, no more. Be specific to the exact job and industry, not generic: name real tools, "
     "real certifications, realistic entry-level roles and concrete portfolio projects. Use kind 'role' for "
     "intermediate jobs or internships, 'cert' for real certifications, 'project' for things to build. "
-    "Order phases from foundations to getting hired. Mark steps that are nice to have as essential=false. "
+    "Order phases from foundations to getting hired. "
+    "Hours are what a beginner must SPEND to finish that step, and the whole roadmap should add up to roughly "
+    "400 to 900 hours. A 'role' step is the effort of applying and interviewing for it (10 to 30 hours), not the "
+    "time spent working in the job. "
+    "'essential' means nearly every entry-level posting for this job asks for it; advanced tools, extra "
+    "certifications and stretch projects must be essential=false (use it for at least 4 nodes). "
     "Never invent certifications or companies."
 )
 
@@ -123,25 +128,39 @@ class RoadmapRequest(BaseModel):
     weeks_budget: Optional[int] = Field(default=None, ge=1, le=520)
 
 
-def demo_lookup(goal):
-    """DEMO_MODE=true: a saved roadmap for a known goal is returned with no AI call."""
-    if os.getenv("DEMO_MODE", "").lower() != "true" or not DEMO_CACHE.exists():
+def cached_roadmap(goal):
+    """A saved roadmap (real AI output stored earlier) for one of the example goals, or None."""
+    if not DEMO_CACHE.exists():
         return None
     return json.loads(DEMO_CACHE.read_text(encoding="utf-8")).get(" ".join(goal.split()).lower())
 
 
+def demo_lookup(goal):
+    """DEMO_MODE=true forces the saved roadmap (a backup for a bad network). Off by default: the live AI answers."""
+    return cached_roadmap(goal) if os.getenv("DEMO_MODE", "").lower() == "true" else None
+
+
 @app.post("/api/roadmap")
 def make_roadmap(req: RoadmapRequest, request: Request):
-    saved = demo_lookup(req.goal)
+    own_skills = bool(req.known_skills)       # a saved roadmap knows nothing about the user's own skills
+    saved = None if own_skills else demo_lookup(req.goal)
+    from_cache = saved is not None
     if not saved and too_fast(request):
         return problem(429, "too_fast")
     try:
         if saved:
             cleaned, known = roadmap.clean_roadmap(saved["roadmap"]), saved.get("known", [])
         else:
-            skills = [" ".join(s.split())[:60] for s in req.known_skills if s.strip()]
-            raw = llm.ask_json(ROADMAP_SYSTEM, json.dumps({"target_job": req.goal.strip(), "current_skills": skills}))
-            cleaned, known = roadmap.clean_roadmap(raw), raw.get("already_known")
+            try:
+                skills = [" ".join(s.split())[:60] for s in req.known_skills if s.strip()]
+                raw = llm.ask_json(ROADMAP_SYSTEM, json.dumps({"target_job": req.goal.strip(), "current_skills": skills}))
+                cleaned, known = roadmap.clean_roadmap(raw), raw.get("already_known")
+            except (llm.RateLimited, llm.Unavailable):
+                backup = None if own_skills else cached_roadmap(req.goal)
+                if not backup:
+                    raise
+                # Every model is busy or down: show the saved example for this exact goal, and say so.
+                cleaned, known, from_cache = roadmap.clean_roadmap(backup["roadmap"]), backup.get("known", []), True
     except llm.RateLimited:
         return problem(429, "rate_limit")
     except llm.Unavailable:
@@ -150,7 +169,7 @@ def make_roadmap(req: RoadmapRequest, request: Request):
         return problem(502, "bad_answer")
 
     known = roadmap.clean_known(known, cleaned["nodes"])
-    return {"roadmap": cleaned, "known": known,
+    return {"roadmap": cleaned, "known": known, "from_cache": from_cache,
             "plan": planner.plan(cleaned["nodes"], known, req.hours_per_week, req.weeks_budget)}
 
 

@@ -105,3 +105,13 @@ def test_parse_json_handles_fences_and_noise():
     assert llm.parse_json('```json\n{"a": 1}\n```') == {"a": 1}
     assert llm.parse_json('Sure! {"a": {"b": 2}} done') == {"a": {"b": 2}}
     assert llm.parse_json("") == {} and llm.parse_json(None) == {} and llm.parse_json("{broken") == {}
+
+
+def test_gives_up_when_the_models_are_too_slow(monkeypatch, use_client):
+    monkeypatch.setenv("LLM_CHAIN", "a=m1,b=m2,c=m3")
+    clock = iter([0, 1, 100, 100, 100, 100])             # the first model "takes" 99 seconds and fails
+    monkeypatch.setattr(llm.time, "monotonic", lambda: next(clock))
+    client = use_client(FakeClient([rate_limit_error(), '{"x": 1}', '{"x": 2}']))
+    with pytest.raises(llm.RateLimited):
+        llm.ask_json("s", "u")
+    assert len(client.calls) == 1                         # the other models were not tried

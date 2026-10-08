@@ -14,6 +14,7 @@ import json
 import logging
 import os
 import re
+import time
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -32,6 +33,7 @@ class Unavailable(Exception):
 
 
 _clients = {}
+TOTAL_SECONDS = 80      # stop trying further models after this long, so a request never hangs for minutes
 
 
 def chain():
@@ -50,7 +52,7 @@ def _client_for(provider):
         if not key:
             raise Unavailable(f"no key for {provider}")
         _clients[provider] = OpenAI(base_url=os.getenv(f"{provider.upper()}_BASE_URL") or None,
-                                    api_key=key, max_retries=0, timeout=40)
+                                    api_key=key, max_retries=0, timeout=50)
     return _clients[provider]
 
 
@@ -74,7 +76,11 @@ def ask_json(system, user):
         raise Unavailable("LLM_CHAIN is not set")
     effort = os.getenv("LLM_REASONING_EFFORT")
     limited = False
+    started = time.monotonic()
     for provider, model in models:
+        if time.monotonic() - started > TOTAL_SECONDS:
+            log.warning("giving up: the models were too slow")
+            break
         extra = {"reasoning_effort": effort} if effort and ("gpt-oss" in model or "gpt-5" in model) else {}
         try:
             reply = _client_for(provider).chat.completions.create(
@@ -92,6 +98,7 @@ def ask_json(system, user):
             continue
         data = parse_json(reply.choices[0].message.content)
         if data:
+            log.info("answered by %s in %.1fs", model, time.monotonic() - started)
             return data
         log.warning("unusable JSON from %s", model)
     raise RateLimited() if limited else Unavailable("no model answered")

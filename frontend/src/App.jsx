@@ -125,6 +125,7 @@ export default function App() {
       setHours(values.hours_per_week)
       setBudget(values.weeks_budget ?? '')
       setPlan(data.plan)
+      if (data.from_cache) setToast({ text: 'The AI is busy, so this is a saved example roadmap for this role.' })
       setAdvice({})
       setSelectedId(null)
     } catch (error) {

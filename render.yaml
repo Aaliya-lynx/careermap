@@ -25,6 +25,6 @@ services:
       - key: LLM_REASONING_EFFORT
         value: low
       - key: DEMO_MODE
-        value: "true"
+        value: "false"
       - key: FRONTEND_ORIGINS
         sync: false
