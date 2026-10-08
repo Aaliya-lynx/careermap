@@ -718,3 +718,16 @@ label { color: #f4eff7; }
 .toast.is-success { background: #1f6b4a; color: #ffffff; border: 1px solid #5fd3a1; font-weight: 700; }
 .toast.is-success .icon-button { background: rgba(255, 255, 255, 0.18); color: #ffffff; }
 .toast { bottom: 84px; }
+
+/* skill tree: everything white (tier panels and the legend under it too) */
+.graph.tree .tier { background: #ffffff; border: 1.5px solid #dcc6ea; }
+.graph.tree .tier.is-complete { background: #ffffff; border-color: #7cc9a3; }
+.graph.tree .orb-label, .graph.tree .orb-meta { text-shadow: 0 0 3px #ffffff, 0 0 3px #ffffff, 0 0 8px #ffffff; }
+.graph-wrap .legend { background: #ffffff; border: 1.5px solid #dcc6ea; color: #8a5a00; }
+.graph-wrap .legend summary, .graph-wrap .legend strong, .graph-wrap .legend-note { color: #8a5a00; }
+.graph-wrap .legend h4 { color: #9a6a10; }
+.graph-wrap .legend .orb-swatch { background: #efe2f7; border-color: #b58fcf; }
+.graph-wrap .legend .orb-swatch.is-known { background: #dff3e8; border-color: #2f9e6e; }
+.graph-wrap .legend .orb-swatch.is-available { background: #d9b3ec; border-color: #7a4b9a; }
+.graph-wrap .legend .orb-swatch.is-critical { border-color: #d19a1c; }
+.graph-wrap .legend .orb-swatch.is-stretch { background: transparent; border-color: #8d7a9c; }
