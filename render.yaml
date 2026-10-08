@@ -1,0 +1,30 @@
+# Render blueprint for the backend. Keys marked "sync: false" are typed in the Render dashboard, never stored here.
+# Leave "Root Directory" empty when creating the service by hand.
+services:
+  - type: web
+    name: careermap-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: LLM_CHAIN
+        value: azure=gpt-5-mini,gemini=gemini-2.5-flash,gemini=gemini-2.5-flash-lite,groq=openai/gpt-oss-20b,groq=openai/gpt-oss-120b
+      - key: AZURE_BASE_URL
+        sync: false
+      - key: AZURE_API_KEY
+        sync: false
+      - key: GEMINI_BASE_URL
+        value: https://generativelanguage.googleapis.com/v1beta/openai/
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: GROQ_API_KEY
+        sync: false
+      - key: LLM_REASONING_EFFORT
+        value: low
+      - key: DEMO_MODE
+        value: "true"
+      - key: FRONTEND_ORIGINS
+        sync: false
