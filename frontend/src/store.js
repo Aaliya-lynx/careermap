@@ -32,3 +32,21 @@ export const newId = () => Date.now().toString(36) + Math.random().toString(36).
 export function upsert(list, entry) {
   return [entry, ...list.filter((e) => e.id !== entry.id)].slice(0, MAX_SAVED)
 }
+
+// "About you": the details a student typed once (profile, skills, weekly hours) are remembered in this browser so the form is pre-filled next time.
+const ME_KEY = 'careermap.me.v1'
+
+export function loadMe() {
+  try {
+    const me = JSON.parse(localStorage.getItem(ME_KEY))
+    return me && typeof me === 'object' ? me : {}
+  } catch { return {} }
+}
+
+export function saveMe(me) {
+  try { localStorage.setItem(ME_KEY, JSON.stringify(me)) } catch { /* blocked storage: the form is simply empty next time */ }
+}
+
+export function clearMe() {
+  try { localStorage.removeItem(ME_KEY) } catch { /* ignore */ }
+}

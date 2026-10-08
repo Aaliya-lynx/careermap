@@ -500,3 +500,5 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .where-col.strengthen { border-left-color: #e6b450; }
 .where-col h4 { margin: 0 0 6px; font-size: 0.95rem; }
 .where-col ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+
+.linklike { background: none; border: 0; color: var(--accent); padding: 4px 0; font: inherit; font-size: 0.85rem; text-decoration: underline; cursor: pointer; }

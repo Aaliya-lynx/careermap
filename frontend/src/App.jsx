@@ -3,7 +3,7 @@ import { analyzeCertificates, createRoadmap, getAdvice, getPaths, replan } from 
 import { downloadPdf, downloadText, fileName, toPlainText } from './exports.js'
 import { paceInfo, readyByDate, weeksText } from './format.js'
 import { buildNarration } from './narrate.js'
-import { loadLibrary, newId, saveLibrary, upsert } from './store.js'
+import { clearMe, loadLibrary, loadMe, newId, saveLibrary, saveMe, upsert } from './store.js'
 import { decodeShare, readShared, shareUrl } from './share.js'
 import Certificates from './components/Certificates.jsx'
 import Dashboard from './components/Dashboard.jsx'
@@ -36,9 +36,11 @@ export default function App() {
     first.current = { library, entry: library[0] ?? null }
   }
   const start = first.current.entry
+  const [me, setMe] = useState(loadMe)           // details remembered from last time
+  const [formKey, setFormKey] = useState(0)
   const [library, setLibrary] = useState(first.current.library)
   const [activeId, setActiveId] = useState(start?.id ?? null)
-  const [form, setForm] = useState({ goal: start?.goal ?? '', skills: start?.skills ?? '', hours: start?.hours ?? 8, budget: start?.budget ?? '', profile: start?.profile ?? {} })
+  const [form, setForm] = useState({ goal: start?.goal ?? '', skills: start?.skills ?? me.skills ?? '', hours: start?.hours ?? me.hours ?? 8, budget: start?.budget ?? '', profile: start?.profile ?? me.profile ?? {} })
   const [roadmap, setRoadmap] = useState(start?.roadmap ?? null)
   const [known, setKnown] = useState(start?.known ?? [])
   const [completed, setCompleted] = useState(start?.completed ?? {})
@@ -63,6 +65,7 @@ export default function App() {
   const [view, setView] = useState('tree')
   const [expanded, setExpanded] = useState(false)
   const [showLibrary, setShowLibrary] = useState(false)
+  const [page, setPage] = useState('home')          // 'home' = the start page, 'roadmap' = the plan; switching never loses either
   const [controlsOpen, setControlsOpen] = useState(() => !narrowScreen())
   const skipReplan = useRef(false)
   const completedPhases = useRef(null)   // phases that were complete last time: a new one triggers a celebration
@@ -138,6 +141,7 @@ export default function App() {
         if (cancelled) return
         skipReplan.current = true
         completedPhases.current = null
+        setPage('roadmap')
         setActiveId(newId())
         setForm({ goal: shared.roadmap.title, skills: '', hours: shared.hours, budget: shared.budget })
         setRoadmap({ ...shared.roadmap, nodes: data.nodes })
@@ -158,6 +162,7 @@ export default function App() {
   }, [])
 
   function openEntry(entry) {
+    setPage('roadmap')
     completedPhases.current = null
     setActiveId(entry.id)
     setForm({ goal: entry.goal, skills: entry.skills ?? '', hours: entry.hours, budget: entry.budget, profile: entry.profile ?? {} })
@@ -194,12 +199,16 @@ export default function App() {
     setBusy(true)
     setMessage('')
     try {
+      const remembered = { profile: values.profile, skills: values.skills, hours: values.hours_per_week }
+      saveMe(remembered)
+      setMe(remembered)
       const data = await createRoadmap({
         goal: values.goal, known_skills: values.known_skills,
         hours_per_week: values.hours_per_week, weeks_budget: values.weeks_budget, profile: values.profile,
       })
       skipReplan.current = true
       completedPhases.current = null
+      setPage('roadmap')
       setActiveId(newId())
       setForm({ goal: values.goal, skills: values.skills, hours: values.hours_per_week, budget: values.weeks_budget ?? '', profile: values.profile })
       setRoadmap(data.roadmap)
@@ -224,6 +233,16 @@ export default function App() {
   }
 
   // "New roadmap" only clears the screen: everything you built stays in "My roadmaps".
+  // A new form keeps what you told us last time, but never the job.
+  const freshForm = () => ({ goal: '', skills: me.skills ?? '', hours: me.hours ?? 8, budget: '', profile: me.profile ?? {} })
+
+  function forgetMe() {
+    clearMe()
+    setMe({})
+    setForm({ goal: '', skills: '', hours: 8, budget: '', profile: {} })
+    setFormKey((k) => k + 1)
+  }
+
   function startOver(keepDetails = false) {
     completedPhases.current = null
     setHighlight(null)
@@ -233,7 +252,7 @@ export default function App() {
     setSelectedId(null)
     setExpanded(false)
     setMessage('')
-    setForm(keepDetails === true ? { ...form, hours, budget } : { goal: '', skills: '', hours: 8, budget: '', profile: {} })
+    setForm(keepDetails === true ? { ...form, hours, budget } : freshForm())
   }
 
   const toggleKnown = useCallback((id) => {
@@ -343,6 +362,8 @@ export default function App() {
     setToast({ text: 'Text file downloaded.' })
   }
 
+  const showHome = page === 'home' || !roadmap
+  const goHome = (event) => { event?.preventDefault(); setExpanded(false); setPage('home'); window.scrollTo({ top: 0 }) }
   const step = roadmap?.nodes.find((n) => n.id === selectedId)
   const summary = plan?.summary
   const pace = roadmap && plan ? paceInfo({ startedAt, completed, nodes: roadmap.nodes, hours, plan }) : null
@@ -350,14 +371,16 @@ export default function App() {
   return (
     <div className={`app ${expanded ? 'has-full' : ''}`}>
       <header className="top">
-        <a className="brand" href="/" aria-label="CareerMap home"><span className="logo" aria-hidden="true">◈</span> CareerMap</a>
+        <a className="brand" href="/" aria-label="CareerMap home" onClick={goHome}><span className="logo" aria-hidden="true">◈</span> CareerMap</a>
         <nav className="top-actions" aria-label="Main">
           {library.length > 0 && <button type="button" className="ghost" onClick={() => setShowLibrary(true)}>My roadmaps ({library.length})</button>}
-          {roadmap && <button type="button" className="ghost" onClick={() => startOver()}>+ New roadmap</button>}
+          {roadmap && showHome && <button type="button" className="ghost back" onClick={() => { setPage('roadmap'); window.scrollTo({ top: 0 }) }}>← Back to my roadmap</button>}
+          {roadmap && !showHome && <button type="button" className="ghost" onClick={goHome}>Start page</button>}
+          {roadmap && !showHome && <button type="button" className="ghost" onClick={() => startOver()}>+ New roadmap</button>}
         </nav>
       </header>
 
-      {!roadmap && (
+      {showHome && (
         <main className="hero">
           <h1>Your dream job, <span className="grad">reverse-engineered.</span></h1>
           <p className="lead">Tell us the exact role. We build your skill tree and tell you the date you could be ready, then it re-plans live as your hours and skills change.</p>
@@ -376,13 +399,13 @@ export default function App() {
               </ul>
             </section>
           )}
-          <SetupForm busy={busy} onSubmit={build} initial={form} />
+          <SetupForm key={`${formKey}-${roadmap ? 'fresh' : activeId ?? 'new'}`} busy={busy} onSubmit={build} onForget={forgetMe} initial={roadmap ? freshForm() : form} />
           {busy && <p className="loading" role="status">{LOADING_STEPS[loadingStep]}</p>}
           {message && <p className="callout warn" role="alert">{message}</p>}
         </main>
       )}
 
-      {roadmap && (
+      {roadmap && !showHome && (
         <main className="workspace">
           <section className="ready" aria-live="polite">
             <div>

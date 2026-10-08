@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { EXAMPLES, GITHUB_LINK, PROFILE_OPTIONS } from '../format.js'
 
-export default function SetupForm({ busy, onSubmit, initial }) {
+export default function SetupForm({ busy, onSubmit, onForget, initial }) {
   const [goal, setGoal] = useState(initial.goal)
   const [skills, setSkills] = useState(initial.skills)
   const [hours, setHours] = useState(initial.hours)
@@ -61,7 +61,8 @@ export default function SetupForm({ busy, onSubmit, initial }) {
             {githubBad && <small className="field-error" role="alert">Use a link like https://github.com/your-name</small>}
           </div>
         </div>
-        <p className="notice">Your choices help the AI skip what you already have. We do not open your GitHub: the link is only kept in this browser so you can find it again.</p>
+        <p className="notice">Your choices help the AI skip what you already have. We do not open your GitHub: the link is only kept in this browser so you can find it again. We remember these details on this device so you only fill them in once.</p>
+        {(Object.values(profile).some(Boolean) || skills) && <button type="button" className="linklike" onClick={onForget}>Forget my details on this device</button>}
       </details>
 
       <div className="row">
