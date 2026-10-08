@@ -389,7 +389,7 @@ export default function App() {
           {plan ? (
             <div className="stage">
               {view === 'map'
-                ? <Graph roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} expanded={expanded} onToggleExpand={() => setExpanded((v) => !v)} />
+                ? <Graph roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown} expanded={expanded} onToggleExpand={() => setExpanded((v) => !v)} />
                 : <Outline roadmap={roadmap} plan={plan} known={known} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown} />}
               {step && (
                 <SidePanel step={step} info={plan.nodes[step.id]} roadmap={roadmap} known={known} completedAt={completed[step.id]} evidenceTitle={evidence[step.id]}
