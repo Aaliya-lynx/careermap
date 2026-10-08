@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { analyzeCertificates, createRoadmap, getAdvice, getPaths, replan } from './api.js'
-import { downloadText, fileName, toMarkdown } from './exports.js'
+import { downloadPdf, downloadText, fileName, toPlainText } from './exports.js'
 import { paceInfo, readyByDate, weeksText } from './format.js'
 import { buildNarration } from './narrate.js'
 import { loadLibrary, newId, saveLibrary, upsert } from './store.js'
@@ -328,9 +328,18 @@ export default function App() {
     }
   }
 
-  function saveChecklist() {
-    downloadText(fileName(roadmap.title, 'md'), toMarkdown(roadmap, plan, known, hours))
-    setToast({ text: 'Checklist downloaded.' })
+  async function savePdf() {
+    try {
+      await downloadPdf(roadmap, plan, known, hours)
+      setToast({ text: 'PDF downloaded.' })
+    } catch {
+      setToast({ text: 'The PDF could not be made in this browser. Try the text file instead.' })
+    }
+  }
+
+  function saveText() {
+    downloadText(fileName(roadmap.title, 'txt'), toPlainText(roadmap, plan, known, hours))
+    setToast({ text: 'Text file downloaded.' })
   }
 
   const step = roadmap?.nodes.find((n) => n.id === selectedId)
@@ -399,7 +408,8 @@ export default function App() {
             <div className="save-row">
               <Listen getLines={() => buildNarration(roadmap, plan, hours)} disabled={!plan} />
               <button type="button" className="ghost" onClick={copyShareLink}>Copy share link</button>
-              <button type="button" className="ghost" onClick={saveChecklist} disabled={!plan}>Download checklist</button>
+              <button type="button" className="ghost" onClick={savePdf} disabled={!plan}>Download PDF</button>
+              <button type="button" className="ghost" onClick={saveText} disabled={!plan}>Download text</button>
             </div>
           </section>
 
