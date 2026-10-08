@@ -461,3 +461,27 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 @media (max-width: 900px) { .tl-label { width: 150px; font-size: 0.82rem; } .tl-label small { display: none; } }
 
 @media (max-width: 900px) { .level-badge { min-width: 120px; padding: 6px 10px; font-size: 0.75rem; } .level-badge .muted { display: none; } }
+
+/* ---------- compare two dream roles ---------- */
+.compare { display: grid; gap: 16px; }
+.cmp-form { display: grid; gap: 12px; justify-items: start; }
+.cmp-pick { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; width: 100%; }
+.cmp-pick select { width: 100%; background: var(--soft); color: var(--text); border: 1px solid transparent; border-radius: 8px; padding: 12px 14px; font: inherit; }
+.cmp-pick select:focus { border-color: var(--accent); outline: none; }
+.cmp-bar { display: flex; height: 38px; border-radius: 10px; overflow: hidden; gap: 3px; margin: 6px 0; }
+.cmp-bar span { display: grid; place-items: center; font-weight: 800; min-width: 34px; }
+.cmp-bar .only-a { background: #3a3140; color: var(--text); }
+.cmp-bar .shared { background: var(--accent); color: var(--on-accent); }
+.cmp-bar .only-b { background: #2c3a4a; color: var(--text); }
+.cmp-legend { display: flex; justify-content: space-between; gap: 8px; font-size: 0.82rem; color: var(--muted); margin: 0 0 8px; }
+.cmp-pairs { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.cmp-pairs li { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
+.cmp-link { display: grid; justify-items: center; color: var(--accent); font-weight: 800; font-size: 1.2rem; max-width: 150px; text-align: center; }
+.cmp-link small { color: var(--muted); font-weight: 400; font-size: 0.74rem; line-height: 1.2; }
+.cmp-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.cmp-cols .card { display: grid; gap: 8px; }
+.cmp-step { display: flex; gap: 10px; align-items: center; background: #26202b; border-radius: 8px; padding: 9px 12px; }
+.cmp-pairs .cmp-step { border: 1px solid var(--accent); background: #2a2030; }
+.cmp-step strong { display: block; font-size: 0.95rem; line-height: 1.25; }
+.cmp-step small { color: var(--muted); font-size: 0.78rem; }
+@media (max-width: 900px) { .cmp-pairs li { grid-template-columns: 1fr; } .cmp-link { max-width: none; grid-auto-flow: column; gap: 8px; justify-content: start; } .cmp-cols { grid-template-columns: 1fr; } }

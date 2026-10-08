@@ -8,6 +8,7 @@ import { decodeShare, readShared, shareUrl } from './share.js'
 import Certificates from './components/Certificates.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Graph from './components/Graph.jsx'
+import Compare from './components/Compare.jsx'
 import Library from './components/Library.jsx'
 import Listen from './components/Listen.jsx'
 import Outline from './components/Outline.jsx'
@@ -421,6 +422,7 @@ export default function App() {
               <button type="button" role="tab" aria-selected={view === 'tree'} className={view === 'tree' ? 'is-on' : ''} onClick={() => setView('tree')}>Skill tree</button>
               <button type="button" role="tab" aria-selected={view === 'map'} className={view === 'map' ? 'is-on' : ''} onClick={() => setView('map')}>Map</button>
               <button type="button" role="tab" aria-selected={view === 'timeline'} className={view === 'timeline' ? 'is-on' : ''} onClick={() => { setView('timeline'); setExpanded(false) }}>Timeline</button>
+              <button type="button" role="tab" aria-selected={view === 'compare'} className={view === 'compare' ? 'is-on' : ''} onClick={() => { setView('compare'); setExpanded(false) }}>Compare</button>
               <button type="button" role="tab" aria-selected={view === 'outline'} className={view === 'outline' ? 'is-on' : ''} onClick={() => { setView('outline'); setExpanded(false) }}>Outline</button>
               <button type="button" role="tab" aria-selected={view === 'paths'} className={view === 'paths' ? 'is-on' : ''} onClick={() => { setView('paths'); setExpanded(false) }}>Paths</button>
             </div>
@@ -440,6 +442,8 @@ export default function App() {
               {view === 'tree'
                 ? <SkillTree roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown}
                     highlight={highlight} onClearHighlight={() => setHighlight(null)} expanded={expanded} onToggleExpand={() => setExpanded((v) => !v)} />
+                : view === 'compare'
+                ? <Compare roadmap={roadmap} others={library.filter((e) => e.id !== activeId)} hours={hours} />
                 : view === 'timeline'
                   ? <Timeline roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} />
                   : view === 'map'
