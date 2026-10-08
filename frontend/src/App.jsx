@@ -463,17 +463,6 @@ export default function App() {
                     <li>{weeksText(summary.weeks_needed)}</li>
                     <li><strong>{summary.remaining_hours}</strong> hours to go</li>
                   </ul>
-                  {!summary.within_budget && (
-                    <div className="callout warn fix" role="alert">
-                      <p><strong>Your {summary.weeks_budget}-week deadline is too short.</strong> At {hours} hours a week this plan needs about {summary.weeks_needed} weeks.</p>
-                      <div className="fix-actions">
-                        <button type="button" className="ghost" onClick={() => setBudget(String(summary.weeks_needed))}>Use {summary.weeks_needed} weeks</button>
-                        <button type="button" className="ghost" onClick={() => setBudget('')}>Remove the deadline</button>
-                      </div>
-                      <p className="muted">Or study more hours per week in the plan settings.</p>
-                    </div>
-                  )}
-                  {summary.stretch_ids.length > 0 && <p className="callout">{summary.stretch_ids.length} optional step{summary.stretch_ids.length > 1 ? 's' : ''} moved to “stretch” to fit your deadline.</p>}
                 </>
               ) : <p className="muted">Planning…</p>}
               <div className="ready-actions">
@@ -500,6 +489,16 @@ export default function App() {
                 <span className="muted">weeks</span>
                 {budget !== '' && budget != null && <button type="button" className="linklike" onClick={() => setBudget('')}>Clear</button>}
               </div>
+              {summary && !summary.within_budget && (
+                <div className="callout warn fix" role="alert">
+                  <p><strong>{summary.weeks_budget} weeks is too short.</strong> This plan needs about {summary.weeks_needed} at {hours} h a week.</p>
+                  <div className="fix-actions">
+                    <button type="button" className="ghost" onClick={() => setBudget(String(summary.weeks_needed))}>Use {summary.weeks_needed} weeks</button>
+                    <button type="button" className="ghost" onClick={() => setBudget('')}>No deadline</button>
+                  </div>
+                </div>
+              )}
+              {summary && summary.stretch_ids.length > 0 && <p className="stretch-note">{summary.stretch_ids.length} optional step{summary.stretch_ids.length > 1 ? 's' : ''} moved to “stretch” to fit.</p>}
               <p className="notice">The date updates as you change these. No waiting.</p>
             </div>
           </section>
