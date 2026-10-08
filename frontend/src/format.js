@@ -63,3 +63,13 @@ export function paceInfo({ startedAt, completed, nodes, hours, plan }) {
     started: new Date(startedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
   }
 }
+
+// The "About you" dropdowns. The backend checks answers against the same lists.
+export const PROFILE_OPTIONS = [
+  { key: 'education', label: 'Education', choices: ['School (grades 9 to 12)', 'Diploma / polytechnic', 'B.Tech / B.E.', 'BCA / B.Sc. / B.Com. / BA', "Master's (M.Tech, MCA, MBA, M.Sc.)", 'Working professional', 'Self-taught / other'] },
+  { key: 'year', label: 'Year', choices: ['1st year', '2nd year', '3rd year', 'Final year', 'Graduated', 'Not applicable'] },
+  { key: 'field', label: 'Field or specialization', choices: ['Computer science / IT', 'Electronics / electrical', 'Mechanical / civil / other engineering', 'Business / commerce', 'Science / maths', 'Arts / humanities', 'Design / media', 'Other'] },
+  { key: 'projects', label: 'Projects you have built', choices: ['None yet', '1 to 2 small projects', '3 or more projects', 'Something real people use'] },
+  { key: 'hackathons', label: 'Hackathons and competitions', choices: ['Never', 'Joined one or two', 'Joined several', 'Won or placed'] },
+]
+export const GITHUB_LINK = /^https:\/\/(www\.)?github\.com\/[A-Za-z0-9][A-Za-z0-9-]{0,38}\/?$/

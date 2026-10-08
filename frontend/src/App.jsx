@@ -38,7 +38,7 @@ export default function App() {
   const start = first.current.entry
   const [library, setLibrary] = useState(first.current.library)
   const [activeId, setActiveId] = useState(start?.id ?? null)
-  const [form, setForm] = useState({ goal: start?.goal ?? '', skills: start?.skills ?? '', hours: start?.hours ?? 8, budget: start?.budget ?? '' })
+  const [form, setForm] = useState({ goal: start?.goal ?? '', skills: start?.skills ?? '', hours: start?.hours ?? 8, budget: start?.budget ?? '', profile: start?.profile ?? {} })
   const [roadmap, setRoadmap] = useState(start?.roadmap ?? null)
   const [known, setKnown] = useState(start?.known ?? [])
   const [completed, setCompleted] = useState(start?.completed ?? {})
@@ -71,14 +71,14 @@ export default function App() {
   useEffect(() => {
     if (!roadmap || !activeId) return
     const summary = plan ? { weeks_needed: plan.summary.weeks_needed, percent_ready: plan.summary.percent_ready } : null
-    const entry = { id: activeId, title: roadmap.title || form.goal, goal: form.goal, skills: form.skills, roadmap, known, completed,
+    const entry = { id: activeId, title: roadmap.title || form.goal, goal: form.goal, skills: form.skills, profile: form.profile, roadmap, known, completed,
       evidence, certResult, paths, startedAt, hours, budget, plan, summary, updatedAt: Date.now() }
     setLibrary((current) => {
       const next = upsert(current, entry)
       saveLibrary(next)
       return next
     })
-  }, [roadmap, activeId, known, completed, evidence, certResult, paths, startedAt, hours, budget, plan, form.goal, form.skills])
+  }, [roadmap, activeId, known, completed, evidence, certResult, paths, startedAt, hours, budget, plan, form.goal, form.skills, form.profile])
 
   // Whenever hours, budget or known skills change, ask the server for a new plan (plain code, no AI).
   useEffect(() => {
@@ -160,7 +160,7 @@ export default function App() {
   function openEntry(entry) {
     completedPhases.current = null
     setActiveId(entry.id)
-    setForm({ goal: entry.goal, skills: entry.skills ?? '', hours: entry.hours, budget: entry.budget })
+    setForm({ goal: entry.goal, skills: entry.skills ?? '', hours: entry.hours, budget: entry.budget, profile: entry.profile ?? {} })
     setRoadmap(entry.roadmap)
     setKnown(entry.known)
     setCompleted(entry.completed ?? {})
@@ -196,12 +196,12 @@ export default function App() {
     try {
       const data = await createRoadmap({
         goal: values.goal, known_skills: values.known_skills,
-        hours_per_week: values.hours_per_week, weeks_budget: values.weeks_budget,
+        hours_per_week: values.hours_per_week, weeks_budget: values.weeks_budget, profile: values.profile,
       })
       skipReplan.current = true
       completedPhases.current = null
       setActiveId(newId())
-      setForm({ goal: values.goal, skills: values.skills, hours: values.hours_per_week, budget: values.weeks_budget ?? '' })
+      setForm({ goal: values.goal, skills: values.skills, hours: values.hours_per_week, budget: values.weeks_budget ?? '', profile: values.profile })
       setRoadmap(data.roadmap)
       setKnown(data.known)
       setCompleted({})
@@ -224,7 +224,7 @@ export default function App() {
   }
 
   // "New roadmap" only clears the screen: everything you built stays in "My roadmaps".
-  function startOver() {
+  function startOver(keepDetails = false) {
     completedPhases.current = null
     setHighlight(null)
     setActiveId(null)
@@ -233,7 +233,7 @@ export default function App() {
     setSelectedId(null)
     setExpanded(false)
     setMessage('')
-    setForm({ goal: '', skills: '', hours: 8, budget: '' })
+    setForm(keepDetails === true ? { ...form, hours, budget } : { goal: '', skills: '', hours: 8, budget: '', profile: {} })
   }
 
   const toggleKnown = useCallback((id) => {
@@ -353,7 +353,7 @@ export default function App() {
         <a className="brand" href="/" aria-label="CareerMap home"><span className="logo" aria-hidden="true">◈</span> CareerMap</a>
         <nav className="top-actions" aria-label="Main">
           {library.length > 0 && <button type="button" className="ghost" onClick={() => setShowLibrary(true)}>My roadmaps ({library.length})</button>}
-          {roadmap && <button type="button" className="ghost" onClick={startOver}>+ New roadmap</button>}
+          {roadmap && <button type="button" className="ghost" onClick={() => startOver()}>+ New roadmap</button>}
         </nav>
       </header>
 
@@ -415,6 +415,26 @@ export default function App() {
           </section>
 
           {message && <p className="callout warn" role="alert">{message}</p>}
+
+          <section className="where card" aria-label="Where you are now">
+              <h3>Where you are now</h3>
+              {!roadmap.where_you_are && !form.profile?.github && <p className="muted">This roadmap was built without knowing about you, so it assumes you are starting fresh.</p>}
+              {roadmap.where_you_are && (
+                <div className="where-cols">
+                  {[['have', 'Already have'], ['strengthen', 'Strengthen'], ['next', 'Recommended next']].map(([key, title]) => (
+                    roadmap.where_you_are[key]?.length > 0 && (
+                      <div key={key} className={`where-col ${key}`}>
+                        <h4>{title}</h4>
+                        <ul>{roadmap.where_you_are[key].map((item) => <li key={item}>{item}</li>)}</ul>
+                      </div>
+                    )
+                  ))}
+                </div>
+              )}
+              {form.profile?.github && <p className="muted">GitHub: <a href={form.profile.github} target="_blank" rel="noreferrer noopener">{form.profile.github.replace('https://', '')}</a></p>}
+              {roadmap.where_you_are && <p className="notice">✨ AI-written from the choices you made. Self-reported, so check it matches what you really have.</p>}
+              <button type="button" className="ghost" onClick={() => startOver(true)}>{roadmap.where_you_are ? 'Change my details' : 'Add details about me'}</button>
+            </section>
 
           {plan && (
             <div className="viewrow">

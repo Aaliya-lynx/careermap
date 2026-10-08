@@ -10,6 +10,7 @@ The server stores nothing about users.
 """
 import json
 import os
+import re
 import unicodedata
 from pathlib import Path
 from typing import List, Optional
@@ -17,7 +18,7 @@ from typing import List, Optional
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 import limiter
 import llm
@@ -114,6 +115,10 @@ ROADMAP_SYSTEM = (
     "'essential' means nearly every entry-level posting for this job asks for it; advanced tools, extra "
     "certifications and stretch projects must be essential=false (use it for at least 4 nodes). "
     "Never invent certifications or companies. "
+    "If the JSON also has a student_profile (education, year, field, projects, hackathons, all chosen from lists), tailor the roadmap to that "
+    "person instead of a complete beginner: put steps they already plausibly have in already_known, make early steps lighter, and add a "
+    '"where_you_are" object {"have": [<up to 4 short skills or experience they likely already have>], "strengthen": [<up to 4 things to improve>], '
+    '"next": [<up to 4 short recommended next actions, in order>]}. Only claim what the profile and skills support; when unsure, put it under strengthen. '
     'If the target is not a real job or career (random characters, a question, an instruction, a joke, or nothing to do with work), '
     'reply ONLY with {"error": "not_a_job"}.'
 )
@@ -128,11 +133,55 @@ ADVICE_SYSTEM = (
 )
 
 
+# The profile is chosen from fixed lists (so nothing free-form reaches the AI) plus an optional GitHub link that stays in the browser.
+PROFILE_CHOICES = {
+    "education": ["School (grades 9 to 12)", "Diploma / polytechnic", "B.Tech / B.E.", "BCA / B.Sc. / B.Com. / BA", "Master's (M.Tech, MCA, MBA, M.Sc.)", "Working professional", "Self-taught / other"],
+    "year": ["1st year", "2nd year", "3rd year", "Final year", "Graduated", "Not applicable"],
+    "field": ["Computer science / IT", "Electronics / electrical", "Mechanical / civil / other engineering", "Business / commerce", "Science / maths", "Arts / humanities", "Design / media", "Other"],
+    "projects": ["None yet", "1 to 2 small projects", "3 or more projects", "Something real people use"],
+    "hackathons": ["Never", "Joined one or two", "Joined several", "Won or placed"],
+}
+GITHUB_LINK = re.compile(r"^https://(?:www\.)?github\.com/([A-Za-z0-9](?:[A-Za-z0-9-]{0,38}))/?$")
+
+
+class Profile(BaseModel):
+    education: str = Field(default="", max_length=60)
+    year: str = Field(default="", max_length=60)
+    field: str = Field(default="", max_length=60)
+    projects: str = Field(default="", max_length=60)
+    hackathons: str = Field(default="", max_length=60)
+    github: str = Field(default="", max_length=100)
+
+    @model_validator(mode="after")
+    def only_known_values(self):
+        for key, allowed in PROFILE_CHOICES.items():
+            if getattr(self, key) and getattr(self, key) not in allowed:
+                raise ValueError(f"{key} must be one of the listed choices")
+        if self.github and not GITHUB_LINK.match(self.github.strip()):
+            raise ValueError("github must look like https://github.com/username")
+        return self
+
+    def choices(self):
+        return {key: getattr(self, key) for key in PROFILE_CHOICES if getattr(self, key)}
+
+
 class RoadmapRequest(BaseModel):
     goal: str = Field(min_length=3, max_length=200)
     known_skills: List[str] = Field(default=[], max_length=20)
+    profile: Optional[Profile] = None
     hours_per_week: float = Field(default=8, ge=1, le=80)
     weeks_budget: Optional[int] = Field(default=None, ge=1, le=520)
+
+
+def clean_where(raw):
+    """The 'where you are now' lists, kept short and text-only. None if there is nothing usable."""
+    if not isinstance(raw, dict):
+        return None
+    out = {}
+    for key in ("have", "strengthen", "next"):
+        items = raw.get(key) if isinstance(raw.get(key), list) else []
+        out[key] = [roadmap.clean_text(i, 100) for i in items if isinstance(i, str) and i.strip()][:4]
+    return out if any(out.values()) else None
 
 
 def cached_roadmap(goal):
@@ -151,7 +200,8 @@ def demo_lookup(goal):
 def make_roadmap(req: RoadmapRequest, request: Request):
     if sum(1 for ch in req.goal if unicodedata.category(ch)[0] in "LM") < 3:     # at least 3 letters, in any script
         return problem(422, "not_a_job")
-    own_skills = bool(req.known_skills)       # a saved roadmap knows nothing about the user's own skills
+    chosen = req.profile.choices() if req.profile else {}
+    own_skills = bool(req.known_skills) or bool(chosen)       # a saved roadmap knows nothing about the user's own skills or profile
     saved = None if own_skills else demo_lookup(req.goal)
     from_cache = saved is not None
     if not saved and too_fast(request):
@@ -162,10 +212,16 @@ def make_roadmap(req: RoadmapRequest, request: Request):
         else:
             try:
                 skills = [" ".join(s.split())[:60] for s in req.known_skills if s.strip()]
-                raw = llm.ask_json(ROADMAP_SYSTEM, json.dumps({"target_job": req.goal.strip(), "current_skills": skills}))
+                facts = {"target_job": req.goal.strip(), "current_skills": skills}
+                if chosen:
+                    facts["student_profile"] = chosen
+                raw = llm.ask_json(ROADMAP_SYSTEM, json.dumps(facts))
                 if raw.get("error") == "not_a_job":
                     return problem(422, "not_a_job")
                 cleaned, known = roadmap.clean_roadmap(raw), raw.get("already_known")
+                where = clean_where(raw.get("where_you_are")) if chosen else None
+                if where:
+                    cleaned["where_you_are"] = where
             except (llm.RateLimited, llm.Unavailable):
                 backup = None if own_skills else cached_roadmap(req.goal)
                 if not backup:
