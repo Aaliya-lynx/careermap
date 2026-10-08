@@ -2,8 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createRoadmap, getAdvice, replan } from './api.js'
 import { readyByDate, weeksText } from './format.js'
 import Graph from './components/Graph.jsx'
+import Dashboard from './components/Dashboard.jsx'
 import SetupForm from './components/SetupForm.jsx'
 import SidePanel from './components/SidePanel.jsx'
+import Toast from './components/Toast.jsx'
+import { decodeShare, readShared, shareUrl } from './share.js'
 
 const STORAGE_KEY = 'careermap.v1'
 
@@ -28,7 +31,9 @@ export default function App() {
   const [message, setMessage] = useState('')
   const [selectedId, setSelectedId] = useState(null)
   const [advice, setAdvice] = useState({})
+  const [toast, setToast] = useState(null)
   const skipReplan = useRef(false)
+  const completedPhases = useRef(null)   // phases that were complete last time: a new one triggers a celebration
 
   // Save progress in this browser only.
   useEffect(() => {
@@ -54,6 +59,56 @@ export default function App() {
     return () => { clearTimeout(timer); controller.abort() }
   }, [roadmap, known, hours, budget])
 
+  useEffect(() => {
+    if (!plan || !roadmap) return
+    const now = new Set(plan.phases.filter((p) => p.complete).map((p) => p.phase))
+    const before = completedPhases.current
+    completedPhases.current = now
+    if (!before) return
+    for (const phase of now) {
+      if (!before.has(phase)) {
+        setToast({ text: `Phase ${phase} complete${roadmap.phases[phase - 1] ? `: ${roadmap.phases[phase - 1]}` : ''}. Nice work!`, celebrate: true })
+        break
+      }
+    }
+  }, [plan, roadmap])
+
+  // Open a shared link (#r=...). The steps are cleaned by the server before they are used.
+  useEffect(() => {
+    if (!window.location.hash.startsWith('#r=')) return
+    let cancelled = false
+    ;(async () => {
+      const shared = readShared(await decodeShare(window.location.hash.slice(3)))
+      window.history.replaceState(null, '', window.location.pathname)
+      if (!shared) { setMessage('That share link could not be opened.'); return }
+      try {
+        const data = await replan({ nodes: shared.roadmap.nodes, known: shared.known, hours_per_week: shared.hours, weeks_budget: shared.budget ? Number(shared.budget) : null })
+        if (cancelled) return
+        skipReplan.current = true
+        completedPhases.current = null
+        setForm({ goal: shared.roadmap.title, skills: '', hours: shared.hours, budget: shared.budget })
+        setRoadmap({ ...shared.roadmap, nodes: data.nodes })
+        setKnown(data.known)
+        setHours(shared.hours)
+        setBudget(shared.budget)
+        setPlan(data.plan)
+      } catch (error) {
+        setMessage(error.message)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [])
+
+  async function copyShareLink() {
+    const url = await shareUrl({ roadmap, known, hours, budget })
+    try {
+      await navigator.clipboard.writeText(url)
+      setToast({ text: 'Link copied. Anyone with it can open this roadmap.' })
+    } catch {
+      window.prompt('Copy this link to share your roadmap:', url)
+    }
+  }
+
   async function build(values) {
     setBusy(true)
     setMessage('')
@@ -63,6 +118,7 @@ export default function App() {
         hours_per_week: values.hours_per_week, weeks_budget: values.weeks_budget,
       })
       skipReplan.current = true
+      completedPhases.current = null
       setForm({ goal: values.goal, skills: values.skills, hours: values.hours_per_week, budget: values.weeks_budget ?? '' })
       setRoadmap(data.roadmap)
       setKnown(data.known)
@@ -79,6 +135,7 @@ export default function App() {
   }
 
   function startOver() {
+    completedPhases.current = null
     setRoadmap(null)
     setPlan(null)
     setSelectedId(null)
@@ -142,10 +199,13 @@ export default function App() {
               <label htmlFor="budget-input">Finish within (weeks)</label>
               <input id="budget-input" type="number" min="1" max="520" value={budget} placeholder="no limit"
                 onChange={(e) => setBudget(e.target.value)} />
+              <button type="button" className="ghost share" onClick={copyShareLink}>Copy share link</button>
             </div>
           </section>
 
           {message && <p className="callout warn" role="alert">{message}</p>}
+
+          {plan && <Dashboard roadmap={roadmap} plan={plan} onSelect={setSelectedId} />}
 
           {plan ? (
             <div className="stage">
@@ -159,6 +219,7 @@ export default function App() {
           <p className="notice footer-note">Roadmap and advice are written by AI and can be wrong. Check roles, certifications and costs. Your progress is saved only in this browser.</p>
         </main>
       )}
+      <Toast toast={toast} onDone={() => setToast(null)} />
     </div>
   )
 }
