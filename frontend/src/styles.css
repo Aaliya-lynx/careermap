@@ -567,7 +567,8 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 @media (max-width: 640px) { .hh-art { display: none; } }
 
 /* ---------- summary: date, progress, settings, actions ---------- */
-@media (min-width: 900px) { .ready { grid-template-columns: minmax(0, 1fr) 320px; align-items: start; } }
+@media (min-width: 900px) { .ready { grid-template-columns: minmax(0, 1fr) minmax(420px, 0.8fr); align-items: stretch; } .ready-main { align-content: space-between; } .plan-settings { grid-template-columns: 1fr 1fr; column-gap: 22px; } .plan-settings > h3, .plan-settings > .callout, .plan-settings > .notice, .plan-settings > .stretch-note { grid-column: 1 / -1; } }
+.ps-hours, .ps-deadline { display: grid; gap: 8px; align-content: start; min-width: 0; }
 .ready-main { display: grid; gap: 12px; min-width: 0; }
 .ready-main .ready-date { margin: 0; }
 .ready-meter { height: 10px; border-radius: 5px; background: #352c3b; overflow: hidden; }

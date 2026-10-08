@@ -476,6 +476,7 @@ export default function App() {
 
             <div className="plan-settings" role="group" aria-label="Plan settings">
               <h3>Plan settings</h3>
+              <div className="ps-hours">
               <label htmlFor="hours-slider">Hours per week <strong>{hours} h</strong></label>
               <input id="hours-slider" type="range" min="1" max="40" value={hours} onChange={(e) => setHours(Number(e.target.value))} />
               <div className="hours-presets" aria-label="Quick choices">
@@ -483,11 +484,14 @@ export default function App() {
                   <button key={h} type="button" className={`chip ${hours === h ? 'is-on' : ''}`} onClick={() => setHours(h)}>{h} h</button>
                 ))}
               </div>
+              </div>
+              <div className="ps-deadline">
               <label htmlFor="budget-input">Deadline <span className="optional">(optional)</span></label>
               <div className="deadline">
                 <input id="budget-input" type="number" min="1" max="520" value={budget} placeholder="no deadline" onChange={(e) => setBudget(e.target.value)} />
                 <span className="muted">weeks</span>
                 {budget !== '' && budget != null && <button type="button" className="linklike" onClick={() => setBudget('')}>Clear</button>}
+              </div>
               </div>
               {summary && !summary.within_budget && (
                 <div className="callout warn fix" role="alert">
