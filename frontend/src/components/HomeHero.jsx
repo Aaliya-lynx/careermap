@@ -13,7 +13,7 @@ export default function HomeHero() {
     <section className="home-hero" aria-label="CareerMap">
       <div className="hh-text">
         <p className="hh-pill"><span aria-hidden="true">◈</span> Career roadmaps, reverse-engineered</p>
-        <p className="hh-brand">CareerMap</p>
+        <p className="hh-brand"><span className="hh-mark" aria-hidden="true">◈</span> CareerMap</p>
         <h1>Your dream job, <span className="grad">reverse-engineered.</span></h1>
         <p className="hh-lead">Tell us the exact role. We build your skill tree and tell you the date you could be ready, then it re-plans live as your hours and skills change.</p>
         <button type="button" className="primary hh-cta" onClick={startNow}>Get started</button>
