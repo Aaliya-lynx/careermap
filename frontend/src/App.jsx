@@ -65,6 +65,8 @@ export default function App() {
   const [view, setView] = useState('tree')
   const [expanded, setExpanded] = useState(false)
   const [showLibrary, setShowLibrary] = useState(false)
+  const swipe = useRef(null)
+  const wheelLock = useRef(0)
   const [page, setPage] = useState('home')          // 'home' = the start page, 'roadmap' = the plan; switching never loses either
   const [controlsOpen, setControlsOpen] = useState(() => !narrowScreen())
   const skipReplan = useRef(false)
@@ -363,7 +365,39 @@ export default function App() {
   }
 
   const showHome = page === 'home' || !roadmap
-  const goHome = (event) => { event?.preventDefault(); setExpanded(false); setPage('home'); window.scrollTo({ top: 0 }) }
+  const goPage = (next) => {
+    if (next === 'roadmap' && !roadmap) return
+    setExpanded(false)
+    setPage(next)
+    window.scrollTo({ top: 0 })
+  }
+  const goHome = (event) => { event?.preventDefault(); goPage('home') }
+  // Swiping or scrolling sideways moves between the pages, but never when the gesture belongs to the map, a slider, a field or a side-scrolling list.
+  const ownsSideways = (el) => {
+    for (let node = el; node && node !== document.body; node = node.parentElement) {
+      if (node.classList?.contains('react-flow') || ['INPUT', 'SELECT', 'TEXTAREA'].includes(node.tagName)) return true
+      const overflowX = getComputedStyle(node).overflowX
+      if ((overflowX === 'auto' || overflowX === 'scroll') && node.scrollWidth > node.clientWidth + 2) return true
+    }
+    return false
+  }
+  const swipeStart = (e) => {
+    swipe.current = !roadmap || expanded || e.touches.length !== 1 || ownsSideways(e.target) ? null : { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+  const swipeEnd = (e) => {
+    const from = swipe.current
+    swipe.current = null
+    if (!from) return
+    const dx = e.changedTouches[0].clientX - from.x
+    const dy = e.changedTouches[0].clientY - from.y
+    if (Math.abs(dx) >= 70 && Math.abs(dx) >= Math.abs(dy) * 1.6) goPage(dx < 0 ? 'roadmap' : 'home')
+  }
+  const swipeWheel = (e) => {
+    if (!roadmap || expanded || Math.abs(e.deltaX) < 40 || Math.abs(e.deltaX) < Math.abs(e.deltaY) * 1.5 || ownsSideways(e.target)) return
+    if (Date.now() - wheelLock.current < 700) return
+    wheelLock.current = Date.now()
+    goPage(e.deltaX > 0 ? 'roadmap' : 'home')
+  }
   const step = roadmap?.nodes.find((n) => n.id === selectedId)
   const summary = plan?.summary
   const pace = roadmap && plan ? paceInfo({ startedAt, completed, nodes: roadmap.nodes, hours, plan }) : null
@@ -374,13 +408,13 @@ export default function App() {
         <a className="brand" href="/" aria-label="CareerMap home" onClick={goHome}><span className="logo" aria-hidden="true">◈</span> CareerMap</a>
         <nav className="top-actions" aria-label="Main">
           {library.length > 0 && <button type="button" className="ghost" onClick={() => setShowLibrary(true)}>My roadmaps ({library.length})</button>}
-          {roadmap && showHome && <button type="button" className="ghost back" onClick={() => { setPage('roadmap'); window.scrollTo({ top: 0 }) }}>← Back to my roadmap</button>}
-          {roadmap && !showHome && <button type="button" className="ghost" onClick={goHome}>Start page</button>}
           {roadmap && !showHome && <button type="button" className="ghost" onClick={() => startOver()}>+ New roadmap</button>}
         </nav>
       </header>
 
-      {showHome && (
+      <div className={roadmap ? 'pager' : undefined} onTouchStart={swipeStart} onTouchEnd={swipeEnd} onWheel={swipeWheel}>
+      <div className={roadmap ? `pager-track ${showHome ? 'at-home' : 'at-plan'}` : undefined}>
+      <div className={roadmap ? 'pager-page' : undefined} inert={roadmap && !showHome ? true : undefined}>
         <main className="hero">
           <h1>Your dream job, <span className="grad">reverse-engineered.</span></h1>
           <p className="lead">Tell us the exact role. We build your skill tree and tell you the date you could be ready, then it re-plans live as your hours and skills change.</p>
@@ -403,9 +437,10 @@ export default function App() {
           {busy && <p className="loading" role="status">{LOADING_STEPS[loadingStep]}</p>}
           {message && <p className="callout warn" role="alert">{message}</p>}
         </main>
-      )}
+      </div>
 
-      {roadmap && !showHome && (
+      {roadmap && (
+        <div className="pager-page" inert={showHome ? true : undefined}>
         <main className="workspace">
           <section className="ready" aria-live="polite">
             <div>
@@ -503,7 +538,23 @@ export default function App() {
           ) : <p className="loading" role="status">Loading your plan…</p>}
           <p className="notice footer-note">Use it as a guide and confirm costs and requirements with official sources. Your roadmaps are saved only in this browser.</p>
         </main>
+        </div>
       )}
+      </div>
+      </div>
+
+      {roadmap && !expanded && (
+        <nav className="pager-nav" aria-label="Pages">
+          {showHome
+            ? <button type="button" className="pager-arrow right" aria-label="Go to my roadmap" title="My roadmap" onClick={() => goPage('roadmap')}>›</button>
+            : <button type="button" className="pager-arrow left" aria-label="Go to the start page" title="Start page" onClick={() => goPage('home')}>‹</button>}
+          <div className="pager-dots">
+            <button type="button" className={showHome ? 'is-on' : ''} aria-current={showHome ? 'page' : undefined} onClick={() => goPage('home')}>Start</button>
+            <button type="button" className={showHome ? '' : 'is-on'} aria-current={showHome ? undefined : 'page'} onClick={() => goPage('roadmap')}>My roadmap</button>
+          </div>
+        </nav>
+      )}
+
 
       {showLibrary && <Library items={library} activeId={activeId} onOpen={(id) => openEntry(library.find((e) => e.id === id))}
         onDelete={deleteEntry} onClose={() => setShowLibrary(false)} />}

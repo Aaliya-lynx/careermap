@@ -30,7 +30,7 @@ h1, h2, h3, h4, p { margin: 0 0 0.6rem; }
 a { color: var(--accent); }
 :focus-visible { outline: 3px solid #ffffff; outline-offset: 2px; }
 
-.app { max-width: 1500px; margin: 0 auto; padding: 0 24px 40px; }
+.app { max-width: 1500px; margin: 0 auto; padding: 0 24px 76px; }
 .top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
 .brand { color: var(--text); text-decoration: none; font-weight: 800; font-size: 1.3rem; letter-spacing: -0.01em; }
 .logo { color: var(--accent); margin-right: 6px; }
@@ -502,3 +502,23 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .where-col ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
 
 .linklike { background: none; border: 0; color: var(--accent); padding: 4px 0; font: inherit; font-size: 0.85rem; text-decoration: underline; cursor: pointer; }
+
+/* ---------- two pages that slide: start page and roadmap ---------- */
+.pager { overflow-x: clip; }
+.pager-track { display: flex; width: 200%; }
+.pager-page { width: 50%; flex: none; min-width: 0; }
+.pager-page:first-child { transition: margin-left 0.45s cubic-bezier(0.22, 0.8, 0.3, 1); }
+.pager-track.at-plan .pager-page:first-child { margin-left: -50%; }
+.pager-page[inert] { max-height: 80vh; overflow: hidden; }
+.pager-nav { position: fixed; inset: 0; pointer-events: none; z-index: 40; }
+.pager-nav button { pointer-events: auto; }
+.pager-arrow { position: fixed; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; border: 1px solid #4a3f52; background: rgba(26, 22, 29, 0.92);
+  color: var(--text); font-size: 1.8rem; line-height: 1; display: none; place-items: center; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); }
+.pager-arrow:hover { background: var(--accent); color: var(--on-accent); }
+.pager-arrow.left { left: 12px; }
+.pager-arrow.right { right: 12px; }
+@media (min-width: 900px) { .pager-arrow { display: grid; } }
+.pager-dots { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(26, 22, 29, 0.94); border: 1px solid #4a3f52; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); }
+.pager-dots button { border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 0.82rem; font-weight: 700; padding: 7px 14px; border-radius: 999px; }
+.pager-dots button.is-on { background: var(--accent); color: var(--on-accent); }
+@media (prefers-reduced-motion: reduce) { .pager-page:first-child { transition: none; } }
