@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { analyzeCertificates, createRoadmap, getAdvice, getPaths, replan } from './api.js'
+import { analyzeCertificates, createRoadmap, createShare, getAdvice, getPaths, getShare, replan } from './api.js'
 import { downloadPdf, downloadText, fileName, toPlainText } from './exports.js'
 import { paceInfo, readyByDate, weeksText } from './format.js'
 import { buildNarration } from './narrate.js'
 import { clearMe, loadLibrary, loadMe, newId, saveLibrary, saveMe, upsert } from './store.js'
-import { decodeShare, readShared, shareUrl } from './share.js'
+import { decodeShare, readShared, shareUrl, shortUrl } from './share.js'
 import Certificates from './components/Certificates.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Graph from './components/Graph.jsx'
@@ -133,12 +133,19 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [expanded])
 
-  // Open a shared link (#r=...). The steps are cleaned by the server before they are used.
+  // Open a shared link: a short one (#s=id, kept on the server) or a long one (#r=..., the roadmap is in the address).
+  // The steps are cleaned by the server before they are used.
   useEffect(() => {
-    if (!window.location.hash.startsWith('#r=')) return
     let cancelled = false
-    ;(async () => {
-      const shared = readShared(await decodeShare(window.location.hash.slice(3)))
+    async function openFromHash() {
+      const hash = window.location.hash
+      if (!hash.startsWith('#r=') && !hash.startsWith('#s=')) return
+      let shared = null
+      if (hash.startsWith('#s=')) {
+        try { shared = readShared(await getShare(hash.slice(3))) } catch (error) { window.history.replaceState(null, '', window.location.pathname); setMessage(error.message); return }
+      } else {
+        shared = readShared(await decodeShare(hash.slice(3)))
+      }
       window.history.replaceState(null, '', window.location.pathname)
       if (!shared) { setMessage('That share link could not be opened.'); return }
       try {
@@ -162,8 +169,10 @@ export default function App() {
       } catch (error) {
         setMessage(error.message)
       }
-    })()
-    return () => { cancelled = true }
+    }
+    openFromHash()
+    window.addEventListener('hashchange', openFromHash)      // a link pasted into a tab that is already open
+    return () => { cancelled = true; window.removeEventListener('hashchange', openFromHash) }
   }, [])
 
   function openEntry(entry) {
@@ -352,10 +361,18 @@ export default function App() {
   }
 
   async function copyShareLink() {
-    const url = await shareUrl({ roadmap, known, hours, budget })
+    const data = { roadmap, known, hours, budget }
+    let url
+    let short = false
+    try {
+      url = shortUrl((await createShare({ ...data, budget: budget ? Number(budget) : null })).id)
+      short = true
+    } catch {
+      url = await shareUrl(data)             // the server cannot keep it right now: the long link still works
+    }
     try {
       await navigator.clipboard.writeText(url)
-      setToast({ text: 'Link copied. Anyone with it can open this roadmap.' })
+      setToast({ text: short ? 'Short link copied. Anyone with it can open this roadmap for 90 days.' : 'Link copied (the long version, because short links are unavailable right now).' })
     } catch {
       window.prompt('Copy this link to share your roadmap:', url)
     }

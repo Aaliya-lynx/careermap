@@ -1,4 +1,4 @@
-// Share links: the roadmap travels inside the URL (after the #), so no server stores anything.
+// Long share links: the whole roadmap travels inside the URL (after the #). Used when short links are unavailable, and for older links.
 // The data is compressed when the browser supports it, then written as URL-safe text.
 
 const toBase64Url = (bytes) => {
@@ -43,6 +43,17 @@ export async function shareUrl(data) {
   return `${window.location.origin}${window.location.pathname}#r=${await encodeShare(data)}`
 }
 
+// The "where you are now" lists: three short lists of text, nothing else.
+function whereYouAre(value) {
+  if (!value || typeof value !== 'object') return null
+  const list = (items) => (Array.isArray(items) ? items.filter((i) => typeof i === 'string').slice(0, 4).map((i) => i.slice(0, 100)) : [])
+  const out = { have: list(value.have), strengthen: list(value.strengthen), next: list(value.next) }
+  return out.have.length || out.strengthen.length || out.next.length ? out : null
+}
+
+// A short link: the roadmap is kept on the server under a short id, and only the id is in the address.
+export const shortUrl = (id) => `${window.location.origin}${window.location.pathname}#s=${id}`
+
 // Keep only what the app needs from a shared roadmap: the server cleans the steps again before they are used.
 export function readShared(data) {
   const roadmap = data?.roadmap
@@ -54,6 +65,7 @@ export function readShared(data) {
       summary: text(roadmap.summary, 300),
       phases: Array.isArray(roadmap.phases) ? roadmap.phases.slice(0, 6).map((p) => text(p, 40)) : [],
       nodes: roadmap.nodes.slice(0, 24),
+      ...(whereYouAre(roadmap.where_you_are) ? { where_you_are: whereYouAre(roadmap.where_you_are) } : {}),
     },
     known: Array.isArray(data.known) ? data.known.filter((k) => typeof k === 'string').slice(0, 60) : [],
     hours: Math.min(Math.max(Number(data.hours) || 8, 1), 80),

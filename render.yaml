@@ -26,5 +26,11 @@ services:
         value: low
       - key: DEMO_MODE
         value: "false"
+      - key: CF_ACCOUNT_ID
+        sync: false
+      - key: CF_KV_NAMESPACE_ID
+        sync: false
+      - key: CF_API_TOKEN
+        sync: false
       - key: FRONTEND_ORIGINS
         sync: false

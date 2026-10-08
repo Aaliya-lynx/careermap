@@ -3,10 +3,12 @@
 POST /api/roadmap      : the AI builds a roadmap for a dream job; code validates it and plans it
 POST /api/plan         : re-plan after a change of hours, budget or known skills (plain code, no AI)
 POST /api/node-advice  : the AI suggests a project and interview questions for one step
+POST /api/share       : keep a roadmap you chose to share under a short id
+GET  /api/share/{id}  : read a shared roadmap back
 GET  /health
 
 The AI proposes; plain code decides (validation in roadmap.py, scheduling in planner.py).
-The server stores nothing about users.
+The server stores nothing about users. The only thing it keeps is a roadmap someone chose to share, under a random id, for 90 days.
 """
 import json
 import os
@@ -24,6 +26,7 @@ import limiter
 import llm
 import planner
 import roadmap
+import share_store as shares
 
 DEMO_CACHE = Path(__file__).resolve().parent / "demo_cache.json"
 
@@ -36,6 +39,8 @@ MESSAGES = {
     "not_a_job": "That does not look like a job we can map. Try a specific role, for example: Data Analyst in healthcare.",
     "no_paths": "We could not put together typical routes just now. Please try again.",
     "no_compare": "We could not compare those two roles just now. Please try again.",
+    "share_missing": "That share link has expired or does not exist. Ask for a new one.",
+    "share_unavailable": "Short links are not available right now.",
     "no_certs": "We could not read a certificate there. Try a clearer, well-lit photo of the whole page, or type the name instead.",
 }
 
@@ -52,6 +57,8 @@ app.add_middleware(
 
 
 ai_limiter = limiter.Limiter(per_visitor=8, overall=60, window=60)   # protects the AI budget
+share_limiter = limiter.Limiter(per_visitor=10, overall=300, window=60)   # protects the share storage
+share_store = shares.from_env()
 
 
 def too_fast(request: Request):
@@ -496,3 +503,60 @@ def compare(req: CompareRequest, request: Request):
     except llm.Unavailable:
         return problem(503, "unavailable")
     return result if result is not None else problem(502, "no_compare")
+
+
+# --------------------------------------------------------------------------
+# Short share links: store a roadmap someone chose to share, read it back by its id
+# --------------------------------------------------------------------------
+
+SHARE_ID = re.compile(r"^[A-Za-z0-9]{6,12}$")
+MAX_SHARE_BYTES = 30000
+
+
+class ShareRequest(BaseModel):
+    roadmap: dict
+    known: List[str] = Field(default=[], max_length=60)
+    hours: float = Field(default=8, ge=1, le=80)
+    budget: Optional[int] = Field(default=None, ge=1, le=520)
+
+
+@app.post("/api/share")
+def create_share(req: ShareRequest, request: Request):
+    who = limiter.client_id(request.headers.get("x-forwarded-for"), request.client.host if request.client else None)
+    if not share_limiter.allow(who):
+        return problem(429, "too_fast")
+    if not (getattr(share_store, "persistent", False) or os.environ.get("ALLOW_MEMORY_SHARES") == "true"):
+        return problem(503, "share_unavailable")        # no lasting storage set up: the app falls back to the long link
+    nodes = req.roadmap.get("nodes")
+    if not isinstance(nodes, list) or len(nodes) > 24:
+        return problem(422, "bad_roadmap")
+    try:
+        cleaned = roadmap.clean_roadmap(req.roadmap)
+    except roadmap.RoadmapError:
+        return problem(422, "bad_roadmap")
+    where = clean_where(req.roadmap.get("where_you_are"))
+    if where:
+        cleaned["where_you_are"] = where
+    payload = json.dumps({"roadmap": cleaned, "known": roadmap.clean_known(req.known, cleaned["nodes"]), "hours": req.hours, "budget": req.budget},
+                         separators=(",", ":"))
+    if len(payload.encode("utf-8")) > MAX_SHARE_BYTES:
+        return problem(422, "bad_roadmap")
+    short = shares.new_id()
+    try:
+        share_store.put(short, payload)
+    except shares.StoreError:
+        return problem(503, "share_unavailable")
+    return {"id": short}
+
+
+@app.get("/api/share/{short}")
+def read_share(short: str):
+    if not SHARE_ID.match(short):
+        return problem(404, "share_missing")
+    try:
+        found = share_store.get(short)
+    except shares.StoreError:
+        return problem(503, "share_unavailable")
+    if found is None:
+        return problem(404, "share_missing")
+    return JSONResponse(content=json.loads(found))

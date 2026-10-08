@@ -24,9 +24,23 @@ async function post(path, body, signal) {
   return data
 }
 
+async function get(path) {
+  let response
+  try {
+    response = await fetch(`${BASE}${path}`)
+  } catch {
+    throw new ApiError('Could not reach the server. Check your connection and try again. The server may be waking up, which can take a minute.')
+  }
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) throw new ApiError(typeof data.detail === 'string' ? data.detail : 'Something went wrong. Please try again.')
+  return data
+}
+
 export const createRoadmap = (body) => post('/api/roadmap', body)
 export const replan = (body, signal) => post('/api/plan', body, signal)
 export const getAdvice = (body) => post('/api/node-advice', body)
 export const analyzeCertificates = (body) => post('/api/certificates', body)
 export const getPaths = (body) => post('/api/paths', body)
 export const compareRoles = (body) => post('/api/compare', body)
+export const createShare = (body) => post('/api/share', body)
+export const getShare = (id) => get(`/api/share/${encodeURIComponent(id)}`)

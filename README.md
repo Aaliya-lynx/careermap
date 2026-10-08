@@ -29,7 +29,7 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 - Certificates: upload a photo or screenshot (or type a name). The AI reads it, counts matching steps as known (self-reported, not verified) and suggests careers that fit.
 - "Listen to my plan": the plan read aloud with the browser's voice. If the device has no voice or the tab is muted, the app says so instead of staying silent.
 - "People who took this path": three typical routes into the job, each a short timeline of roles, rough timing and side projects. They are AI-written patterns, clearly labelled as not real people, and each has a button that highlights its steps on your map.
-- "My roadmaps": every roadmap is saved in the browser, with download as a picture or a PDF (or plain text) checklist, and a share link that needs no account or server storage.
+- "My roadmaps": every roadmap is saved in the browser, with download as a picture or a PDF (or plain text) checklist, and a short share link (about 45 characters) that opens the roadmap for anyone, with no account. If short links are unavailable, it copies a longer link that carries the whole roadmap in the address instead.
 - 128 automated backend tests, all passing, using a fake AI so they cost nothing.
 
 **Left for the next 16 hours, honestly**
@@ -37,6 +37,7 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 - The three providers have each answered a real roadmap (Azure, Gemini and Groq); the automatic switch between them under real load has not been stress-tested.
 - Certificates cannot be verified, and PDFs are not read (a screenshot works).
 - The voice depends on the voices installed on the device.
+- Short links need the Cloudflare KV settings (`CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID`, `CF_API_TOKEN`) on the host; without them the app copies the long link.
 - The comparison pairs steps with one AI call, so two roles with very different wording may be paired slightly differently on each try.
 
 **Plan to finish**
@@ -55,6 +56,7 @@ flowchart LR
     F -->|photo or name| C[POST /api/certificates]
     F -->|typical routes| T[POST /api/paths]
     F -->|two roles| K[POST /api/compare]
+    F -->|share| H[POST and GET /api/share]
     subgraph Backend [FastAPI backend on Render]
         L[limiter.py: per-visitor request limit]
         R --> L
@@ -62,6 +64,7 @@ flowchart LR
         C --> L
         T --> L
         K --> L
+        H --> S[(Cloudflare KV: shared roadmaps only, 90 days)]
         L --> M[llm.py: model chain]
         M --> V[roadmap.py: validate the AI JSON]
         P --> V
@@ -83,7 +86,7 @@ How it works:
 
 Why these choices:
 - **The AI proposes, code decides.** The AI knows what a role needs. Dates, ordering and re-routing are arithmetic, so they are done in tested code. Results are explainable, instant and cheap, and a confused AI answer cannot crash the planner.
-- **Stateless server.** No accounts and no stored user data. Roadmaps and progress stay in the browser. A share link carries the roadmap in the URL.
+- **Almost stateless server.** No accounts and no stored user data. Roadmaps and progress stay in the browser. The one thing the server keeps is a roadmap someone chooses to share: it is stored under a random 8-character id in Cloudflare KV and deleted after 90 days. It holds only the steps, hours and your "where you are now" lists, never a name, email, GitHub link or certificate. If that storage is not set up, sharing falls back to a long link that carries the roadmap in the address.
 - **A chain of models across three providers.** Each free tier has its own daily limit, so a chain keeps the app available. As a last resort, if every model is busy, a saved real example is shown for the three example roles, and the screen says so.
 - **A per-visitor request limit** on the AI routes protects the budget.
 - **React Flow** for the map, because it gives zoom, pan, click and keyboard focus. The exported picture draws the connecting lines itself, because browsers cannot photograph thin SVG lines.
@@ -125,7 +128,7 @@ npm run dev                         # http://localhost:5173
 - **Models:** Azure OpenAI `gpt-5-mini` first, then Google Gemini (`gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`), then Groq (`openai/gpt-oss-20b`, `openai/gpt-oss-120b`). The same models write the roadmap, the step advice and the certificate reading.
 - **AI coding assistance** was used to help write the code.
 - **What users are told:** the start form says answers are sent to an AI service, so private details should be left out. Results carry plain cautions: confirm costs and requirements with official sources, routes are illustrative and not real people, and certificates are self-reported and not verified.
-- **Privacy:** the server stores nothing about users. Typed goals and skills, and certificate images, are sent to an AI provider to produce the answer, and the app tells users to leave out private details and to cover their name and ID numbers on certificates. Provider terms differ: do not enter private data.
+- **Privacy:** the server stores nothing about users. The only exception is a roadmap you choose to share, kept for 90 days under a random id (anyone with the link can open it). Typed goals and skills, and certificate images, are sent to an AI provider to produce the answer, and the app tells users to leave out private details and to cover their name and ID numbers on certificates. Provider terms differ: do not enter private data.
 
 ## Who it is for
 
