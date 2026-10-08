@@ -30,7 +30,6 @@ const LOADING_STEPS = [
 
 const SECTIONS = [['roadmap', 'Roadmap'], ['certs', 'Certificates'], ['progress', 'Progress'], ['you', 'About you'], ['explore', 'Explore']]
 const VIEWS = [['tree', 'Skill tree'], ['map', 'Map'], ['timeline', 'Timeline'], ['outline', 'Outline']]
-const narrowScreen = () => window.matchMedia('(max-width: 900px)').matches
 
 export default function App() {
   const first = useRef(null)
@@ -73,7 +72,6 @@ export default function App() {
   const swipe = useRef(null)
   const wheelLock = useRef(0)
   const [page, setPage] = useState('home')          // 'home' = the start page, 'roadmap' = the plan; switching never loses either
-  const [controlsOpen, setControlsOpen] = useState(() => !narrowScreen())
   const skipReplan = useRef(false)
   const completedPhases = useRef(null)   // phases that were complete last time: a new one triggers a celebration
 
@@ -454,32 +452,55 @@ export default function App() {
         <div className="pager-page" inert={showHome ? true : undefined}>
         <main className="workspace">
           <section className="ready" aria-live="polite">
-            <div>
+            <div className="ready-main">
               <p className="eyebrow">{roadmap.title || form.goal}</p>
               {summary ? (
                 <>
                   <p className="ready-date"><span className="muted-label">Ready by</span> {summary.weeks_needed === 0 ? 'today' : readyByDate(summary.weeks_needed)}</p>
-                  <p className="muted">{weeksText(summary.weeks_needed)} · {summary.percent_ready}% ready · {summary.remaining_hours} hours to go</p>
+                  <div className="ready-meter" role="img" aria-label={`${summary.percent_ready} percent ready`}><span style={{ width: `${Math.max(summary.percent_ready, 2)}%` }} /></div>
+                  <ul className="ready-facts">
+                    <li><strong>{summary.percent_ready}%</strong> ready</li>
+                    <li>{weeksText(summary.weeks_needed)}</li>
+                    <li><strong>{summary.remaining_hours}</strong> hours to go</li>
+                  </ul>
                   {!summary.within_budget && (
-                    <p className="callout warn">Needs {summary.weeks_needed} weeks, over your {summary.weeks_budget}-week limit. Raise your weekly hours or lower the goal.</p>
+                    <div className="callout warn fix" role="alert">
+                      <p><strong>Your {summary.weeks_budget}-week deadline is too short.</strong> At {hours} hours a week this plan needs about {summary.weeks_needed} weeks.</p>
+                      <div className="fix-actions">
+                        <button type="button" className="ghost" onClick={() => setBudget(String(summary.weeks_needed))}>Use {summary.weeks_needed} weeks</button>
+                        <button type="button" className="ghost" onClick={() => setBudget('')}>Remove the deadline</button>
+                      </div>
+                      <p className="muted">Or study more hours per week in the plan settings.</p>
+                    </div>
                   )}
-                  {summary.stretch_ids.length > 0 && <p className="callout">{summary.stretch_ids.length} optional step{summary.stretch_ids.length > 1 ? 's' : ''} moved to “stretch” to fit your limit.</p>}
+                  {summary.stretch_ids.length > 0 && <p className="callout">{summary.stretch_ids.length} optional step{summary.stretch_ids.length > 1 ? 's' : ''} moved to “stretch” to fit your deadline.</p>}
                 </>
               ) : <p className="muted">Planning…</p>}
+              <div className="ready-actions">
+                <Listen getLines={() => buildNarration(roadmap, plan, hours)} disabled={!plan} />
+                <span className="ready-label">Save or share</span>
+                <button type="button" className="ghost" onClick={copyShareLink}>Copy share link</button>
+                <button type="button" className="ghost" onClick={savePdf} disabled={!plan}>Download PDF</button>
+                <button type="button" className="ghost" onClick={saveText} disabled={!plan}>Download text</button>
+              </div>
             </div>
-            <details className="controls" open={controlsOpen} onToggle={(e) => setControlsOpen(e.currentTarget.open)}>
-              <summary>Adjust hours and deadline <span className="muted">({hours} h/week{budget ? `, ${budget} weeks` : ''})</span></summary>
-              <label htmlFor="hours-slider">Hours per week: <strong>{hours}</strong></label>
+
+            <div className="plan-settings" role="group" aria-label="Plan settings">
+              <h3>Plan settings</h3>
+              <label htmlFor="hours-slider">Hours per week <strong>{hours} h</strong></label>
               <input id="hours-slider" type="range" min="1" max="40" value={hours} onChange={(e) => setHours(Number(e.target.value))} />
-              <label htmlFor="budget-input">Finish within (weeks)</label>
-              <input id="budget-input" type="number" min="1" max="520" value={budget} placeholder="no limit"
-                onChange={(e) => setBudget(e.target.value)} />
-            </details>
-            <div className="save-row">
-              <Listen getLines={() => buildNarration(roadmap, plan, hours)} disabled={!plan} />
-              <button type="button" className="ghost" onClick={copyShareLink}>Copy share link</button>
-              <button type="button" className="ghost" onClick={savePdf} disabled={!plan}>Download PDF</button>
-              <button type="button" className="ghost" onClick={saveText} disabled={!plan}>Download text</button>
+              <div className="hours-presets" aria-label="Quick choices">
+                {[5, 10, 15, 20, 30].map((h) => (
+                  <button key={h} type="button" className={`chip ${hours === h ? 'is-on' : ''}`} onClick={() => setHours(h)}>{h} h</button>
+                ))}
+              </div>
+              <label htmlFor="budget-input">Deadline <span className="optional">(optional)</span></label>
+              <div className="deadline">
+                <input id="budget-input" type="number" min="1" max="520" value={budget} placeholder="no deadline" onChange={(e) => setBudget(e.target.value)} />
+                <span className="muted">weeks</span>
+                {budget !== '' && budget != null && <button type="button" className="linklike" onClick={() => setBudget('')}>Clear</button>}
+              </div>
+              <p className="notice">The date updates as you change these. No waiting.</p>
             </div>
           </section>
 
