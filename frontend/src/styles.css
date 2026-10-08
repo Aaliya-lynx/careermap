@@ -385,43 +385,9 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 
 /* ---------- skill tree (game style) ---------- */
 .viewbar { flex-wrap: wrap; }
-.tier { border-radius: 14px; background: var(--card); pointer-events: none; }
-.tier.is-complete { background: #17241f; }
-.tier-label { display: block; padding: 10px 16px; font-weight: 800; color: var(--muted); font-size: 0.9rem; }
-.tier.is-complete .tier-label { color: var(--ok); }
-.orb { position: relative; width: 150px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; animation: pop 0.45s backwards; }
-.orb-core { width: 78px; height: 78px; border-radius: 50%; display: grid; place-items: center; font-size: 1.9rem; color: var(--text); background: #26202b; border: 3px solid #4a4152; padding: 0; transition: transform 0.15s, border-color 0.2s, background 0.2s, box-shadow 0.2s; }
-.orb-core:hover { transform: scale(1.1); background: #342c3a; }
-.orb-label, .orb-meta { text-shadow: 0 0 3px var(--card), 0 0 3px var(--card), 0 0 8px var(--card); }
-.orb-label { font-weight: 700; font-size: 0.9rem; line-height: 1.25; max-width: 150px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.orb-meta { color: var(--muted); font-size: 0.78rem; }
-.orb.is-known .orb-core { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); font-weight: 800; box-shadow: 0 0 0 5px rgba(127, 209, 174, 0.14); }
-.orb.is-available .orb-core { border-color: var(--accent); background: #2a2030; animation: ring 2.2s ease-in-out infinite; }
-.orb.is-locked .orb-core { border-color: #3a3140; background: #1c1720; font-size: 1.5rem; }
-.orb.is-locked .orb-label, .orb.is-locked .orb-meta { opacity: 0.6; }
-.orb.is-stretch .orb-core { border-style: dashed; border-color: #6b6073; background: transparent; }
-.orb.is-critical .orb-core { border-color: var(--amber); }
-.orb.is-critical.is-known .orb-core { box-shadow: 0 0 0 5px rgba(230, 180, 80, 0.16); }
-.orb.is-selected .orb-core { outline: 3px solid #fff; outline-offset: 3px; }
-.orb.is-dim { opacity: 0.25; }
-.orb-start { top: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
-.orb-tick { position: absolute; top: 52px; left: calc(50% + 24px); width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--bg); background: #3a3140; color: var(--text); font-size: 0.8rem; font-weight: 800; display: grid; place-items: center; padding: 0; transition: transform 0.12s, background 0.15s; }
-.orb-tick:hover { background: var(--accent); color: var(--on-accent); transform: scale(1.18); }
-.orb.is-known .orb-tick { background: #2b2531; font-size: 0.9rem; }
-.orb.just-unlocked .orb-core { animation: burst 1.3s ease-out; }
 @keyframes ring { 50% { box-shadow: 0 0 0 9px rgba(201, 155, 224, 0.2); } }
 @keyframes burst { 0% { transform: scale(0.7); box-shadow: 0 0 0 0 rgba(127, 209, 174, 0.9); } 60% { transform: scale(1.22); box-shadow: 0 0 0 26px rgba(127, 209, 174, 0); } 100% { transform: scale(1); } }
 .react-flow__edge.edge-lit .react-flow__edge-path { stroke-width: 3; }
-.tree .edge-plain .react-flow__edge-path { stroke: #4a4152; stroke-dasharray: 2 7; stroke-linecap: round; stroke-width: 2.4; }
-.level-badge { display: grid; gap: 4px; background: #2b2531; border-radius: 12px; padding: 10px 14px; min-width: 190px; max-width: 260px; font-size: 0.82rem; }
-.level-badge strong { font-size: 1rem; }
-.xp { display: block; height: 7px; border-radius: 4px; background: #4a4152; overflow: hidden; }
-.xp > span { display: block; height: 100%; background: var(--accent); transition: width 0.6s ease; }
-.orb-swatch { width: 22px; height: 22px; border-radius: 50%; border: 3px solid #4a4152; background: #26202b; justify-self: center; }
-.orb-swatch.is-known { border-color: var(--ok); background: var(--ok-soft); }
-.orb-swatch.is-available { border-color: var(--accent); background: #2a2030; }
-.orb-swatch.is-critical { border-color: var(--amber); }
-.orb-swatch.is-stretch { border-style: dashed; border-color: #6b6073; background: transparent; }
 
 /* ---------- timeline ---------- */
 .tl-scroll { overflow-x: auto; background: #0d0b0f; border-radius: 12px; padding: 8px 0 12px; }
@@ -595,33 +561,15 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .plan-settings .fix-actions .ghost { padding: 5px 12px; font-size: 0.8rem; }
 .stretch-note { margin: 0; color: var(--muted); font-size: 0.82rem; }
 
-/* the skill tree starts compact with the whole tree in view; Full screen makes it big */
-.graph.tree:not(.is-full) { height: clamp(520px, 80vh, 820px); }
-
 /* ---------- legibility: the visual views stand out from the page and the text is easy to read ---------- */
 .graph, .tl-scroll { background: #1c1722; border: 1px solid #50455a; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
 .graph.is-full { border: 0; box-shadow: none; }
-.tier, .zone { background: #2a2231; border: 1px solid #473c52; }
-.tier.is-complete, .zone.is-complete { background: #1f3429; border-color: #347255; }
-.tier-label { font-size: 1.15rem; color: #f0e7f6; letter-spacing: 0.01em; }
 .zone-label { font-size: 1.02rem; color: #f0e7f6; }
-.tier.is-complete .tier-label, .zone.is-complete .zone-label { color: #8fe0bd; }
 
 /* skill tree steps */
-.orb { width: 170px; gap: 5px; }
-.orb-core { width: 90px; height: 90px; border-width: 4px; font-size: 2.2rem; background: #382e41; border-color: #7a6b86; }
-.orb.is-locked .orb-core { background: #2b2332; border-color: #6a5c76; font-size: 1.8rem; }
-.orb.is-available .orb-core { background: #44304f; }
-.orb-label { font-size: 1.06rem; font-weight: 800; color: #ffffff; line-height: 1.2; max-width: 158px; }
-.orb-meta { font-size: 0.95rem; color: #ddd3e3; }
-.orb.is-locked .orb-label { opacity: 0.88; }
-.orb.is-locked .orb-meta { opacity: 0.8; }
-.orb-tick { top: 58px; left: calc(50% + 28px); width: 30px; height: 30px; }
 .edge-plain .react-flow__edge-path { stroke: #8f8199; stroke-width: 1.8; opacity: 0.75; }
 .edge-done .react-flow__edge-path { stroke-width: 2.4; opacity: 1; }
 .edge-critical .react-flow__edge-path { stroke-width: 3; }
-.level-badge { background: #332a3b; border: 1px solid #5a4d64; font-size: 0.92rem; }
-.level-badge strong { font-size: 1.1rem; }
 
 /* map steps */
 .step { background: #382e41; border: 1px solid #5a4d64; }
@@ -654,7 +602,6 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .outline-meta { font-size: 0.9rem; color: #ddd3e3; }
 .outline-step { padding: 8px 10px; }
 .outline-step.is-stretch { opacity: 0.8; }
-.orb-label, .orb-meta { text-shadow: 0 0 3px #2a2231, 0 0 3px #2a2231, 0 0 8px #2a2231; }
 
 /* ---------- form fields stand out from their cards ---------- */
 input[type='text'], input[type='number'], input:not([type]), .about select, .field select, .cmp-pick select {
@@ -672,28 +619,6 @@ label { color: #f4eff7; }
 .about { background: #2a2231; border: 1px solid #4d4157; }
 .about summary { color: #ffffff; }
 .optional { color: #cfc5d6; }
-
-/* ---------- skill tree: white background, golden text, mauve details ---------- */
-.graph.tree { background: #ffffff; border-color: #c99be0; }
-.graph.tree .tier { background: #f6eefb; border-color: #dcc6ea; }
-.graph.tree .tier.is-complete { background: #eaf6ef; border-color: #9bd3b5; }
-.graph.tree .tier-label, .graph.tree .tier.is-complete .tier-label { color: #8a5a00; }
-.graph.tree .orb-core { background: #efe2f7; border-color: #b58fcf; color: #5b3a73; }
-.graph.tree .orb.is-locked .orb-core { background: #f1e9f6; border-color: #cbb7d9; color: #8d7a9c; }
-.graph.tree .orb.is-available .orb-core { background: #d9b3ec; border-color: #7a4b9a; color: #3a2349; }
-.graph.tree .orb.is-known .orb-core { background: #dff3e8; border-color: #2f9e6e; color: #1f7a52; }
-.graph.tree .orb.is-critical .orb-core { border-color: #d19a1c; }
-.graph.tree .orb-label, .graph.tree .orb-meta { color: #8a5a00; text-shadow: 0 0 3px #f6eefb, 0 0 3px #f6eefb, 0 0 8px #f6eefb; }
-.graph.tree .orb-label { font-weight: 800; }
-.graph.tree .orb-meta { color: #9a6a10; }
-.graph.tree .orb-tick { background: #ffffff; border-color: #c99be0; color: #5b3a73; }
-.graph.tree .edge-plain .react-flow__edge-path { stroke: #a98bc0; opacity: 0.9; }
-.graph.tree .edge-done .react-flow__edge-path { stroke: #2f9e6e; }
-.graph.tree .edge-critical .react-flow__edge-path { stroke: #d19a1c; }
-.graph.tree .level-badge { background: #ffffff; border-color: #c99be0; color: #8a5a00; }
-.graph.tree .level-badge .muted { color: #9a6a10; }
-.graph.tree .react-flow__controls button { background: #ffffff; color: #5b3a73; border-color: #dcc6ea; }
-.graph.tree .react-flow__controls button svg { fill: #5b3a73; }
 
 /* compare: pick the second role one way or the other */
 .cmp-step-label { margin: 4px 0 -4px; color: var(--muted); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
@@ -719,46 +644,45 @@ label { color: #f4eff7; }
 .toast.is-success .icon-button { background: rgba(255, 255, 255, 0.18); color: #ffffff; }
 .toast { bottom: 84px; }
 
-/* skill tree: everything white (tier panels and the legend under it too) */
-.graph.tree .tier { background: #ffffff; border: 1.5px solid #dcc6ea; }
-.graph.tree .tier.is-complete { background: #ffffff; border-color: #7cc9a3; }
-.graph.tree .orb-label, .graph.tree .orb-meta { text-shadow: 0 0 3px #ffffff, 0 0 3px #ffffff, 0 0 8px #ffffff; }
-.graph-wrap .legend { background: #ffffff; border: 1.5px solid #dcc6ea; color: #8a5a00; }
-.graph-wrap .legend summary, .graph-wrap .legend strong, .graph-wrap .legend-note { color: #8a5a00; }
-.graph-wrap .legend h4 { color: #9a6a10; }
-.graph-wrap .legend .orb-swatch { background: #efe2f7; border-color: #b58fcf; }
-.graph-wrap .legend .orb-swatch.is-known { background: #dff3e8; border-color: #2f9e6e; }
-.graph-wrap .legend .orb-swatch.is-available { background: #d9b3ec; border-color: #7a4b9a; }
-.graph-wrap .legend .orb-swatch.is-critical { border-color: #d19a1c; }
-.graph-wrap .legend .orb-swatch.is-stretch { background: transparent; border-color: #8d7a9c; }
 
-/* ---------- skill tree as a fan: numbered, colour-coded steps on arcs ---------- */
-.graph.tree .orb.kind-skill, .legend .kind-skill { --branch: #8a4fb5; }
-.graph.tree .orb.kind-project, .legend .kind-project { --branch: #e07a1f; }
-.graph.tree .orb.kind-cert, .legend .kind-cert { --branch: #2f7fd1; }
-.graph.tree .orb.kind-role, .legend .kind-role { --branch: #c9961a; }
-.orb-num { position: absolute; top: 62px; left: calc(50% + 26px); min-width: 28px; height: 28px; padding: 0 6px; border-radius: 14px; display: grid; place-items: center;
-  background: var(--branch, #8a4fb5); color: #ffffff; font-weight: 800; font-size: 0.9rem; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(58, 35, 73, 0.35); pointer-events: none; }
-.graph.tree .orb-tick { top: -4px; left: calc(50% + 32px); }
-.graph.tree .orb.is-selected .orb-core { outline: 3px solid #3a2349; outline-offset: 3px; }
-.graph.tree .orb-core { border-color: var(--branch, #b58fcf); }
-.graph.tree .orb.is-locked .orb-core { border-color: #cbb7d9; }
-.graph.tree .orb.is-known .orb-core { border-color: #2f9e6e; }
-.graph.tree .orb.is-available .orb-core { border-color: var(--branch, #7a4b9a); }
-.graph.tree .orb.is-critical .orb-core { border-color: #d19a1c; }
-.fan-rings { pointer-events: none; overflow: visible; }
-.fan-arc { fill: none; stroke: #d9c3e8; stroke-width: 2.5; }
-.fan-base { stroke: #d9c3e8; stroke-width: 2.5; stroke-linecap: round; }
-.fan-ring-name { fill: #8a5a00; font-size: 15px; font-weight: 800; }
-.fan-root { width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; background: #3a2349; color: #f0d6fb; border: 4px solid #c99be0;
-  box-shadow: 0 0 0 8px rgba(201, 155, 224, 0.25); position: relative; }
-.fan-root-dot { font-size: 2.2rem; line-height: 1; }
-.fan-root-label { position: absolute; top: 104px; left: 50%; transform: translateX(-50%); white-space: nowrap; color: #8a5a00; font-weight: 800; font-size: 1rem; }
-.legend-kinds { grid-column: 1 / -1; display: flex !important; flex-wrap: wrap; gap: 6px 22px !important; }
-.legend-kinds li { grid-template-columns: 22px auto !important; }
-.kind-dot { display: block; width: 18px; height: 18px; border-radius: 50%; background: var(--branch, #8a4fb5); border: 2px solid #ffffff; box-shadow: 0 0 0 1px #dcc6ea; }
-.graph.tree .edge-root .react-flow__edge-path { stroke: #c99be0; stroke-dasharray: 3 7; }
+/* ---------- skill tree (game style) ---------- */
+.viewbar { flex-wrap: wrap; }
+.tier { border-radius: 14px; background: var(--card); pointer-events: none; }
+.tier.is-complete { background: #17241f; }
+.tier-label { display: block; padding: 10px 16px; font-weight: 800; color: var(--muted); font-size: 0.9rem; }
+.tier.is-complete .tier-label { color: var(--ok); }
+.orb { position: relative; width: 150px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; animation: pop 0.45s backwards; }
+.orb-core { width: 78px; height: 78px; border-radius: 50%; display: grid; place-items: center; font-size: 1.9rem; color: var(--text); background: #26202b; border: 3px solid #4a4152; padding: 0; transition: transform 0.15s, border-color 0.2s, background 0.2s, box-shadow 0.2s; }
+.orb-core:hover { transform: scale(1.1); background: #342c3a; }
+.orb-label { font-weight: 700; font-size: 0.9rem; line-height: 1.25; max-width: 150px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.orb-meta { color: var(--muted); font-size: 0.78rem; }
+.orb.is-known .orb-core { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); font-weight: 800; box-shadow: 0 0 0 5px rgba(127, 209, 174, 0.14); }
+.orb.is-available .orb-core { border-color: var(--accent); background: #2a2030; animation: ring 2.2s ease-in-out infinite; }
+.orb.is-locked .orb-core { border-color: #3a3140; background: #1c1720; font-size: 1.5rem; }
+.orb.is-locked .orb-label, .orb.is-locked .orb-meta { opacity: 0.6; }
+.orb.is-stretch .orb-core { border-style: dashed; border-color: #6b6073; background: transparent; }
+.orb.is-critical .orb-core { border-color: var(--amber); }
+.orb.is-critical.is-known .orb-core { box-shadow: 0 0 0 5px rgba(230, 180, 80, 0.16); }
+.orb.is-selected .orb-core { outline: 3px solid #fff; outline-offset: 3px; }
+.orb.is-dim { opacity: 0.25; }
+.orb-start { top: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+.orb-tick { position: absolute; top: 52px; left: calc(50% + 24px); width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--bg); background: #3a3140; color: var(--text); font-size: 0.8rem; font-weight: 800; display: grid; place-items: center; padding: 0; transition: transform 0.12s, background 0.15s; }
+.orb-tick:hover { background: var(--accent); color: var(--on-accent); transform: scale(1.18); }
+.orb.is-known .orb-tick { background: #2b2531; font-size: 0.9rem; }
+.orb.just-unlocked .orb-core { animation: burst 1.3s ease-out; }
+.react-flow__edge.edge-lit .react-flow__edge-path { stroke-width: 3; }
+.tree .edge-plain .react-flow__edge-path { stroke: #4a4152; stroke-dasharray: 2 7; stroke-linecap: round; stroke-width: 2.4; }
+.level-badge { display: grid; gap: 4px; background: #2b2531; border-radius: 12px; padding: 10px 14px; min-width: 190px; max-width: 260px; font-size: 0.82rem; }
+.level-badge strong { font-size: 1rem; }
+.xp { display: block; height: 7px; border-radius: 4px; background: #4a4152; overflow: hidden; }
+.xp > span { display: block; height: 100%; background: var(--accent); transition: width 0.6s ease; }
+.orb-swatch { width: 22px; height: 22px; border-radius: 50%; border: 3px solid #4a4152; background: #26202b; justify-self: center; }
+.orb-swatch.is-known { border-color: var(--ok); background: var(--ok-soft); }
+.orb-swatch.is-available { border-color: var(--accent); background: #2a2030; }
+.orb-swatch.is-critical { border-color: var(--amber); }
+.orb-swatch.is-stretch { border-style: dashed; border-color: #6b6073; background: transparent; }
 
-.graph.tree .orb-label { max-width: 128px; font-size: 1rem; line-height: 1.2; }
-.graph.tree .orb-meta { font-size: 0.85rem; }
-.fan-ring-name { font-size: 15px; }
+/* map: phase panels stand out from the page */
+.zone { background: #2a2231; border: 1px solid #473c52; }
+.zone.is-complete { background: #1f3429; border-color: #347255; }
+.zone.is-complete .zone-label { color: #8fe0bd; }
