@@ -10,9 +10,9 @@ CareerMap turns a specific dream job (for example "UI/UX Designer for fintech ap
 
 Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 
-| The skill tree | The dashboard | On a phone |
-|---|---|---|
-| ![The skill tree with the player bar for time travel](docs/screenshot-map.jpg) | ![Progress, pace, this week, hours by phase and certificates](docs/screenshot-dashboard.jpg) | ![The phone layout](docs/screenshot-phone.jpg) |
+| The skill tree | The timeline | The dashboard | On a phone |
+|---|---|---|---|
+| ![The game-style skill tree: climb from the bottom tier](docs/screenshot-tree.jpg) | ![The timeline, with bars filling as the marker moves](docs/screenshot-timeline.jpg) | ![Progress, pace, this week, hours by phase and certificates](docs/screenshot-dashboard.jpg) | ![The phone layout](docs/screenshot-phone.jpg) |
 
 ## Done / Left / Plan
 

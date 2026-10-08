@@ -16,6 +16,18 @@ function loadVoices() {
   })
 }
 
+// The speech engine pauses between every queued item, so many short sentences sound choppy.
+// Join sentences into a few longer chunks (kept short enough that Chrome does not cut a long utterance off).
+function joinLines(lines, limit = 200) {
+  const chunks = []
+  for (const line of lines) {
+    const last = chunks.length - 1
+    if (last >= 0 && chunks[last].length + line.length < limit) chunks[last] += ' ' + line
+    else chunks.push(line)
+  }
+  return chunks
+}
+
 // Prefer an Indian or British English voice, then any English voice, then the device's first voice.
 const pickVoice = (voices) =>
   voices.find((v) => v.lang === 'en-IN') ?? voices.find((v) => v.lang === 'en-GB') ?? voices.find((v) => v.lang.startsWith('en')) ?? voices[0] ?? null
@@ -53,7 +65,7 @@ export default function Listen({ getLines, disabled }) {
       return
     }
     const voice = pickVoice(voices)
-    const lines = getLines()
+    const lines = joinLines(getLines())
     await new Promise((resolve) => setTimeout(resolve, 80))   // Chrome can drop a speak() that comes straight after cancel()
     let started = false
     lines.forEach((text, i) => {
