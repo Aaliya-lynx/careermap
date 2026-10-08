@@ -12,16 +12,18 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 
 | The skill tree | The timeline | The dashboard | On a phone |
 |---|---|---|---|
-| ![The game-style skill tree: climb from the bottom tier](docs/screenshot-tree.jpg) | ![The timeline, with bars filling as the marker moves](docs/screenshot-timeline.jpg) | ![Progress, pace, this week, hours by phase and certificates](docs/screenshot-dashboard.jpg) | ![The phone layout](docs/screenshot-phone.jpg) |
+| ![The skill tree: climb from the bottom tier, with glowing circles](docs/screenshot-tree.jpg) | ![The timeline, with bars filling as the marker moves](docs/screenshot-timeline.jpg) | ![Progress, pace, this week and hours by phase](docs/screenshot-dashboard.jpg) | ![The phone layout](docs/screenshot-phone.jpg) |
 
 ## Done / Left / Plan
 
 **Done and working**
 - AI-generated roadmap for any typed target job, with real tools, certifications, roles and projects. The model's answer is validated in code before it is used (no cycles, no broken links, size limits).
 - The roadmap page is split into five parts so nothing is repeated or crowded: **Roadmap** (the views below), **Certificates**, **Progress**, **About you** and **Explore** (typical paths and comparing two roles). Each part shows only its own content.
-- Six ways to see the plan. **Skill tree**: a game-style tree of round medallions in tiers that you climb from the bottom, with locked, ready and unlocked states, power lines that light up, an unlock animation when you tick a step, and a level and XP badge. **Map**: left-to-right columns by phase. **Timeline**: weeks across the page with a bar per step, a moving "now" marker and bars that fill as you play your plan forward. **Outline**: a plain list. **Paths**: typical routes into the job. **Compare**: put two dream roles side by side (a saved roadmap or a new job) and see which steps are really the same skill, with the shared hours counted, so you can do the overlap first.
+- Six ways to see the plan. **Skill tree**: round medallions in tiers that you climb from the bottom. Each circle glows in the colour of its state (unlocked, ready, locked, on the longest chain), simple straight lines join the steps and turn green once the step they come from is unlocked, an unlock animation plays when you tick a step, and a level and XP badge shows your progress. It opens at the bottom tier, and "Full screen" makes it big. **Map**: left-to-right columns by phase. **Timeline**: weeks across the page with a bar per step, a moving "now" marker and bars that fill as you play your plan forward. **Outline**: a plain list. **Paths**: typical routes into the job. **Compare**: put two dream roles side by side (one of your saved roadmaps, or a new job you type) and see which steps are really the same skill, with the shared hours counted, so you can do the overlap first.
 - All visual views: zoom, pan, click, keyboard focus, full screen, a "Start here" tag, and highlighting of what a step needs and unlocks. The map also has filters by type.
-- "Tell us about yourself": optional dropdowns for education, year, field, projects and hackathons, plus a GitHub profile link. The AI uses the choices to skip what you already have and writes a "Where you are now" card (already have, strengthen, recommended next). The GitHub link is only kept in your browser: the app does not open it, and nothing the AI says claims to have read it. A roadmap that already exists can be rebuilt with these details from its "Add details about me" button. The details are remembered in your browser so you only fill them in once, with a "Forget my details" link for shared computers. The start page opens with a banner (the CareerMap title, the headline, a "Get started" button and a small tiled picture drawn in the app) above the form. The app opens on it and the plan sits on a second page next to it: swipe sideways on a phone, use the arrow buttons or a sideways trackpad swipe on a laptop, or tap "Start" and "My roadmap" at the bottom. Swipes that begin on the map, the timeline or a slider are left to those controls. Nothing is lost when you switch.
+- "Tell us about yourself": optional dropdowns for education, year, field, projects and hackathons, plus a GitHub profile link. The AI uses the choices to skip what you already have and writes a "Where you are now" card (already have, strengthen, recommended next). The GitHub link is only kept in your browser: the app does not open it, and nothing the AI says claims to have read it. A roadmap that already exists can be rebuilt with these details from its "Add details about me" button. The details are remembered in your browser so you only fill them in once, with a "Forget my details" link for shared computers.
+- A start page with the CareerMap title, the headline and a "Get started" button above the form. Enter moves to the next field and only builds the roadmap from the last field or the button (the phone keyboard's Go key is handled the same way, but has not been tried on a real phone yet).
+- The plan sits on a second page next to the start page: swipe sideways on a phone, use the arrow buttons or a sideways trackpad swipe on a laptop, or tap "Start" and "My roadmap" at the bottom. Swipes that begin on the map, the timeline or a slider are left to those controls. Nothing is lost when you switch.
 - Live re-planning: hours per week, a weeks deadline and "I already know this" re-route the map and the ready-by date instantly, with no AI call. The summary at the top of the roadmap shows the ready-by date, a progress bar and a "Plan settings" card (hours with quick choices, an optional deadline). If a deadline is too short, a small note in the settings card offers one tap to set it to the weeks the plan really needs or to remove it.
 - Per-step advice from the AI (a weekend project, interview questions, search phrases).
 - Progress: percentage ready, a phase-complete celebration, this week's focus, a 4-week timeline, charts, and a pace card that compares the hours you finished with the hours you planned.
@@ -29,16 +31,16 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 - Certificates: upload a photo or screenshot (or type a name). The AI reads it, counts matching steps as known (self-reported, not verified) and suggests careers that fit.
 - "Listen to my plan": the plan read aloud with the browser's voice. If the device has no voice or the tab is muted, the app says so instead of staying silent.
 - "People who took this path": three typical routes into the job, each a short timeline of roles, rough timing and side projects. They are AI-written patterns, clearly labelled as not real people, and each has a button that highlights its steps on your map.
-- "My roadmaps": every roadmap is saved in the browser, with download as a picture or a PDF (or plain text) checklist, and a short share link (about 45 characters) that opens the roadmap for anyone, with no account. If short links are unavailable, it copies a longer link that carries the whole roadmap in the address instead.
+- "My roadmaps": every roadmap is saved in the browser, with download as a picture or a PDF (or plain text) checklist, and a short share link (about 45 characters) that opens the roadmap for anyone, with no account. If short links are unavailable, it copies a longer link that carries the whole roadmap in the address instead. A green "Link copied" message confirms the copy.
 - 147 automated backend tests, all passing, using a fake AI so they cost nothing.
 
 **Left for the next 16 hours, honestly**
-- Checked in desktop Chrome and in a phone-sized window. A pass on a real Android phone (touch gestures, the camera, the voice) is still to do.
+- Checked in desktop Chrome-family browsers (the Chrome and Edge engine) and in phone-sized windows. A pass on a real Android phone (touch gestures, the camera, the voice) is still to do.
 - The three providers have each answered a real roadmap (Azure, Gemini and Groq); the automatic switch between them under real load has not been stress-tested.
 - Certificates cannot be verified, and PDFs are not read (a screenshot works).
 - The voice depends on the voices installed on the device.
 - On the free host the first request after a quiet spell can take up to a minute. If the connection fails, the app waits 5 seconds and tries once more before showing a message.
-- Short links need the Cloudflare KV settings (`CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID`, `CF_API_TOKEN`) on the host; without them the app copies the long link.
+- Short links are built and tested with a fake store. They need the Cloudflare KV settings (`CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID`, `CF_API_TOKEN`) on the host, and a check on the live site is still to do. Until the storage answers, the app copies the long link.
 - The comparison pairs steps with one AI call, so two roles with very different wording may be paired slightly differently on each try.
 
 **Plan to finish**
@@ -65,7 +67,7 @@ flowchart LR
         C --> L
         T --> L
         K --> L
-        H --> S[(Cloudflare KV: shared roadmaps only, 90 days)]
+        H --> KV[(Cloudflare KV: shared roadmaps only, 90 days)]
         L --> M[llm.py: model chain]
         M --> V[roadmap.py: validate the AI JSON]
         P --> V
@@ -84,6 +86,7 @@ How it works:
 4. `planner.py` (plain Python, no AI) schedules the remaining steps in prerequisite order at your weekly hours and works out the ready-by date, the percentage ready, the longest chain, and which optional steps no longer fit your deadline.
 5. Changing hours, the deadline or a known step calls `/api/plan`, which runs only steps 3 and 4. It is instant and costs no AI call.
 6. Certificates go to `/api/certificates`: the browser first shrinks the image (which also strips hidden metadata), the AI reads it once, and nothing is stored.
+7. "Copy share link" sends the roadmap to `/api/share`, which checks it again, stores it under a random id for 90 days and returns the id. Opening `#s=<id>` fetches it back. If the storage is not available, the app copies a long link that holds the whole roadmap instead.
 
 Why these choices:
 - **The AI proposes, code decides.** The AI knows what a role needs. Dates, ordering and re-routing are arithmetic, so they are done in tested code. Results are explainable, instant and cheap, and a confused AI answer cannot crash the planner.
@@ -95,7 +98,7 @@ Why these choices:
 
 ## What we added
 
-Beyond the brief: a game-style skill tree with unlock animations and a level badge, a timeline view; the ready-by planner with a weekly-hours slider and deadline (optional steps become dashed "stretch" steps); live pace tracking against what you actually finished; time travel with Play; certificate reading with career suggestions; voice narration; typical routes into the job (illustrative, AI-written); saved roadmaps; downloads as a picture, a PDF and a text file; a share link; an Outline view as a plain-list alternative to the map; a legend that explains every line and colour; filters; and a phase-complete celebration. Each makes the roadmap something a student can come back to, not a one-time answer.
+Beyond the brief: a game-style skill tree with glowing circles, unlock animations and a level badge; a timeline view; the ready-by planner with a weekly-hours slider, quick hour choices and a deadline (optional steps become dashed "stretch" steps, and a too-short deadline offers a one-tap fix); live pace tracking against what you actually finished; time travel with Play; a "Tell us about yourself" step that personalises the roadmap and a "Where you are now" card; comparing two dream roles side by side; certificate reading with career suggestions; voice narration; typical routes into the job (illustrative, AI-written); saved roadmaps; downloads as a picture, a PDF and a text file; short share links; swiping between the start page and the plan; an Outline view as a plain-list alternative to the map; a legend that explains every line and colour; filters; and a phase-complete celebration. Each makes the roadmap something a student can come back to, not a one-time answer.
 
 ## How to run it
 
@@ -118,6 +121,8 @@ npm run dev                         # http://localhost:5173
 ```
 
 - `.env.example` lists every setting. At least one provider (`AZURE_*`, `GEMINI_*` or `GROQ_*`) needs a key, and `LLM_CHAIN` names the models in the order they are tried.
+- No AI key yet? Set `DEMO_MODE=true` in `backend/.env`: the three example jobs (Full Stack Developer, UI/UX Designer, Data Analyst in healthcare) then answer from saved real roadmaps, with no AI call. Type the job exactly as on the example chips and leave skills and "about you" empty, because a saved roadmap knows nothing about your own details.
+- Optional: `CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID` and `CF_API_TOKEN` turn on short share links (Cloudflare Workers KV). Without them sharing uses the long link.
 - `frontend/.env.example`: `VITE_API_URL` is the backend address (the default is `http://localhost:8000`).
 - No login is needed. **Live URL:** https://careermap-neon.vercel.app. The free backend sleeps when idle, so the very first request after a quiet period can take up to a minute.
 - Deploy: `render.yaml` describes the backend (Render). The frontend is a Vite app (Vercel, root directory `frontend`).
@@ -125,8 +130,9 @@ npm run dev                         # http://localhost:5173
 ## Tools and AI used
 
 - **Backend:** Python, FastAPI, Uvicorn, Pydantic, the OpenAI Python SDK (used as a generic client for OpenAI-compatible providers), python-dotenv, pytest, httpx.
-- **Frontend:** React 19, Vite, `@xyflow/react` (React Flow), `html-to-image`, and the browser's Web Speech API for the voice.
-- **Models:** Azure OpenAI `gpt-5-mini` first, then Google Gemini (`gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`), then Groq (`openai/gpt-oss-20b`, `openai/gpt-oss-120b`). The same models write the roadmap, the step advice and the certificate reading.
+- **Frontend:** React 19, Vite, `@xyflow/react` (React Flow), `html-to-image` for the picture download, `jspdf` for the PDF, and the browser's Web Speech API for the voice.
+- **Models:** Azure OpenAI `gpt-5-mini` first, then Google Gemini (`gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`), then Groq (`openai/gpt-oss-20b`, `openai/gpt-oss-120b`). The same models write the roadmap, the step advice, the typical routes, the comparison and the certificate reading.
+- **Hosting and storage:** Vercel (website), Render (backend) and Cloudflare Workers KV (shared roadmaps only).
 - **AI coding assistance** was used to help write the code.
 - **What users are told:** the start form says answers are sent to an AI service, so private details should be left out. Results carry plain cautions: confirm costs and requirements with official sources, routes are illustrative and not real people, and certificates are self-reported and not verified.
 - **Privacy:** the server stores nothing about users. The only exception is a roadmap you choose to share, kept for 90 days under a random id (anyone with the link can open it). Typed goals and skills, and certificate images, are sent to an AI provider to produce the answer, and the app tells users to leave out private details and to cover their name and ID numbers on certificates. Provider terms differ: do not enter private data.
