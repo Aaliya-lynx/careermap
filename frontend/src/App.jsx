@@ -12,6 +12,8 @@ import Library from './components/Library.jsx'
 import Listen from './components/Listen.jsx'
 import Outline from './components/Outline.jsx'
 import Paths from './components/Paths.jsx'
+import SkillTree from './components/SkillTree.jsx'
+import Timeline from './components/Timeline.jsx'
 import SetupForm from './components/SetupForm.jsx'
 import SidePanel from './components/SidePanel.jsx'
 import Toast from './components/Toast.jsx'
@@ -57,7 +59,7 @@ export default function App() {
   const [selectedId, setSelectedId] = useState(null)
   const [advice, setAdvice] = useState({})
   const [toast, setToast] = useState(null)
-  const [view, setView] = useState('map')
+  const [view, setView] = useState('tree')
   const [expanded, setExpanded] = useState(false)
   const [showLibrary, setShowLibrary] = useState(false)
   const [controlsOpen, setControlsOpen] = useState(() => !narrowScreen())
@@ -406,11 +408,13 @@ export default function App() {
           {plan && (
             <div className="viewrow">
             <div className="viewbar" role="tablist" aria-label="How to see the roadmap">
+              <button type="button" role="tab" aria-selected={view === 'tree'} className={view === 'tree' ? 'is-on' : ''} onClick={() => setView('tree')}>Skill tree</button>
               <button type="button" role="tab" aria-selected={view === 'map'} className={view === 'map' ? 'is-on' : ''} onClick={() => setView('map')}>Map</button>
+              <button type="button" role="tab" aria-selected={view === 'timeline'} className={view === 'timeline' ? 'is-on' : ''} onClick={() => { setView('timeline'); setExpanded(false) }}>Timeline</button>
               <button type="button" role="tab" aria-selected={view === 'outline'} className={view === 'outline' ? 'is-on' : ''} onClick={() => { setView('outline'); setExpanded(false) }}>Outline</button>
               <button type="button" role="tab" aria-selected={view === 'paths'} className={view === 'paths' ? 'is-on' : ''} onClick={() => { setView('paths'); setExpanded(false) }}>Paths</button>
             </div>
-            {view === 'map' && <p className="map-tip">
+            {(view === 'map' || view === 'tree') && <p className="map-tip">
               <span className="tip-desktop">Drag the map to move it. Scroll the page as usual; hold Ctrl and scroll (or pinch) to zoom, and use “Fit all” to see everything.</span>
               <span className="tip-phone">One finger scrolls the page. Use two fingers to move or zoom the map, or tap Full screen.</span>
             </p>}
@@ -423,7 +427,12 @@ export default function App() {
 
           {plan ? (
             <div className="stage">
-              {view === 'map'
+              {view === 'tree'
+                ? <SkillTree roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown}
+                    highlight={highlight} onClearHighlight={() => setHighlight(null)} expanded={expanded} onToggleExpand={() => setExpanded((v) => !v)} />
+                : view === 'timeline'
+                  ? <Timeline roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} />
+                  : view === 'map'
                 ? <Graph roadmap={roadmap} plan={plan} selectedId={selectedId} onSelect={setSelectedId} onToggleKnown={toggleKnown}
                     highlight={highlight} onClearHighlight={() => setHighlight(null)} expanded={expanded} onToggleExpand={() => setExpanded((v) => !v)} />
                 : view === 'paths'

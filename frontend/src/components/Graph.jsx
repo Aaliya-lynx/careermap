@@ -3,6 +3,7 @@ import { Background, Controls, Handle, Panel, Position, ReactFlow, getViewportFo
 import { toPng } from 'html-to-image'
 import { KINDS, STATUS_LABEL, readyByDate } from '../format.js'
 import { download, fileName } from '../exports.js'
+import { futureSummary, relatedTo } from '../graphUtils.js'
 
 const COLUMN = 340
 const ROW = 120
@@ -112,20 +113,6 @@ function startView(columns, rows, expanded) {
   return { defaultViewport: { x: 16, y: 8, zoom: narrowScreen() ? 0.8 : 0.95 } }
 }
 
-// Everything a step needs (before it) and everything it unlocks (after it).
-function relatedTo(id, nodes) {
-  const byId = Object.fromEntries(nodes.map((n) => [n.id, n]))
-  const related = new Set([id])
-  const up = [id]
-  while (up.length) for (const r of byId[up.pop()].requires) if (!related.has(r)) { related.add(r); up.push(r) }
-  const down = [id]
-  while (down.length) {
-    const current = down.pop()
-    for (const n of nodes) if (n.requires.includes(current) && !related.has(n.id)) { related.add(n.id); down.push(n.id) }
-  }
-  return related
-}
-
 // In "future" mode a step you have not done yet is shown as done once its planned finish week has passed.
 function simFor(info, week) {
   if (week <= 0 || info.status === 'known' || info.status === 'implied' || info.status === 'stretch') return null
@@ -164,21 +151,6 @@ function Legend({ overlay }) {
 }
 
 const FILTERS = [['all', 'All'], ['skill', 'Skills'], ['project', 'Projects'], ['cert', 'Certificates'], ['role', 'Roles']]
-
-// What the map would look like in a given week, if you keep to your plan.
-function futureSummary(roadmap, plan, week) {
-  let done = 0
-  let total = 0
-  let finished = 0
-  for (const step of roadmap.nodes) {
-    const info = plan.nodes[step.id]
-    if (info.status === 'stretch') continue
-    total += step.hours
-    if (info.status === 'known' || info.status === 'implied') done += step.hours
-    else if (info.end_week != null && info.end_week <= week) { done += step.hours; finished += 1 }
-  }
-  return { percent: total ? Math.round((100 * done) / total) : 0, finished }
-}
 
 function MapControls({ roadmap, plan, filter, matchCount, onFilter, week, onWeek, playing, onPlaying }) {
   const max = plan.summary.weeks_needed

@@ -18,7 +18,8 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 
 **Done and working**
 - AI-generated roadmap for any typed target job, with real tools, certifications, roles and projects. The model's answer is validated in code before it is used (no cycles, no broken links, size limits).
-- Interactive map: zoom, pan, click, keyboard focus, full screen, filters by type, click a phase title to centre on it, a "Start here" tag, and highlighting of what a step needs and unlocks.
+- Five ways to see the plan. **Skill tree**: a game-style tree of round medallions in tiers that you climb from the bottom, with locked, ready and unlocked states, power lines that light up, an unlock animation when you tick a step, and a level and XP badge. **Map**: left-to-right columns by phase. **Timeline**: weeks across the page with a bar per step, a moving "now" marker and bars that fill as you play your plan forward. **Outline**: a plain list. **Paths**: typical routes into the job.
+- All visual views: zoom, pan, click, keyboard focus, full screen, a "Start here" tag, and highlighting of what a step needs and unlocks. The map also has filters by type.
 - Live re-planning: hours per week, a weeks deadline and "I already know this" re-route the map and the ready-by date instantly, with no AI call.
 - Per-step advice from the AI (a weekend project, interview questions, search phrases).
 - Progress: percentage ready, a phase-complete celebration, this week's focus, a 4-week timeline, charts, and a pace card that compares the hours you finished with the hours you planned.
@@ -87,7 +88,7 @@ Why these choices:
 
 ## What we added
 
-Beyond the brief: the ready-by planner with a weekly-hours slider and deadline (optional steps become dashed "stretch" steps); live pace tracking against what you actually finished; time travel with Play; certificate reading with career suggestions; voice narration; typical routes into the job (illustrative, AI-written); saved roadmaps; downloads as a picture and a checklist; a share link; an Outline view as a plain-list alternative to the map; a legend that explains every line and colour; filters; and a phase-complete celebration. Each makes the roadmap something a student can come back to, not a one-time answer.
+Beyond the brief: a game-style skill tree with unlock animations and a level badge, a timeline view; the ready-by planner with a weekly-hours slider and deadline (optional steps become dashed "stretch" steps); live pace tracking against what you actually finished; time travel with Play; certificate reading with career suggestions; voice narration; typical routes into the job (illustrative, AI-written); saved roadmaps; downloads as a picture and a checklist; a share link; an Outline view as a plain-list alternative to the map; a legend that explains every line and colour; filters; and a phase-complete celebration. Each makes the roadmap something a student can come back to, not a one-time answer.
 
 ## How to run it
 
