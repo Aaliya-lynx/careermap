@@ -60,7 +60,7 @@ function Tools({ expanded, onToggleExpand }) {
 
 function TreeLegend({ overlay }) {
   return (
-    <details className={`legend ${overlay ? 'legend-overlay' : 'legend-below'}`} open={!overlay}>
+    <details className={`legend ${overlay ? 'legend-overlay' : 'legend-below'}`} open={false}>
       <summary>How to read the skill tree</summary>
       <div className="legend-body">
         <p className="legend-note">Start at the bottom and climb. A step unlocks when everything below it that it needs is done.</p>
@@ -140,7 +140,7 @@ export default function SkillTree({ roadmap, plan, selectedId, onSelect, onToggl
       const unlocked = ['known', 'implied'].includes(plan.nodes[r].status)
       const kind = critical ? 'edge-critical' : unlocked ? 'edge-done' : plan.nodes[n.id].status === 'stretch' ? 'edge-stretch' : 'edge-plain'
       const focus = related ? (related.has(r) && related.has(n.id) ? 'edge-focus' : 'edge-dim') : ''
-      flowEdges.push({ id: `${r}->${n.id}`, source: r, target: n.id, type: 'default', animated: critical, className: `${kind} ${focus} ${unlocked ? 'edge-lit' : ''}` })
+      flowEdges.push({ id: `${r}->${n.id}`, source: r, target: n.id, type: 'smoothstep', animated: false, className: `${kind} ${focus} ${unlocked ? 'edge-lit' : ''}` })
     }))
     return { nodes: flowNodes, edges: flowEdges, size: { width: width + 80, height: height + TOP_PAD } }
   }, [roadmap, plan, selectedId, onSelect, onToggleKnown, highlight, fresh])
