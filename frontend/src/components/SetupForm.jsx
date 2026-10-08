@@ -23,8 +23,19 @@ export default function SetupForm({ busy, onSubmit, onForget, initial }) {
     })
   }
 
+  // Enter in a field moves to the next one; Enter in the last field builds the roadmap.
+  function nextOnEnter(event) {
+    if (event.key !== 'Enter' || !['INPUT', 'SELECT'].includes(event.target.tagName) || event.nativeEvent.isComposing) return
+    const fields = [...event.currentTarget.querySelectorAll('input, select')].filter((el) => !el.disabled && el.offsetParent !== null)
+    const next = fields[fields.indexOf(event.target) + 1]
+    if (!next) return                       // last field: let Enter submit the form
+    event.preventDefault()
+    next.focus()
+    if (next.tagName === 'INPUT') next.select?.()
+  }
+
   return (
-    <form className="setup" onSubmit={submit}>
+    <form className="setup" onSubmit={submit} onKeyDown={nextOnEnter}>
       <div className="field">
         <label htmlFor="goal">Your dream job, as specific as you can</label>
         <input id="goal" value={goal} onChange={(e) => setGoal(e.target.value)} minLength={3} maxLength={200} required
