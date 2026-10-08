@@ -88,13 +88,12 @@ export default function Compare({ roadmap, others, hours }) {
               <option value="">Choose a roadmap…</option>
               {others.map((e) => <option key={e.id} value={e.id}>{e.title || e.goal}</option>)}
             </select>
-            <p className="notice">Uses a roadmap you already made, so there is nothing new to build.</p>
           </div>
         ) : (
           <div className="cmp-pick">
             <label htmlFor="cmp-typed">Type the other job</label>
             <input id="cmp-typed" value={typed} onChange={(e) => setTyped(e.target.value)} maxLength={200} placeholder="e.g. Data Scientist" autoComplete="off" />
-            <p className="notice">We build a second roadmap for it first, which takes about 20 seconds.</p>
+            <p className="notice">Building the second roadmap takes about 20 seconds.</p>
           </div>
         )}
         <button type="submit" className="primary" disabled={!ready}>{busy || 'Compare the two paths'}</button>

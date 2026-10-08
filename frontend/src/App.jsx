@@ -576,7 +576,6 @@ export default function App() {
                 </div>
               )}
               {summary && summary.stretch_ids.length > 0 && <p className="stretch-note">{summary.stretch_ids.length} optional step{summary.stretch_ids.length > 1 ? 's' : ''} moved to “stretch” to fit.</p>}
-              <p className="notice">The date updates as you change these. No waiting.</p>
             </div>
           </section>
 
@@ -599,7 +598,7 @@ export default function App() {
                       ))}
                     </div>
                     {(view === 'map' || view === 'tree') && <p className="map-tip">
-                      <span className="tip-desktop">Drag the map to move it. Scroll the page as usual; hold Ctrl and scroll (or pinch) to zoom, and use “Fit all” to see everything.</span>
+                      <span className="tip-desktop">Drag to move the map. Hold Ctrl and scroll (or pinch) to zoom. “Fit all” shows everything.</span>
                       <span className="tip-phone">One finger scrolls the page. Use two fingers to move or zoom the map, or tap Full screen.</span>
                     </p>}
                   </div>

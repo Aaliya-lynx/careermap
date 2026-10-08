@@ -86,7 +86,7 @@ export default function SetupForm({ busy, onSubmit, onForget, initial }) {
             {githubBad && <small className="field-error" role="alert">Use a link like https://github.com/your-name</small>}
           </div>
         </div>
-        <p className="notice">Your choices help the AI skip what you already have. We do not open your GitHub: the link is only kept in this browser so you can find it again. We remember these details on this device so you only fill them in once.</p>
+        <p className="notice">Your choices help tailor the roadmap, and are remembered on this device so you only fill them in once. Your GitHub link stays in this browser: it is not opened or sent to the AI.</p>
         {(Object.values(profile).some(Boolean) || skills) && <button type="button" className="linklike" onClick={onForget}>Forget my details on this device</button>}
       </details>
 

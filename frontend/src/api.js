@@ -26,7 +26,7 @@ async function post(path, body, signal) {
     })
   } catch (error) {
     if (error.name === 'AbortError') throw error
-    throw new ApiError('Could not reach the server. Check your connection and try again. The server may be waking up, which can take a minute.')
+    throw new ApiError('Could not connect. Check your connection and try again. If the app has been idle, it can take up to a minute to wake up.')
   }
   const data = await response.json().catch(() => ({}))
   if (!response.ok) {
@@ -41,7 +41,7 @@ async function get(path) {
   try {
     response = await send(`${BASE}${path}`, {})
   } catch {
-    throw new ApiError('Could not reach the server. Check your connection and try again. The server may be waking up, which can take a minute.')
+    throw new ApiError('Could not connect. Check your connection and try again. If the app has been idle, it can take up to a minute to wake up.')
   }
   const data = await response.json().catch(() => ({}))
   if (!response.ok) throw new ApiError(typeof data.detail === 'string' ? data.detail : 'Something went wrong. Please try again.')
