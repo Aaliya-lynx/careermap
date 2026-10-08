@@ -3,6 +3,7 @@ import { Background, Controls, Handle, Panel, Position, ReactFlow, useReactFlow 
 import { KINDS, STATUS_LABEL } from '../format.js'
 import { relatedTo } from '../graphUtils.js'
 
+const CENTRE = { left: '50%', top: 39, opacity: 0, pointerEvents: 'none' }   // lines join at the middle of the circle (the circle is 78px high)
 const SLOT = 176     // horizontal room for one medallion
 const TIER = 210     // vertical room for one tier
 const ORB_W = 150
@@ -18,8 +19,8 @@ function Orb({ data }) {
   const stateText = done ? 'unlocked' : state === 'available' ? 'ready to unlock' : state === 'stretch' ? 'stretch step' : 'locked until its prerequisites are done'
   return (
     <div className={classes}>
-      <Handle type="target" position={Position.Bottom} isConnectable={false} />
-      <Handle type="source" position={Position.Top} isConnectable={false} />
+      <Handle type="target" position={Position.Top} isConnectable={false} style={CENTRE} />
+      <Handle type="source" position={Position.Top} isConnectable={false} style={CENTRE} />
       <button type="button" className="orb-core" onClick={() => onSelect(step.id)} title={`${step.why || step.title} (${step.hours} hours)`}
         aria-label={`${step.title}. ${kind.label}, ${step.hours} hours, ${stateText}${info.critical ? ', on the longest chain' : ''}. Open details.`}>
         <span aria-hidden="true">{done ? '✓' : state === 'locked' ? '🔒' : kind.icon}</span>
@@ -71,7 +72,7 @@ function TreeLegend({ overlay }) {
         </ul>
         <ul>
           <li><i className="swatch orb-swatch is-critical" /> <span><strong>Gold ring and ★:</strong> on the longest chain, which sets your date.</span></li>
-          <li><i className="swatch line-green" /> <span><strong>Lit green line:</strong> the step it comes from is unlocked.</span></li>
+          <li><i className="swatch line-green" /> <span><strong>Green line:</strong> the step it comes from is unlocked.</span></li>
           <li><i className="swatch orb-swatch is-stretch" /> <span><strong>Dashed ring:</strong> optional stretch step, left out of your plan.</span></li>
         </ul>
       </div>
@@ -132,15 +133,11 @@ export default function SkillTree({ roadmap, plan, selectedId, onSelect, onToggl
       })
     })
 
-    const path = plan.summary.critical_path
-    const onPath = new Set(path.slice(1).map((id, i) => `${path[i]}->${id}`))
     const flowEdges = []
     roadmap.nodes.forEach((n) => n.requires.forEach((r) => {
-      const critical = onPath.has(`${r}->${n.id}`)
       const unlocked = ['known', 'implied'].includes(plan.nodes[r].status)
-      const kind = critical ? 'edge-critical' : unlocked ? 'edge-done' : plan.nodes[n.id].status === 'stretch' ? 'edge-stretch' : 'edge-plain'
       const focus = related ? (related.has(r) && related.has(n.id) ? 'edge-focus' : 'edge-dim') : ''
-      flowEdges.push({ id: `${r}->${n.id}`, source: r, target: n.id, type: 'default', animated: critical, className: `${kind} ${focus} ${unlocked ? 'edge-lit' : ''}` })
+      flowEdges.push({ id: `${r}->${n.id}`, source: r, target: n.id, type: 'straight', className: `tree-edge ${unlocked ? 'is-lit' : ''} ${focus}` })
     }))
     return { nodes: flowNodes, edges: flowEdges, size: { width: width + 80, height: height + TOP_PAD } }
   }, [roadmap, plan, selectedId, onSelect, onToggleKnown, highlight, fresh])
