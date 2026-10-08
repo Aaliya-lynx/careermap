@@ -158,7 +158,7 @@ export default function SkillTree({ roadmap, plan, selectedId, onSelect, onToggl
     <div className="graph-wrap">
       <div className={`graph tree ${expanded ? 'is-full' : ''}`} role="region"
         aria-label="Skill tree. Start at the bottom and climb. Drag to pan, hold Control and scroll or pinch to zoom, and press Tab to move between steps.">
-        <ReactFlow key={expanded ? 'full' : 'normal'} nodes={nodes} edges={edges} nodeTypes={nodeTypes} defaultViewport={start}
+        <ReactFlow key={expanded ? 'full' : 'normal'} nodes={nodes} edges={edges} nodeTypes={nodeTypes} {...(expanded ? { defaultViewport: start } : { fitView: true, fitViewOptions: { padding: 0.06, minZoom: window.innerWidth < 700 ? 0.45 : 0.3, maxZoom: 0.9 } })}
           minZoom={0.15} maxZoom={1.6} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false}
           zoomOnScroll={expanded} preventScrolling={expanded} zoomActivationKeyCode={['Control', 'Meta']} panOnDrag={expanded || !touchScreen()}
           onPaneClick={() => selectedId && onSelect(null)} proOptions={{ hideAttribution: true }}>

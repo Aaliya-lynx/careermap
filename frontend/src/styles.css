@@ -597,3 +597,6 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .plan-settings .fix-actions { gap: 6px; }
 .plan-settings .fix-actions .ghost { padding: 5px 12px; font-size: 0.8rem; }
 .stretch-note { margin: 0; color: var(--muted); font-size: 0.82rem; }
+
+/* the skill tree starts compact with the whole tree in view; Full screen makes it big */
+.graph.tree:not(.is-full) { height: clamp(400px, 58vh, 560px); }
