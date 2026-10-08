@@ -28,6 +28,20 @@ const LOADING_STEPS = [
   'Almost there…',
 ]
 
+// Old-style copy for browsers that refuse the modern clipboard: returns true if the text was copied.
+function copyWithTextarea(text) {
+  const box = document.createElement('textarea')
+  box.value = text
+  box.setAttribute('readonly', '')
+  box.style.cssText = 'position:fixed;top:0;left:0;opacity:0'
+  document.body.appendChild(box)
+  box.select()
+  let ok = false
+  try { ok = document.execCommand('copy') } catch { ok = false }
+  box.remove()
+  return ok
+}
+
 const SECTIONS = [['roadmap', 'Roadmap'], ['certs', 'Certificates'], ['progress', 'Progress'], ['you', 'About you'], ['explore', 'Explore']]
 const VIEWS = [['tree', 'Skill tree'], ['map', 'Map'], ['timeline', 'Timeline'], ['outline', 'Outline']]
 
@@ -370,22 +384,30 @@ export default function App() {
     setTimeout(() => document.querySelector('.graph')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60)
   }
 
+  // The link is made while the copy is already under way, so the browser still counts it as the result of the click.
   async function copyShareLink() {
     const data = { roadmap, known, hours, budget }
-    let url
-    let short = false
-    try {
-      url = shortUrl((await createShare({ ...data, budget: budget ? Number(budget) : null })).id)
-      short = true
-    } catch {
-      url = await shareUrl(data)             // the server cannot keep it right now: the long link still works
+    const makeLink = async () => {
+      try {
+        return shortUrl((await createShare({ ...data, budget: budget ? Number(budget) : null })).id)
+      } catch {
+        return shareUrl(data)                // the server cannot keep it right now: the long link still works
+      }
     }
+    const linkPromise = makeLink()
+    let copied = false
     try {
-      await navigator.clipboard.writeText(url)
-      setToast({ text: short ? 'Short link copied. Anyone with it can open this roadmap for 90 days.' : 'Link copied (the long version, because short links are unavailable right now).' })
+      if (window.ClipboardItem && navigator.clipboard?.write) {
+        await navigator.clipboard.write([new ClipboardItem({ 'text/plain': linkPromise.then((link) => new Blob([link], { type: 'text/plain' })) })])
+      } else {
+        await navigator.clipboard.writeText(await linkPromise)
+      }
+      copied = true
     } catch {
-      window.prompt('Copy this link to share your roadmap:', url)
+      copied = copyWithTextarea(await linkPromise)
     }
+    if (copied) setToast({ text: 'Link copied', kind: 'success' })
+    else setToast({ text: `Could not copy automatically. Your link: ${await linkPromise}` })
   }
 
   async function savePdf() {

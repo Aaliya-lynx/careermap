@@ -25,7 +25,7 @@ export default function Toast({ toast, onDone }) {
           ))}
         </div>
       )}
-      <div className={`toast ${toast.celebrate ? 'is-celebrate' : ''}`} role="status" aria-live="polite">
+      <div className={`toast ${toast.celebrate ? 'is-celebrate' : ''} ${toast.kind === 'success' ? 'is-success' : ''}`} role="status" aria-live="polite">
         <span>{toast.text}</span>
         <button type="button" className="icon-button" onClick={onDone} aria-label="Dismiss message">✕</button>
       </div>

@@ -710,3 +710,8 @@ label { color: #f4eff7; }
 .callout.fix strong { color: #ffffff; }
 .callout.fix .ghost { background: rgba(255, 255, 255, 0.08); border-color: #c99be0; color: #ffffff; }
 .callout.fix .ghost:hover { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+
+/* a green confirmation */
+.toast.is-success { background: #1f6b4a; color: #ffffff; border: 1px solid #5fd3a1; font-weight: 700; }
+.toast.is-success .icon-button { background: rgba(255, 255, 255, 0.18); color: #ffffff; }
+.toast { bottom: 84px; }
