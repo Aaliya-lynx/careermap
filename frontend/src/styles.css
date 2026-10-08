@@ -675,3 +675,22 @@ label { color: #f4eff7; }
 .about { background: #2a2231; border: 1px solid #4d4157; }
 .about summary { color: #ffffff; }
 .optional { color: #cfc5d6; }
+
+/* ---------- skill tree: mauve background, white text ---------- */
+.graph.tree { background: #4b2f61; border-color: #9a74b5; }
+.graph.tree .tier { background: #5d3d75; border-color: #9a74b5; }
+.graph.tree .tier.is-complete { background: #2f5a47; border-color: #5fb08a; }
+.graph.tree .tier-label, .graph.tree .tier.is-complete .tier-label { color: #ffffff; }
+.graph.tree .orb-core { background: #3a2349; border-color: #d9b3ec; color: #ffffff; }
+.graph.tree .orb.is-locked .orb-core { background: #33203f; border-color: #b79bcb; }
+.graph.tree .orb.is-available .orb-core { background: #6d4888; border-color: #f0d6fb; }
+.graph.tree .orb.is-known .orb-core { background: #24493a; border-color: var(--ok); color: var(--ok); }
+.graph.tree .orb.is-critical .orb-core { border-color: var(--amber); }
+.graph.tree .orb-label, .graph.tree .orb-meta { color: #ffffff; text-shadow: 0 0 3px #5d3d75, 0 0 3px #5d3d75, 0 0 8px #5d3d75; }
+.graph.tree .orb-meta { color: #f3eaf8; }
+.graph.tree .orb-tick { background: #3a2349; border-color: #5d3d75; color: #ffffff; }
+.graph.tree .edge-plain .react-flow__edge-path { stroke: #d9c3e8; opacity: 0.8; }
+.graph.tree .level-badge { background: #3a2349; border-color: #9a74b5; color: #ffffff; }
+.graph.tree .level-badge .muted { color: #f3eaf8; }
+.graph.tree .react-flow__controls button { background: #3a2349; color: #ffffff; border-color: #6a4a80; }
+.graph.tree .react-flow__controls button svg { fill: #ffffff; }
