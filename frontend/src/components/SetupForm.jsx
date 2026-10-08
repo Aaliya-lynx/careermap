@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { EXAMPLES, GITHUB_LINK, PROFILE_OPTIONS } from '../format.js'
 
 export default function SetupForm({ busy, onSubmit, onForget, initial }) {
@@ -7,12 +7,12 @@ export default function SetupForm({ busy, onSubmit, onForget, initial }) {
   const [hours, setHours] = useState(initial.hours)
   const [budget, setBudget] = useState(initial.budget)
   const [profile, setProfile] = useState(initial.profile ?? {})
+  const formRef = useRef(null)
   const github = (profile.github ?? '').trim()
   const githubBad = github !== '' && !GITHUB_LINK.test(github)
 
-  function submit(event) {
-    event.preventDefault()
-    if (busy || githubBad) return
+  function build() {
+    if (busy || githubBad || !formRef.current.reportValidity()) return     // the button no longer submits natively, so check the fields here
     onSubmit({
       profile: { ...profile, github },
       goal: goal.trim(),
@@ -23,23 +23,37 @@ export default function SetupForm({ busy, onSubmit, onForget, initial }) {
     })
   }
 
-  // Enter in a field moves to the next one; Enter in the last field builds the roadmap.
-  function nextOnEnter(event) {
-    if (event.key !== 'Enter' || !['INPUT', 'SELECT'].includes(event.target.tagName) || event.nativeEvent.isComposing) return
-    const fields = [...event.currentTarget.querySelectorAll('input, select')].filter((el) => !el.disabled && el.offsetParent !== null)
-    const next = fields[fields.indexOf(event.target) + 1]
-    if (!next) return                       // last field: let Enter submit the form
-    event.preventDefault()
+  const visibleFields = (form) => [...form.querySelectorAll('input, select')].filter((el) => !el.disabled && el.offsetParent !== null)
+
+  // Moves to the field after `from`. Returns false when `from` is the last one.
+  function focusNext(form, from) {
+    const fields = visibleFields(form)
+    const next = fields[fields.indexOf(from) + 1]
+    if (!next) return false
     next.focus()
     if (next.tagName === 'INPUT') next.select?.()
+    return true
+  }
+
+  // Enter moves to the next field; only Enter in the last field (or the button) builds the roadmap.
+  function nextOnEnter(event) {
+    if (event.key !== 'Enter' || !['INPUT', 'SELECT'].includes(event.target.tagName) || event.nativeEvent.isComposing) return
+    event.preventDefault()
+    if (!focusNext(event.currentTarget, event.target)) build()
+  }
+
+  // Phone keyboards send their Enter / Go key as a form submit, not as a key press: treat it the same way.
+  function submitFromKeyboard(event) {
+    event.preventDefault()
+    if (!focusNext(event.currentTarget, document.activeElement)) build()
   }
 
   return (
-    <form className="setup" onSubmit={submit} onKeyDown={nextOnEnter}>
+    <form className="setup" ref={formRef} onSubmit={submitFromKeyboard} onKeyDown={nextOnEnter}>
       <div className="field">
         <label htmlFor="goal">Your dream job, as specific as you can</label>
         <input id="goal" value={goal} onChange={(e) => setGoal(e.target.value)} minLength={3} maxLength={200} required
-          placeholder="e.g. Full Stack Developer at a climate tech startup" autoComplete="off" />
+          placeholder="e.g. Full Stack Developer at a climate tech startup" autoComplete="off" enterKeyHint="next" />
         <div className="chips" aria-label="Examples">
           {EXAMPLES.map((example) => (
             <button type="button" key={example} className="chip" onClick={() => setGoal(example)}>{example}</button>
@@ -50,7 +64,7 @@ export default function SetupForm({ busy, onSubmit, onForget, initial }) {
       <div className="field">
         <label htmlFor="skills">Skills you already have <span className="optional">(optional, separate with commas)</span></label>
         <input id="skills" value={skills} onChange={(e) => setSkills(e.target.value)} maxLength={400}
-          placeholder="e.g. HTML, CSS, basic Python" autoComplete="off" />
+          placeholder="e.g. HTML, CSS, basic Python" autoComplete="off" enterKeyHint="next" />
       </div>
 
       <details className="about" open>
@@ -68,7 +82,7 @@ export default function SetupForm({ busy, onSubmit, onForget, initial }) {
           <div className="field">
             <label htmlFor="p-github">GitHub profile link</label>
             <input id="p-github" value={profile.github ?? ''} onChange={(e) => setProfile({ ...profile, github: e.target.value })} maxLength={100}
-              placeholder="https://github.com/your-name" autoComplete="off" aria-invalid={githubBad} />
+              placeholder="https://github.com/your-name" autoComplete="off" enterKeyHint="next" aria-invalid={githubBad} />
             {githubBad && <small className="field-error" role="alert">Use a link like https://github.com/your-name</small>}
           </div>
         </div>
@@ -79,16 +93,16 @@ export default function SetupForm({ busy, onSubmit, onForget, initial }) {
       <div className="row">
         <div className="field">
           <label htmlFor="hours">Hours per week</label>
-          <input id="hours" type="number" min="1" max="80" value={hours} onChange={(e) => setHours(e.target.value)} />
+          <input id="hours" type="number" min="1" max="80" value={hours} onChange={(e) => setHours(e.target.value)} enterKeyHint="next" />
         </div>
         <div className="field">
           <label htmlFor="budget">Finish within <span className="optional">(weeks, optional)</span></label>
           <input id="budget" type="number" min="1" max="520" value={budget} onChange={(e) => setBudget(e.target.value)}
-            placeholder="e.g. 24" />
+            placeholder="e.g. 24" enterKeyHint="go" />
         </div>
       </div>
 
-      <button className="primary" type="submit" disabled={busy || githubBad}>
+      <button className="primary" type="button" onClick={build} disabled={busy || githubBad}>
         {busy ? 'Building your roadmap…' : 'Build my roadmap'}
       </button>
       <p className="notice">Use your plan as a guide and confirm costs and requirements with official sources. Your answers are sent to an AI service to build it, so please leave out private details.</p>

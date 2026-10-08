@@ -214,6 +214,7 @@ export default function App() {
       skipReplan.current = true
       completedPhases.current = null
       setPage('roadmap')
+      setFormKey((k) => k + 1)             // the start page gets a fresh form: job blank, your details kept
       setActiveId(newId())
       setForm({ goal: values.goal, skills: values.skills, hours: values.hours_per_week, budget: values.weeks_budget ?? '', profile: values.profile })
       setRoadmap(data.roadmap)
