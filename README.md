@@ -38,7 +38,7 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 - Checked in desktop Chrome-family browsers (the Chrome and Edge engine) and in phone-sized windows. A pass on a real Android phone (touch gestures, the camera, the voice) is still to do.
 - The three providers have each answered a real roadmap (Azure, Gemini and Groq); the automatic switch between them under real load has not been stress-tested.
 - Certificates cannot be verified, and PDFs are not read (a screenshot works).
-- The voice depends on the voices installed on the device.
+- The voice depends on the voices installed on the device. It tries voices stored on the device first, then others, then the browser's default, and only then says that it could not start. This is tested with a stand-in speech engine, not on every real device.
 - On the free host the first request after a quiet spell can take up to a minute. If the connection fails, the app waits 5 seconds and tries once more before showing a message.
 - Short links are built and tested with a fake store. They need the Cloudflare KV settings (`CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID`, `CF_API_TOKEN`) on the host, and a check on the live site is still to do. Until the storage answers, the app copies the long link.
 - The comparison pairs steps with one AI call, so two roles with very different wording may be paired slightly differently on each try.

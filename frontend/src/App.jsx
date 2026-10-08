@@ -439,7 +439,7 @@ export default function App() {
       await downloadPdf(roadmap, plan, known, hours)
       setToast({ text: 'PDF downloaded.' })
     } catch {
-      setToast({ text: 'The PDF could not be made in this browser. Try the text file instead.' })
+      setToast({ text: 'The PDF could not be made. Refresh the page and try again, or download the text file instead.' })
     }
   }
 

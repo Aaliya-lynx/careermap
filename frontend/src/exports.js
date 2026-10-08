@@ -58,7 +58,8 @@ const safe = (text) => String(text ?? '')
 
 // A real PDF with checkboxes, made in the browser. The PDF library is loaded only when this is used.
 export async function downloadPdf(roadmap, plan, known, hours) {
-  const { jsPDF } = await import('jspdf')
+  const loadPdfMaker = () => import('jspdf')
+  const { jsPDF } = await loadPdfMaker().catch(loadPdfMaker)      // one more try if the file did not arrive (a poor connection, or a page left open during an update)
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const PAGE_H = 297
   const MARGIN = 18
