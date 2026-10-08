@@ -16,7 +16,7 @@ class RoadmapError(Exception):
     """The AI's answer could not be turned into a usable roadmap."""
 
 
-def _text(value, limit):
+def clean_text(value, limit):
     return " ".join(value.split())[:limit] if isinstance(value, str) else ""
 
 
@@ -74,7 +74,7 @@ def clean_roadmap(raw):
         if not isinstance(item, dict):
             continue
         node_id = _slug(item.get("id")) or _slug(item.get("title"))
-        title = _text(item.get("title"), 80)
+        title = clean_text(item.get("title"), 80)
         if not node_id or not title or node_id in seen:
             continue
         seen.add(node_id)
@@ -88,7 +88,7 @@ def clean_roadmap(raw):
             "hours": _int_between(item.get("hours"), 1, 400, 20),
             "requires": [_slug(r) for r in item["requires"]] if isinstance(item.get("requires"), list) else [],
             "essential": essential if isinstance(essential, bool) else True,
-            "why": _text(item.get("why"), 200),
+            "why": clean_text(item.get("why"), 200),
         })
         if len(nodes) == MAX_NODES:
             break
@@ -103,12 +103,12 @@ def clean_roadmap(raw):
     apply_essential_closure(nodes)
 
     wanted = max(n["phase"] for n in nodes)
-    phases = [_text(p, 40) or f"Phase {i + 1}" for i, p in enumerate(raw["phases"][:MAX_PHASES])] \
+    phases = [clean_text(p, 40) or f"Phase {i + 1}" for i, p in enumerate(raw["phases"][:MAX_PHASES])] \
         if isinstance(raw.get("phases"), list) else []
     while len(phases) < wanted:
         phases.append(f"Phase {len(phases) + 1}")
 
-    return {"title": _text(raw.get("title"), 120), "summary": _text(raw.get("summary"), 300),
+    return {"title": clean_text(raw.get("title"), 120), "summary": clean_text(raw.get("summary"), 300),
             "phases": phases, "nodes": nodes}
 
 

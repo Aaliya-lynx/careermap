@@ -12,7 +12,7 @@ _Draft: to be filled with the real status at the freeze._
 
 ## Architecture and why
 
-Build status: the validator, the planner, the model chain and `/api/plan` are built and tested. `/api/roadmap`, `/api/node-advice` and the web app are being built next.
+Build status: the validator, the planner, the model chain and all three API routes (`/api/roadmap`, `/api/plan`, `/api/node-advice`) are built and tested with a fake AI. The web app is being built next.
 
 ```mermaid
 flowchart LR
