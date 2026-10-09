@@ -670,8 +670,8 @@ export default function App() {
               {section === 'explore' && (
                 <>
                   <div className="viewbar" role="tablist" aria-label="Explore">
-                    <button type="button" role="tab" aria-selected={explore === 'paths'} className={explore === 'paths' ? 'is-on tab-paths' : 'tab-paths'} onClick={() => setExplore('paths')}>Typical paths</button>
-                    <button type="button" role="tab" aria-selected={explore === 'compare'} className={explore === 'compare' ? 'is-on' : ''} onClick={() => setExplore('compare')}>Compare two roles</button>
+                    <button type="button" role="tab" aria-selected={explore === 'paths'} className={explore === 'paths' ? 'is-on tab-paths explore-tab' : 'tab-paths explore-tab'} onClick={() => setExplore('paths')}>Typical paths</button>
+                    <button type="button" role="tab" aria-selected={explore === 'compare'} className={explore === 'compare' ? 'is-on explore-tab' : 'explore-tab'} onClick={() => setExplore('compare')}>Compare two roles</button>
                   </div>
                   {explore === 'paths'
                     ? <Paths paths={paths} busy={pathBusy} error={pathError} onLoad={loadPaths} onShowOnMap={showRouteOnMap} />
