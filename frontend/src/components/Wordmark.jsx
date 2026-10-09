@@ -19,15 +19,13 @@ export default function Wordmark({ className = '' }) {
           <stop offset="1" stopColor="#ffc94d" />
         </linearGradient>
       </defs>
-      <path className="cm-l" style={{ '--i': 0 }} pathLength="1" stroke="url(#cm-wc)" d="M45.8 44.1 A24 24 0 1 1 45.8 11.9" />
-      <g className="cm-node" strokeWidth="3">
-        <circle cx="45.8" cy="44.1" r="5.6" fill="#0f1f2e" stroke="#4fe6cb" />
-        <g className="cm-goal">
-          <circle cx="45.8" cy="11.9" r="8" fill="#ffc94d" stroke="#fff1c2" strokeWidth="2.2" />
-          <circle cx="45.8" cy="11.9" r="4.2" fill="none" stroke="#b36a0a" strokeWidth="1.6" />
-          <circle cx="45.8" cy="11.9" r="1.7" fill="#7a3f00" stroke="none" />
-        </g>
+      <path className="cm-c" pathLength="1" stroke="url(#cm-wc)" d="M45.8 11.9 A24 24 0 1 0 45.8 44.1" />
+      <g className="cm-goal" strokeWidth="3">
+        <circle cx="45.8" cy="11.9" r="8" fill="#ffc94d" stroke="#fff1c2" strokeWidth="2.2" />
+        <circle cx="45.8" cy="11.9" r="4.2" fill="none" stroke="#b36a0a" strokeWidth="1.6" />
+        <circle cx="45.8" cy="11.9" r="1.7" fill="#7a3f00" stroke="none" />
       </g>
+      <circle className="cm-start" cx="45.8" cy="44.1" r="5.6" fill="#0f1f2e" stroke="#4fe6cb" strokeWidth="3" />
       <path className="cm-l" style={{ '--i': 1 }} pathLength="1" stroke="url(#cm-wa)" d="M65 36 A16 16 0 1 1 97 36 A16 16 0 1 1 65 36 M97 20 V52" />
       <path className="cm-l" style={{ '--i': 2 }} pathLength="1" stroke="url(#cm-wa)" d="M114 20 V52 M114 36 A16 16 0 0 1 130 20 H135" />
       <path className="cm-l" style={{ '--i': 3 }} pathLength="1" stroke="url(#cm-wa)" d="M149 36 H181 A16 16 0 1 0 176.3 47.3" />
