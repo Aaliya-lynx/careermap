@@ -786,3 +786,6 @@ label { color: #f4eff7; }
 .home-hero .hh-cta:hover .hh-knob { transform: translateX(-2px); }
 
 .hh-mark { font-size: 0.5em; border-radius: 0.34em; box-shadow: 0 4px 12px rgba(26, 15, 33, 0.3); }
+
+.setup button.primary { background: linear-gradient(180deg, #2c2c31, #131316); color: #ffffff; border: 1px solid #6a6a72; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.28), inset 0 -2px 4px rgba(0, 0, 0, 0.5); }
+.setup button.primary:hover:not(:disabled) { background: linear-gradient(180deg, #38383e, #1a1a1e); }
