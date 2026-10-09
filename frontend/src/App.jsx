@@ -569,7 +569,7 @@ export default function App() {
               <h3>Plan settings</h3>
               <div className="ps-hours">
               <label htmlFor="hours-slider">Hours per week <strong>{hours} h</strong></label>
-              <input id="hours-slider" type="range" min="1" max="40" value={hours} onChange={(e) => setHours(Number(e.target.value))} />
+              <input id="hours-slider" type="range" min="1" max="40" value={hours} style={{ '--fill': `${((hours - 1) / 39) * 100}%` }} onChange={(e) => setHours(Number(e.target.value))} />
               <div className="hours-presets" aria-label="Quick choices">
                 {[5, 10, 15, 20, 30].map((h) => (
                   <button key={h} type="button" className={`chip ${hours === h ? 'is-on' : ''}`} onClick={() => setHours(h)}>{h} h</button>
@@ -670,7 +670,7 @@ export default function App() {
               {section === 'explore' && (
                 <>
                   <div className="viewbar" role="tablist" aria-label="Explore">
-                    <button type="button" role="tab" aria-selected={explore === 'paths'} className={explore === 'paths' ? 'is-on' : ''} onClick={() => setExplore('paths')}>Typical paths</button>
+                    <button type="button" role="tab" aria-selected={explore === 'paths'} className={explore === 'paths' ? 'is-on tab-paths' : 'tab-paths'} onClick={() => setExplore('paths')}>Typical paths</button>
                     <button type="button" role="tab" aria-selected={explore === 'compare'} className={explore === 'compare' ? 'is-on' : ''} onClick={() => setExplore('compare')}>Compare two roles</button>
                   </div>
                   {explore === 'paths'

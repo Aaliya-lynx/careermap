@@ -849,11 +849,6 @@ label { color: #f4eff7; }
 
 .home-hero h1 { color: #ffffff; }
 
-.path, .paths-empty { background: #ffffff; }
-.path h3, .path strong, .path .stage-project, .paths-empty h3, .paths-empty strong { color: #1a0f21; }
-.path .muted, .path .stages p, .paths-empty .muted, .paths-empty .notice { color: #4a4152; }
-.stages li { border-left-color: #cfc7d6; }
-.stages li::before { border-color: #ffffff; }
 
 .home-hero .hh-brand { color: #b784d0; }
 
@@ -890,3 +885,14 @@ label { color: #f4eff7; }
 .home-hero .hh-brand .hh-mark { -webkit-text-fill-color: #e6c4f5; }
 
 .home-hero .hh-brand { color: #0f0f12; -webkit-text-fill-color: #0f0f12; -webkit-text-stroke: 1.5px rgba(120, 255, 180, 0.75); filter: drop-shadow(0 0 10px rgba(120, 255, 180, 0.28)); }
+
+.viewbar button.tab-paths { background: #ffffff; color: #1a0f21; }
+.viewbar button.tab-paths.is-on { box-shadow: 0 0 0 3px #c99be0; }
+.plan-settings .callout.fix { background: #ffffff; border: 1px solid #c99be0; color: #000000; }
+.plan-settings .callout.fix p { color: #000000; font-weight: 700; }
+.plan-settings .callout.fix strong { color: #6a3f86; font-weight: 800; }
+.plan-settings .callout.fix .ghost { background: #c99be0; border-color: #c99be0; color: #000000; font-weight: 700; }
+.plan-settings .callout.fix .ghost:hover { background: #b784d0; border-color: #b784d0; color: #000000; }
+
+.plan-settings input[type='range'] { background: linear-gradient(90deg, #22c55e var(--fill, 50%), #000000 var(--fill, 50%)); border: 1px solid #000000; }
+.plan-settings input[type='range']::-moz-range-progress { background: #22c55e; height: 8px; border-radius: 999px; }
