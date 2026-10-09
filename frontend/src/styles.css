@@ -806,3 +806,5 @@ label { color: #f4eff7; }
 .plan-settings input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #ffffff; border: 1px solid #8c8c92; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45); cursor: pointer; }
 .plan-settings input[type='range']::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #ffffff; border: 1px solid #8c8c92; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45); cursor: pointer; }
 .plan-settings input[type='range']::-moz-range-track { background: transparent; }
+
+.plan-settings input[type='number'] { background: #ffffff; }
