@@ -719,3 +719,5 @@ label { color: #f4eff7; }
 
 .cert-add .file-button { background: #ffffff; color: #1c1720; }
 .cert-add .file-button:hover { background: #f1ecf5; }
+
+.ready .eyebrow { color: #f0c34e; font-weight: 700; }
