@@ -84,6 +84,7 @@ export default function App() {
   const [explore, setExplore] = useState('paths')              // inside Explore: paths or compare
   const [expanded, setExpanded] = useState(false)
   const [showLibrary, setShowLibrary] = useState(false)
+  const [railOpen, setRailOpen] = useState(false)       // the sliding sidebar on the start page (wide screens only)
   const swipe = useRef(null)
   const [knowsSwipe, setKnowsSwipe] = useState(() => { try { return localStorage.getItem('careermap.switched') === '1' } catch { return false } })   // the swipe hint goes away once you have switched pages
   const wheelLock = useRef(0)
@@ -496,7 +497,27 @@ export default function App() {
   const pace = roadmap && plan ? paceInfo({ startedAt, completed, nodes: roadmap.nodes, hours, plan }) : null
 
   return (
-    <div className={`app ${expanded ? 'has-full' : ''} ${showHome ? 'on-home' : ''}`}>
+    <div className={`app ${expanded ? 'has-full' : ''} ${showHome ? 'on-home' : ''} ${showHome && library.length > 0 ? 'has-rail' : ''}`}>
+      {showHome && library.length > 0 && (
+        <aside className={`side-rail ${railOpen ? 'is-open' : ''}`} aria-label="Saved roadmaps">
+          <button type="button" className="rail-item rail-toggle" aria-expanded={railOpen} onClick={() => setRailOpen((open) => !open)} title={railOpen ? 'Close the sidebar' : 'Open the sidebar'}>
+            <span className="rail-ico" aria-hidden="true">{railOpen ? '‹' : '›'}</span><span className="rail-label">Saved roadmaps</span>
+          </button>
+          <ul>
+            {library.slice(0, 6).map((item) => (
+              <li key={item.id}>
+                <button type="button" className="rail-item" onClick={() => openEntry(item)} title={item.title || item.goal}>
+                  <span className="rail-ico" aria-hidden="true">{(item.title || item.goal || '?').trim().charAt(0).toUpperCase()}</span>
+                  <span className="rail-label">{item.title || item.goal}{item.summary ? <small>{item.summary.percent_ready}% ready</small> : null}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <button type="button" className="rail-item rail-bottom" onClick={() => setShowLibrary(true)} title="All roadmaps">
+            <span className="rail-ico" aria-hidden="true">☰</span><span className="rail-label">All roadmaps ({library.length})</span>
+          </button>
+        </aside>
+      )}
       <header className="top">
         <a className="brand" href="/" aria-label="CareerMap home" onClick={goHome}><span className="logo" aria-hidden="true">◈</span> CareerMap</a>
         <nav className="top-actions" aria-label="Main">

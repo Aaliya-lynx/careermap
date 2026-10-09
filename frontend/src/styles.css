@@ -808,3 +808,20 @@ label { color: #f4eff7; }
 .plan-settings input[type='range']::-moz-range-track { background: transparent; }
 
 .plan-settings input[type='number'] { background: #ffffff; }
+
+.side-rail { display: none; }
+@media (min-width: 900px) {
+  .on-home.has-rail { padding-left: 84px; }
+  .on-home .resume { display: none; }
+  .side-rail { display: flex; flex-direction: column; gap: 6px; position: fixed; left: 0; top: 0; bottom: 0; width: 60px; z-index: 30; padding: 14px 8px; background: #2b2b2f; box-shadow: 4px 0 18px rgba(0, 0, 0, 0.35); transition: width 0.25s ease; overflow: hidden; }
+  .side-rail.is-open { width: 260px; }
+  .side-rail ul { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 4px; }
+  .rail-item { display: flex; align-items: center; gap: 14px; width: 100%; padding: 8px; border: 0; border-radius: 8px; background: transparent; color: #f1f1f3; text-align: left; font-weight: 700; font-size: 0.82rem; cursor: pointer; white-space: nowrap; }
+  .rail-item:hover { background: #3a3a40; }
+  .rail-ico { flex: 0 0 28px; height: 28px; display: grid; place-items: center; border-radius: 8px; background: #46464d; color: #f0c34e; font-size: 0.95rem; }
+  .rail-toggle { margin-bottom: 4px; }
+  .rail-label { opacity: 0; overflow: hidden; text-overflow: ellipsis; transition: opacity 0.2s; }
+  .rail-label small { display: block; font-weight: 400; color: #b9b9c0; margin-top: 2px; }
+  .side-rail.is-open .rail-label { opacity: 1; }
+  .rail-bottom { margin-top: auto; }
+}
