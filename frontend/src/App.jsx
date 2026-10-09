@@ -499,6 +499,8 @@ export default function App() {
   return (
     <div className={`app ${expanded ? 'has-full' : ''} ${showHome ? 'on-home' : ''} ${showHome && library.length > 0 ? 'has-rail' : ''}`}>
       {showHome && library.length > 0 && (
+        <>
+        <button type="button" className="rail-fab" aria-label="Open saved roadmaps" onClick={() => setRailOpen(true)}>☰</button>
         <aside className={`side-rail ${railOpen ? 'is-open' : ''}`} aria-label="Saved roadmaps">
           <button type="button" className="rail-item rail-toggle" aria-expanded={railOpen} onClick={() => setRailOpen((open) => !open)} title={railOpen ? 'Close the sidebar' : 'Open the sidebar'}>
             <span className="rail-ico" aria-hidden="true">{railOpen ? '‹' : '›'}</span><span className="rail-label">Saved roadmaps</span>
@@ -517,6 +519,7 @@ export default function App() {
             <span className="rail-ico" aria-hidden="true">☰</span><span className="rail-label">All roadmaps ({library.length})</span>
           </button>
         </aside>
+        </>
       )}
       <header className="top">
         <a className="brand" href="/" aria-label="CareerMap home" onClick={goHome}><span className="logo" aria-hidden="true">◈</span> CareerMap</a>

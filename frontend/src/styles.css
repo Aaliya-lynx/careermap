@@ -859,3 +859,25 @@ label { color: #f4eff7; }
 
 .home-hero .hh-brand { display: flex; width: fit-content; background: linear-gradient(100deg, #ffffff 0%, #f1e2fa 22%, #c99be0 48%, #7a4a96 72%, #1a0f21 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-stroke: 3px #000000; paint-order: stroke fill; }
 .home-hero .hh-brand .hh-mark { -webkit-text-fill-color: #e6c4f5; }
+
+.home-hero .hh-brand { background-image: linear-gradient(105deg, #ffffff 0%, #f6ecfc 16%, #dcb9ee 38%, #b07fcb 60%, #6a3f86 82%, #2d1a3b 100%); -webkit-text-stroke: 2.5px #0d0712; filter: drop-shadow(0 3px 10px rgba(183, 132, 208, 0.35)); }
+
+.home-hero .hh-brand { background-image: linear-gradient(105deg, #ffffff 0%, #f6ecfc 16%, #e2c4f1 38%, #c698de 60%, #a06dbd 82%, #8556a3 100%); }
+
+.rail-fab { display: none; }
+@media (max-width: 899px) {
+  .rail-fab { display: grid; place-items: center; position: fixed; left: 12px; top: 14px; z-index: 35; width: 42px; height: 42px; border-radius: 12px; border: 1px solid #6a6a72; background: #2b2b2f; color: #f1f1f3; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); }
+  .side-rail { display: flex; flex-direction: column; gap: 6px; position: fixed; left: 0; top: 0; bottom: 0; width: 260px; max-width: 82vw; z-index: 40; padding: 14px 8px; background: #2b2b2f; box-shadow: 4px 0 18px rgba(0, 0, 0, 0.45); transform: translateX(-105%); transition: transform 0.25s ease; overflow: hidden; }
+  .side-rail.is-open { transform: none; }
+  .side-rail ul { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 4px; }
+  .rail-item { display: flex; align-items: center; gap: 14px; width: 100%; padding: 10px 8px; border: 0; border-radius: 8px; background: transparent; color: #f1f1f3; text-align: left; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+  .rail-item:hover { background: #3a3a40; }
+  .rail-ico { flex: 0 0 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; background: #46464d; color: #d4d4d9; }
+  .rail-label { overflow: hidden; text-overflow: ellipsis; }
+  .rail-label small { display: block; font-weight: 400; color: #b9b9c0; margin-top: 2px; }
+  .rail-bottom { margin-top: auto; }
+}
+
+@media (max-width: 899px) { .side-rail { z-index: 60; } }
+
+.home-hero .hh-brand { background-image: linear-gradient(105deg, #d9739f 0%, #b77fd0 55%, #9a6cc0 100%); }
