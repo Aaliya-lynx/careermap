@@ -756,3 +756,6 @@ label { color: #f4eff7; }
     linear-gradient(180deg, #e6e6e8, #d6d6d9);
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28); }
 .home-hero::before { display: none; }
+
+.home-hero .hh-cta { background: linear-gradient(180deg, #c3c3c8, #a4a4aa); border-color: #8c8c92; }
+.home-hero .hh-cta:hover { background: linear-gradient(180deg, #cdcdd2, #adadb3); }
