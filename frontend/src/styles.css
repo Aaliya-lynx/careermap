@@ -837,3 +837,5 @@ label { color: #f4eff7; }
 .home-hero .grad { color: #d9b3ec; }
 .home-hero .hh-points { color: rgba(244, 244, 246, 0.9); }
 .home-hero .hh-points li::before { color: #d9b3ec; }
+
+.home-hero .hh-brand { color: #9560b0; }
