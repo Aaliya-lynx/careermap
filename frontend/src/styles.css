@@ -885,3 +885,8 @@ label { color: #f4eff7; }
 .home-hero .hh-brand { padding-bottom: 0.22em; margin-bottom: -0.12em; padding-right: 0.06em; }
 
 .home-hero { margin-bottom: 46px; }
+
+.home-hero .hh-brand { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: #000000; -webkit-text-fill-color: #000000; -webkit-text-stroke: 2.5px #39ff88; paint-order: stroke fill; filter: drop-shadow(0 0 8px rgba(57, 255, 136, 0.8)); }
+.home-hero .hh-brand .hh-mark { -webkit-text-fill-color: #e6c4f5; }
+
+.home-hero .hh-brand { color: #0f0f12; -webkit-text-fill-color: #0f0f12; -webkit-text-stroke: 1.5px rgba(120, 255, 180, 0.75); filter: drop-shadow(0 0 10px rgba(120, 255, 180, 0.28)); }
