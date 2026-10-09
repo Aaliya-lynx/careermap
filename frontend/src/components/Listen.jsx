@@ -12,6 +12,24 @@ function warmUp() {
 }
 if (typeof window !== 'undefined') warmUp()
 
+// A speech engine starts cold the first time it is used, which can take a second or two. So the first time the visitor taps or
+// presses a key anywhere on the page, say one silent space with the voice we will use. By the time "Listen" is pressed it is ready.
+let warmed = false
+function warmEngine() {
+  if (warmed || !supported()) return
+  warmed = true
+  try {
+    const voice = chooseVoices(window.speechSynthesis.getVoices())[0]
+    const quiet = new SpeechSynthesisUtterance(' ')
+    quiet.volume = 0
+    if (voice) { quiet.voice = voice; quiet.lang = voice.lang }
+    window.speechSynthesis.speak(quiet)
+  } catch { /* the warm-up is only a speed-up, never needed */ }
+}
+if (typeof window !== 'undefined') {
+  for (const name of ['pointerdown', 'keydown', 'touchstart']) window.addEventListener(name, warmEngine, { once: true, passive: true, capture: true })
+}
+
 function loadVoices() {
   return new Promise((resolve) => {
     const now = window.speechSynthesis.getVoices()
@@ -28,7 +46,7 @@ function loadVoices() {
 
 // The speech engine pauses between every queued item, so many short sentences sound choppy.
 // Join sentences into a few longer chunks (kept short enough that Chrome does not cut a long utterance off).
-function joinLines(lines, limit = 200, firstLimit = 90) {
+function joinLines(lines, limit = 200, firstLimit = 60) {
   const chunks = []
   for (const line of lines) {
     const last = chunks.length - 1
@@ -57,6 +75,7 @@ export function chooseVoices(voices) {
 // If nothing is heard, it says why instead of failing silently.
 export default function Listen({ getLines, disabled }) {
   const [playing, setPlaying] = useState(false)
+  const [starting, setStarting] = useState(false)   // pressed, but the voice has not begun yet
   const [note, setNote] = useState('')
   const timer = useRef(null)
   const run = useRef(0)            // changes whenever the reading is stopped or started again, so an old attempt stops itself
@@ -74,26 +93,28 @@ export default function Listen({ getLines, disabled }) {
     clearTimeout(timer.current)
     window.speechSynthesis.cancel()
     setPlaying(false)
+    setStarting(false)
     setNote('')
   }
 
   // Reads every chunk with one voice. Resolves true as soon as the voice starts, false if it stays silent.
-  function speakWith(chunks, voice, id) {
+  function speakWith(chunks, voice, id, patience) {
     return new Promise((resolve) => {
       let started = false
-      timer.current = setTimeout(() => resolve(false), 2000)
+      timer.current = setTimeout(() => resolve(false), patience)
       chunks.forEach((text, i) => {
         const utterance = new SpeechSynthesisUtterance(text)
         if (voice) { utterance.voice = voice; utterance.lang = voice.lang }
         utterance.rate = 1
-        utterance.onstart = () => { started = true; clearTimeout(timer.current); resolve(true) }
-        if (i === chunks.length - 1) utterance.onend = () => { if (run.current === id) setPlaying(false) }
+        utterance.onstart = () => { started = true; clearTimeout(timer.current); if (run.current === id) setStarting(false); resolve(true) }
+        if (i === chunks.length - 1) utterance.onend = () => { if (run.current === id) { setPlaying(false); setStarting(false) } }
         utterance.onerror = (event) => {
           if (event.error === 'interrupted' || event.error === 'canceled') return
           clearTimeout(timer.current)
           if (!started) { resolve(false); return }
           setNote(`The voice stopped (${event.error}). Check that the device volume is up and this tab is not muted.`)
           setPlaying(false)
+          setStarting(false)
         }
         window.speechSynthesis.speak(utterance)
       })
@@ -108,25 +129,30 @@ export default function Listen({ getLines, disabled }) {
     window.speechSynthesis.cancel()
     window.speechSynthesis.resume()
     setPlaying(true)
+    setStarting(true)
     const voices = await loadVoices()
     if (run.current !== id) return
     if (!voices.length) {
       setNote('This device has no text-to-speech voice installed, so nothing can be read aloud. On Android, open Settings, search for "Text-to-speech output" and install or enable Speech Services by Google.')
       setPlaying(false)
+      setStarting(false)
       return
     }
     const chunks = joinLines(getLines())
     let first = true
     for (const voice of chooseVoices(voices)) {
+      // the best voice gets more time (a cold engine is slow once); the fallbacks get less
+      const patience = first ? 3000 : 2000
       // Chrome can drop a speak() that comes straight after cancel(), so wait a moment, but only when something was cancelled
       if (!first || busy) await new Promise((resolve) => setTimeout(resolve, 80))
       first = false
       if (run.current !== id) return
-      if (await speakWith(chunks, voice, id)) return            // this voice started: done
+      if (await speakWith(chunks, voice, id, patience)) return            // this voice started: done
       window.speechSynthesis.cancel()                           // silent: try the next voice
     }
     if (run.current !== id) return
     setPlaying(false)
+    setStarting(false)
     setNote('The voice did not start. Check that the device volume is up and this tab is not muted. If it stays silent, the voices on this device may need an internet connection or may not be installed. On a phone, make sure the phone is not on silent.')
   }
 
@@ -134,7 +160,7 @@ export default function Listen({ getLines, disabled }) {
     <>
       <button type="button" className={`ghost listen ${playing ? 'is-playing' : ''}`} onClick={playing ? stop : play} disabled={disabled}
         aria-pressed={playing} aria-label={playing ? 'Stop reading the plan aloud' : 'Listen to your plan read aloud'}>
-        {playing ? '⏹ Stop' : '🔊 Listen to my plan'}
+        {playing ? (starting ? '⏳ Starting… tap to cancel' : '⏹ Stop') : '🔊 Listen to my plan'}
       </button>
       {note && <p className="listen-note callout warn" role="status">{note}</p>}
     </>
