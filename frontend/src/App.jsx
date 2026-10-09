@@ -534,21 +534,6 @@ export default function App() {
       <div className={roadmap ? 'pager-page' : undefined} inert={roadmap && !showHome ? true : undefined}>
         <main className="hero">
           <HomeHero />
-          {library.length > 0 && (
-            <section className="resume" aria-label="Continue a saved roadmap">
-              <h2>Pick up where you left off</h2>
-              <ul>
-                {library.slice(0, 3).map((item) => (
-                  <li key={item.id}>
-                    <button type="button" className="resume-item" onClick={() => openEntry(item)}>
-                      <strong>{item.title || item.goal}</strong>
-                      <span className="muted">{item.summary ? `${item.summary.percent_ready}% ready · ready by ${item.summary.weeks_needed === 0 ? 'today' : readyByDate(item.summary.weeks_needed)}` : 'Open'}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
           <SetupForm key={`${formKey}-${roadmap ? 'fresh' : activeId ?? 'new'}`} busy={busy} onSubmit={build} onForget={forgetMe} initial={prefill ?? (roadmap ? freshForm() : form)} />
           {busy && <p className="loading" role="status">{LOADING_STEPS[loadingStep]}</p>}
           {message && <p className="callout warn" role="alert">{message}</p>}
