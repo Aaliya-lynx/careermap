@@ -750,3 +750,9 @@ label { color: #f4eff7; }
 .home-hero .hh-cta:hover { background: linear-gradient(180deg, #ffffff, #e4e4e6); transform: translateY(-1px); }
 .hh-knob { display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: #1d1d1f; color: #ffffff; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35); transition: transform 0.15s; }
 .home-hero .hh-cta:hover .hh-knob { transform: translateX(2px); }
+
+.home-hero { background:
+    linear-gradient(115deg, transparent 0 22%, rgba(255, 255, 255, 0.55) 30%, transparent 40% 58%, rgba(255, 255, 255, 0.4) 66%, transparent 76%),
+    linear-gradient(180deg, #e6e6e8, #d6d6d9);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28); }
+.home-hero::before { display: none; }
