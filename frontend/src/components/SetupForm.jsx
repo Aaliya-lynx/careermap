@@ -52,7 +52,8 @@ export default function SetupForm({ busy, onSubmit, onForget, initial }) {
     <form className="setup" ref={formRef} onSubmit={submitFromKeyboard} onKeyDown={nextOnEnter}>
       <div className="field">
         <label htmlFor="goal">Your dream job, as specific as you can</label>
-        <input id="goal" value={goal} onChange={(e) => setGoal(e.target.value)} minLength={3} maxLength={200} required
+        <input id="goal" value={goal} onChange={(e) => { e.target.setCustomValidity(''); setGoal(e.target.value) }} minLength={2} maxLength={200} required
+          onInvalid={(e) => e.target.setCustomValidity('Please type a job title, for example: Data Analyst.')}
           placeholder="e.g. Full Stack Developer at a climate tech startup" autoComplete="off" enterKeyHint="next" />
         <div className="chips" aria-label="Examples">
           {EXAMPLES.map((example) => (

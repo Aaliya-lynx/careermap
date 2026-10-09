@@ -30,7 +30,7 @@ async function post(path, body, signal) {
   }
   const data = await response.json().catch(() => ({}))
   if (!response.ok) {
-    const detail = typeof data.detail === 'string' ? data.detail : 'Something went wrong. Please try again.'
+    const detail = typeof data.detail === 'string' ? data.detail : Array.isArray(data.detail) ? 'Please check what you typed and try again.' : 'Something went wrong. Please try again.'
     throw new ApiError(detail)
   }
   return data
@@ -44,7 +44,7 @@ async function get(path) {
     throw new ApiError('Could not connect. Check your connection and try again. If the app has been idle, it can take up to a minute to wake up.')
   }
   const data = await response.json().catch(() => ({}))
-  if (!response.ok) throw new ApiError(typeof data.detail === 'string' ? data.detail : 'Something went wrong. Please try again.')
+  if (!response.ok) throw new ApiError(typeof data.detail === 'string' ? data.detail : Array.isArray(data.detail) ? 'Please check what you typed and try again.' : 'Something went wrong. Please try again.')
   return data
 }
 

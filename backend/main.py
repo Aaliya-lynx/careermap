@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -32,6 +33,8 @@ DEMO_CACHE = Path(__file__).resolve().parent / "demo_cache.json"
 
 MESSAGES = {
     "bad_answer": "The AI gave an answer that could not be used. Please try again.",
+    "bad_goal": "Please type a job title with at least 2 letters, for example: Data Analyst.",
+    "bad_input": "Please check what you typed and try again.",
     "rate_limit": "Many people are using the AI right now. Please wait a minute and try again.",
     "unavailable": "The AI helper is not available right now. Please try again in a little while.",
     "bad_roadmap": "That roadmap could not be read.",
@@ -65,6 +68,18 @@ def too_fast(request: Request):
     """True if this visitor (or the whole app) is over the AI request limit."""
     who = limiter.client_id(request.headers.get("x-forwarded-for"), request.client.host if request.client else None)
     return not ai_limiter.allow(who)
+
+
+def has_a_word(text):
+    """True if some word has at least 2 letters, in any script (so "CA" and "HR" are fine, but "a b" and "???" are not)."""
+    return any(sum(1 for ch in word if unicodedata.category(ch)[0] in "LM") >= 2 for word in text.split())
+
+
+@app.exception_handler(RequestValidationError)
+async def plain_sentence_for_bad_input(request: Request, exc: RequestValidationError):
+    """A person never sees a technical list of field errors: a goal that is too short gets its own hint, everything else a plain sentence."""
+    fields = {str(part) for error in exc.errors() for part in error.get("loc", ())}
+    return problem(422, "bad_goal" if "goal" in fields else "bad_input")
 
 
 def problem(status, key):
@@ -173,7 +188,7 @@ class Profile(BaseModel):
 
 
 class RoadmapRequest(BaseModel):
-    goal: str = Field(min_length=3, max_length=200)
+    goal: str = Field(min_length=2, max_length=200)
     known_skills: List[str] = Field(default=[], max_length=20)
     profile: Optional[Profile] = None
     hours_per_week: float = Field(default=8, ge=1, le=80)
@@ -205,7 +220,7 @@ def demo_lookup(goal):
 
 @app.post("/api/roadmap")
 def make_roadmap(req: RoadmapRequest, request: Request):
-    if sum(1 for ch in req.goal if unicodedata.category(ch)[0] in "LM") < 3:     # at least 3 letters, in any script
+    if not has_a_word(req.goal):
         return problem(422, "not_a_job")
     chosen = req.profile.choices() if req.profile else {}
     own_skills = bool(req.known_skills) or bool(chosen)       # a saved roadmap knows nothing about the user's own skills or profile

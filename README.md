@@ -17,7 +17,7 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 ## Done / Left / Plan
 
 **Done and working**
-- AI-generated roadmap for any typed target job, with real tools, certifications, roles and projects. The model's answer is validated in code before it is used (no cycles, no broken links, size limits).
+- AI-generated roadmap for any typed target job, with real tools, certifications, roles and projects. Short titles such as "CA" or "HR" work. An entry that is not a job (for example "???") gets a plain hint and is never sent to the AI. The model's answer is validated in code before it is used (no cycles, no broken links, size limits).
 - The roadmap page is split into five parts so nothing is repeated or crowded: **Roadmap** (the views below), **Certificates**, **Progress**, **About you** and **Explore** (typical paths and comparing two roles). Each part shows only its own content.
 - Six ways to see the plan. **Skill tree**: round medallions in tiers that you climb from the bottom. Each circle glows in the colour of its state (unlocked, ready, locked, on the longest chain), simple straight lines join the steps and turn green once the step they come from is unlocked, an unlock animation plays when you tick a step, and a level and XP badge shows your progress. It opens small with the whole tree in view, and "Full screen" makes it big. **Map**: left-to-right columns by phase. **Timeline**: weeks across the page with a bar per step, a moving "now" marker and bars that fill as you play your plan forward. **Outline**: a plain list. **Paths**: typical routes into the job. **Compare**: put two dream roles side by side (one of your saved roadmaps, or a new job you type) and see which steps are really the same skill, with the shared hours counted, so you can do the overlap first.
 - All visual views: zoom, pan, click, keyboard focus, full screen, a "Start here" tag, and highlighting of what a step needs and unlocks. The map also has filters by type.
@@ -32,7 +32,7 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 - "Listen to my plan": the plan read aloud with the browser's voice. If the device has no voice or the tab is muted, the app says so instead of staying silent.
 - "People who took this path": three typical routes into the job, each a short timeline of roles, rough timing and side projects. They are AI-written patterns, clearly labelled as not real people, and each has a button that highlights its steps on your map.
 - "My roadmaps": every roadmap is saved in the browser, with download as a picture or a PDF (or plain text) checklist, and a short share link (about 45 characters) that opens the roadmap for anyone, with no account. If short links are unavailable, it copies a longer link that carries the whole roadmap in the address instead. A green "Link copied" message confirms the copy.
-- 147 automated backend tests, all passing, using a fake AI so they cost nothing.
+- 161 automated backend tests, all passing, using a fake AI so they cost nothing.
 
 **Left for the next 16 hours, honestly**
 - Checked in desktop Chrome-family browsers (the Chrome and Edge engine) and in phone-sized windows. A pass on a real Android phone (touch gestures, the camera, the voice) is still to do.
@@ -110,7 +110,7 @@ cd backend
 python -m venv venv
 source venv/bin/activate            # Windows: venv\Scripts\activate
 pip install -r requirements-dev.txt
-pytest                              # 147 tests, no AI key needed
+pytest                              # 161 tests, no AI key needed
 cp ../.env.example .env             # then add at least one provider key
 uvicorn main:app --reload           # http://localhost:8000/health
 

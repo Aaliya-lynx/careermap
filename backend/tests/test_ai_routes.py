@@ -194,3 +194,36 @@ def test_real_job_titles_in_other_scripts_are_not_refused(client, monkeypatch, g
     fake(monkeypatch, good_roadmap())
     r = client.post("/api/roadmap", json={"goal": goal, "hours_per_week": 5})
     assert r.status_code == 200
+
+
+# ---- short job titles and friendly messages for bad input ----
+
+@pytest.mark.parametrize("goal", ["CA", "HR", "PM", "Go developer"])
+def test_short_job_titles_are_accepted(client, monkeypatch, goal):
+    seen = fake(monkeypatch, good_roadmap())
+    r = client.post("/api/roadmap", json={"goal": goal, "hours_per_week": 8})
+    assert r.status_code == 200
+    assert json.loads(seen["user"])["target_job"] == goal
+
+
+@pytest.mark.parametrize("goal", ["C", "?", "  ", "a b", "A1 B2"])
+def test_one_letter_or_no_real_word_is_still_refused_before_the_ai(client, monkeypatch, goal):
+    fake(monkeypatch, RuntimeError("the AI must not be called"))
+    r = client.post("/api/roadmap", json={"goal": goal, "hours_per_week": 8})
+    assert r.status_code == 422 and isinstance(r.json()["detail"], str)
+
+
+def test_a_too_short_goal_gets_a_friendly_message_not_a_technical_list(client, monkeypatch):
+    fake(monkeypatch, RuntimeError("the AI must not be called"))
+    detail = client.post("/api/roadmap", json={"goal": "x", "hours_per_week": 8}).json()["detail"]
+    assert isinstance(detail, str) and "job title" in detail.lower() and "for example" in detail.lower()
+
+
+@pytest.mark.parametrize("path, body", [("/api/roadmap", {"goal": "Data Analyst", "hours_per_week": 0}),
+                                        ("/api/roadmap", {"goal": "Data Analyst", "known_skills": ["a"] * 40}),
+                                        ("/api/plan", {"nodes": "x"}),
+                                        ("/api/node-advice", {"goal": "Data Analyst"})])
+def test_every_other_bad_input_also_gets_a_plain_sentence(client, monkeypatch, path, body):
+    fake(monkeypatch, RuntimeError("the AI must not be called"))
+    r = client.post(path, json=body)
+    assert r.status_code == 422 and isinstance(r.json()["detail"], str) and "try again" in r.json()["detail"].lower()
