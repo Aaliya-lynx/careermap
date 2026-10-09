@@ -771,3 +771,11 @@ label { color: #f4eff7; }
 .plan-settings .hours-presets .chip.is-on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .plan-settings .optional, .plan-settings .muted, .plan-settings .stretch-note { color: #2c2c30; }
 .plan-settings .linklike { color: #3a1f55; }
+
+.plan-settings, .plan-settings h3, .plan-settings label, .plan-settings label strong, .plan-settings .optional, .plan-settings .muted, .plan-settings .stretch-note, .plan-settings p, .plan-settings span { color: #000000; font-weight: 700; }
+.plan-settings input[type='number'] { background: #b4b4ba; border: 1px solid #8c8c92; color: #000000; font-weight: 700; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18); }
+.plan-settings .hours-presets .chip { background: #b4b4ba; border: 1px solid #8c8c92; color: #000000; font-weight: 700; }
+.plan-settings .hours-presets .chip:hover { background: #c2c2c8; }
+.plan-settings .hours-presets .chip.is-on { background: #1d1d1f; border-color: #1d1d1f; color: #ffffff; }
+.plan-settings .callout.fix { background: #b4b4ba; border-color: #8c8c92; color: #000000; }
+.plan-settings .linklike { color: #000000; font-weight: 700; text-decoration: underline; }
