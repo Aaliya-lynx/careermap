@@ -929,3 +929,52 @@ label { color: #f4eff7; }
 
 .plan-settings input[type='range'] { background: linear-gradient(90deg, #f0c34e var(--fill, 50%), #000000 var(--fill, 50%)); }
 .plan-settings input[type='range']::-moz-range-progress { background: #f0c34e; }
+
+.home-hero .hh-brand { -webkit-text-stroke: 1.5px rgba(201, 155, 224, 0.95); filter: drop-shadow(0 0 10px rgba(201, 155, 224, 0.35)); }
+
+.home-hero .hh-brand { -webkit-text-stroke: 1px rgba(201, 155, 224, 0.55); filter: drop-shadow(0 0 3px rgba(201, 155, 224, 0.35)) drop-shadow(0 0 14px rgba(201, 155, 224, 0.4)); }
+
+/* new logo: a route drawn as a C, plus a two-tone wordmark */
+.home-hero .hh-brand { display: flex; align-items: center; gap: 0.2em; width: fit-content; padding: 0; margin: 0 0 12px; background: none; -webkit-background-clip: border-box; background-clip: border-box; color: #f4eefb; -webkit-text-fill-color: #f4eefb; -webkit-text-stroke: 0; paint-order: normal; filter: none; letter-spacing: -0.04em; }
+.hh-logo { width: 0.98em; height: 0.98em; flex: none; filter: drop-shadow(0 8px 16px rgba(80, 40, 140, 0.55)); }
+.wm { display: inline-flex; align-items: baseline; }
+.wm-a { font-weight: 600; color: #f4eefb; -webkit-text-fill-color: #f4eefb; }
+.wm-b { font-weight: 900; padding: 0 0.04em 0.2em 0; margin-bottom: -0.2em; background: linear-gradient(100deg, #ecc8fa 0%, #cf9fe6 45%, #f2b6d2 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+.brand { display: inline-flex; align-items: center; gap: 8px; }
+.brand .logo { margin-right: 0; flex: none; }
+.brand-word .bw-a { font-weight: 600; }
+.brand-word .bw-b { font-weight: 900; color: #d9a8f0; }
+
+/* logo v2: gold-to-rose wordmark, route that draws itself */
+.wm-b { background: linear-gradient(100deg, #ecc6fb 0%, #f3b6d0 50%, #f8d06c 100%); -webkit-background-clip: text; background-clip: text; }
+.brand-word .bw-b { background: linear-gradient(100deg, #ecc6fb, #f3b6d0 55%, #f8d06c); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+.cm-route { stroke-dasharray: 1; stroke-dashoffset: 0; animation: cm-draw 1.1s 0.2s ease-out both; }
+.cm-goal { transform-box: fill-box; transform-origin: center; animation: cm-pop 0.5s 1s ease-out both; }
+@keyframes cm-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes cm-pop { 0% { transform: scale(0.4); opacity: 0; } 70% { transform: scale(1.18); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .cm-route, .cm-goal { animation: none; } }
+
+/* hand-drawn wordmark */
+.hh-word { height: 1.2em; width: auto; flex: none; margin-top: 0.22em; overflow: visible; filter: drop-shadow(0 6px 14px rgba(70, 30, 120, 0.4)); }
+.cm-l { stroke-dasharray: 1; stroke-dashoffset: 0; animation: cm-draw 0.55s calc(0.15s + var(--i) * 0.08s) ease-out both; }
+@media (prefers-reduced-motion: reduce) { .cm-l { animation: none; } }
+
+.hh-logo { width: 1.1em; height: 1.1em; }
+.hh-word { margin-top: 0.12em; }
+.brand-word-svg { height: 30px; width: auto; overflow: visible; margin-top: 4px; }
+.brand-word-svg .cm-l { animation: none; }
+@media (max-width: 520px) { .home-hero .hh-brand { font-size: 2.15rem; } }
+
+/* palette v3: cool (now) to warm (goal) */
+.hh-logo { filter: drop-shadow(0 8px 18px rgba(30, 14, 100, 0.65)); }
+.hh-word { filter: drop-shadow(0 6px 16px rgba(50, 20, 120, 0.5)); }
+
+/* v4: one unified logotype (the C is the route) */
+.home-hero .hh-brand { gap: 0; margin-bottom: 10px; }
+.hh-word { height: 1.18em; margin-top: 0; filter: drop-shadow(0 6px 16px rgba(50, 20, 120, 0.5)); }
+.brand-word-svg { height: 34px; margin-top: 2px; }
+.cm-node { animation: cm-pop 0.5s 0.7s ease-out both; transform-box: fill-box; transform-origin: center; }
+.cm-node .cm-goal { animation: none; }
+.pill-route { display: inline-block; flex: none; margin-right: 8px; vertical-align: middle; }
+@media (prefers-reduced-motion: reduce) { .cm-node { animation: none; } }
+@media (max-width: 520px) { .home-hero .hh-pill { font-size: 0.66rem; letter-spacing: 0; } .pill-route { width: 26px; margin-right: 6px; } }

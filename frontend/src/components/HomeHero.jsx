@@ -1,3 +1,5 @@
+import Wordmark from './Wordmark.jsx'
+
 // The banner at the top of the start page: title, headline, a button to the form, and a tiled picture drawn here (not a photo).
 function startNow() {
   const goal = document.getElementById('goal')
@@ -12,8 +14,8 @@ export default function HomeHero() {
   return (
     <section className="home-hero" aria-label="CareerMap">
       <div className="hh-text">
-        <p className="hh-pill"><span aria-hidden="true">◈</span> Career roadmaps, reverse-engineered</p>
-        <p className="hh-brand"><span className="hh-mark" aria-hidden="true">◈</span> CareerMap</p>
+        <p className="hh-pill"><svg className="pill-route" width="32" height="12" viewBox="0 0 32 12" aria-hidden="true"><defs><linearGradient id="pill-g" x1="5" y1="0" x2="27" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stopColor="#4fe6cb" /><stop offset="0.5" stopColor="#a78bff" /><stop offset="1" stopColor="#ffc94d" /></linearGradient></defs><line x1="5" y1="6" x2="27" y2="6" stroke="url(#pill-g)" strokeWidth="2.4" strokeLinecap="round" /><circle cx="5" cy="6" r="3.6" fill="#1b1f2a" stroke="#4fe6cb" strokeWidth="1.8" /><circle cx="27" cy="6" r="4" fill="#ffc94d" /></svg> AI career roadmaps, built backwards</p>
+        <p className="hh-brand"><Wordmark className="hh-word" /></p>
         <h1>Your dream job, <span className="grad">reverse-engineered.</span></h1>
         <p className="hh-lead">Tell us the exact role. We build your skill tree and tell you the date you could be ready, then it re-plans live as your hours and skills change.</p>
         <button type="button" className="primary hh-cta" onClick={startNow}>Get started <span className="hh-knob" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5l7 7-7 7" /></svg></span></button>

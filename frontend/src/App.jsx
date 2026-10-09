@@ -5,6 +5,7 @@ import { paceInfo, readyByDate, weeksText } from './format.js'
 import { buildNarration } from './narrate.js'
 import { clearMe, loadLibrary, loadMe, newId, saveLibrary, saveMe, upsert } from './store.js'
 import { decodeShare, readShared, shareUrl, shortUrl } from './share.js'
+import Wordmark from './components/Wordmark.jsx'
 import Certificates from './components/Certificates.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Graph from './components/Graph.jsx'
@@ -522,7 +523,7 @@ export default function App() {
         </>
       )}
       <header className="top">
-        <a className="brand" href="/" aria-label="CareerMap home" onClick={goHome}><span className="logo" aria-hidden="true">◈</span> CareerMap</a>
+        <a className="brand" href="/" aria-label="CareerMap home" onClick={goHome}><Wordmark className="brand-word-svg" /></a>
         <nav className="top-actions" aria-label="Main">
           {library.length > 0 && <button type="button" className="ghost" onClick={() => setShowLibrary(true)}>My roadmaps ({library.length})</button>}
           {roadmap && !showHome && <button type="button" className="ghost" onClick={() => startOver()}>+ New roadmap</button>}
