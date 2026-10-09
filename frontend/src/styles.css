@@ -792,3 +792,6 @@ label { color: #f4eff7; }
 
 .setup button.primary { background: linear-gradient(180deg, #a2a2a8, #85858c); color: #000000; border: 1px solid #6a6a72; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.45), inset 0 -2px 4px rgba(0, 0, 0, 0.2); }
 .setup button.primary:hover:not(:disabled) { background: linear-gradient(180deg, #adadb3, #8e8e95); }
+
+.setup button.primary { background: linear-gradient(180deg, #bcbcc2, #a0a0a7); }
+.setup button.primary:hover:not(:disabled) { background: linear-gradient(180deg, #c6c6cc, #aaaab1); }
