@@ -855,6 +855,4 @@ label { color: #f4eff7; }
 .stages li { border-left-color: #cfc7d6; }
 .stages li::before { border-color: #ffffff; }
 
-.home-hero { background: linear-gradient(115deg, transparent 0 22%, rgba(255, 255, 255, 0.14) 30%, transparent 40% 58%, rgba(255, 255, 255, 0.1) 66%, transparent 76%), linear-gradient(120deg, #a07bb8, #7f5b98); }
-.home-hero .grad { color: #f6e6ff; }
-.home-hero .hh-points li::before { color: #ffffff; }
+.home-hero .hh-brand { color: #b784d0; }
