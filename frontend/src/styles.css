@@ -842,3 +842,5 @@ label { color: #f4eff7; }
 
 .home-hero .hh-brand { color: #c99be0; -webkit-text-stroke: 3px #000000; paint-order: stroke fill; }
 .home-hero .hh-brand .hh-mark { -webkit-text-stroke: 0; }
+
+.home-hero .hh-brand { color: #ffffff; }
