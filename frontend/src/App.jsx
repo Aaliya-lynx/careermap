@@ -560,9 +560,9 @@ export default function App() {
               ) : <p className="muted">Planning…</p>}
               <div className="ready-actions">
                 <Listen getLines={() => buildNarration(roadmap, plan, hours)} disabled={!plan} />
-                <button type="button" className="ghost" onClick={copyShareLink}>Copy share link</button>
-                <button type="button" className="ghost" onClick={savePdf} disabled={!plan}>Download PDF</button>
-                <button type="button" className="ghost" onClick={saveText} disabled={!plan}>Download text</button>
+                <button type="button" className="ghost" data-ico="link" onClick={copyShareLink}>Copy share link</button>
+                <button type="button" className="ghost" data-ico="pdf" onClick={savePdf} disabled={!plan}>Download PDF</button>
+                <button type="button" className="ghost" data-ico="text" onClick={saveText} disabled={!plan}>Download text</button>
               </div>
             </div>
 
