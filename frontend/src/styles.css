@@ -881,3 +881,5 @@ label { color: #f4eff7; }
 @media (max-width: 899px) { .side-rail { z-index: 60; } }
 
 .home-hero .hh-brand { background-image: linear-gradient(105deg, #d9739f 0%, #b77fd0 55%, #9a6cc0 100%); }
+
+.home-hero .hh-brand { padding-bottom: 0.22em; margin-bottom: -0.12em; padding-right: 0.06em; }
