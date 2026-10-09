@@ -779,3 +779,8 @@ label { color: #f4eff7; }
 .plan-settings .hours-presets .chip.is-on { background: #1d1d1f; border-color: #1d1d1f; color: #ffffff; }
 .plan-settings .callout.fix { background: #b4b4ba; border-color: #8c8c92; color: #000000; }
 .plan-settings .linklike { color: #000000; font-weight: 700; text-decoration: underline; }
+
+.home-hero .hh-cta { flex-direction: row-reverse; gap: 20px; padding: 7px 30px 7px 7px; background: linear-gradient(180deg, #2c2c31, #131316); color: #ffffff; border: 1px solid #6a6a72; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.28), inset 0 -2px 4px rgba(0, 0, 0, 0.5); }
+.home-hero .hh-cta:hover { background: linear-gradient(180deg, #38383e, #1a1a1e); }
+.hh-knob { width: 44px; height: 44px; background: #e8e8ea; color: #1d1d1f; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px 1px #ffffff; }
+.home-hero .hh-cta:hover .hh-knob { transform: translateX(-2px); }
