@@ -721,3 +721,7 @@ label { color: #f4eff7; }
 .cert-add .file-button:hover { background: #f1ecf5; }
 
 .ready .eyebrow { color: #f0c34e; font-weight: 700; }
+
+.filter-chip { background: transparent; color: var(--text); border: 1.5px solid #6a5c76; border-radius: 8px; padding: 5px 13px; font-weight: 600; }
+.filter-chip:hover { background: #2a2030; border-color: var(--accent); }
+.filter-chip.is-on { background: #2a2030; color: #f0c34e; border-color: #f0c34e; }
