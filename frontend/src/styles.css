@@ -827,3 +827,6 @@ label { color: #f4eff7; }
 }
 
 @media (min-width: 900px) { .rail-ico { background: #46464d; color: #d4d4d9; } .rail-item:hover .rail-ico { background: #55555d; } }
+
+.setup .chips .chip { background: linear-gradient(115deg, transparent 0 22%, rgba(255, 255, 255, 0.55) 30%, transparent 40% 58%, rgba(255, 255, 255, 0.4) 66%, transparent 76%), linear-gradient(180deg, #e6e6e8, #d6d6d9); border: 1px solid #b9b9bf; color: #1a0f21; }
+.setup .chips .chip:hover { background: linear-gradient(180deg, #f1f1f3, #e2e2e5); border-color: #9a9aa2; }
