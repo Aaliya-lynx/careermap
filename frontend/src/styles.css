@@ -786,3 +786,10 @@ label { color: #f4eff7; }
 .home-hero .hh-cta:hover .hh-knob { transform: translateX(-2px); }
 
 .hh-mark { font-size: 0.5em; border-radius: 0.34em; box-shadow: 0 4px 12px rgba(26, 15, 33, 0.3); }
+
+.setup { background:
+    linear-gradient(115deg, transparent 0 22%, rgba(255, 255, 255, 0.55) 30%, transparent 40% 58%, rgba(255, 255, 255, 0.4) 66%, transparent 76%),
+    linear-gradient(180deg, #e6e6e8, #d6d6d9);
+  border: 1px solid #b9b9bf; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28); }
+.setup label, .setup summary, .setup .optional, .setup h2, .setup h3, .setup legend, .setup > p, .setup .muted { color: #1a0f21; }
+.setup details { border-color: #a9a9b0; }
