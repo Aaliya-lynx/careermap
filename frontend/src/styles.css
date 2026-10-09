@@ -796,4 +796,4 @@ label { color: #f4eff7; }
 .setup button.primary { background: linear-gradient(180deg, #bcbcc2, #a0a0a7); }
 .setup button.primary:hover:not(:disabled) { background: linear-gradient(180deg, #c6c6cc, #aaaab1); }
 
-.saved-title { color: #f0c34e; }
+.resume-item strong { color: #f0c34e; }
