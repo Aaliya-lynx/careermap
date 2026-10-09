@@ -801,3 +801,8 @@ label { color: #f4eff7; }
 .plan-settings .hours-presets .chip { background: #000000; border-color: #000000; color: #ffffff; }
 .plan-settings .hours-presets .chip:hover { background: #26262a; }
 .plan-settings .hours-presets .chip.is-on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+
+.plan-settings input[type='range'] { -webkit-appearance: none; appearance: none; height: 8px; border-radius: 999px; background: #c99be0; border: 1px solid #6a5c76; outline-offset: 6px; }
+.plan-settings input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #ffffff; border: 1px solid #8c8c92; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45); cursor: pointer; }
+.plan-settings input[type='range']::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #ffffff; border: 1px solid #8c8c92; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45); cursor: pointer; }
+.plan-settings input[type='range']::-moz-range-track { background: transparent; }
