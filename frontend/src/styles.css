@@ -926,3 +926,6 @@ label { color: #f4eff7; }
 
 .plan-settings .callout.fix { background: none; border: 0; padding: 4px 0; box-shadow: none; }
 .plan-settings .callout.fix p, .plan-settings .callout.fix strong { color: #000000; }
+
+.plan-settings input[type='range'] { background: linear-gradient(90deg, #f0c34e var(--fill, 50%), #000000 var(--fill, 50%)); }
+.plan-settings input[type='range']::-moz-range-progress { background: #f0c34e; }
