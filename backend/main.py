@@ -23,13 +23,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+import demo_db
 import limiter
 import llm
 import planner
 import roadmap
 import share_store as shares
 
-DEMO_CACHE = Path(__file__).resolve().parent / "demo_cache.json"
+DEMO_DB = Path(__file__).resolve().parent / "demo_roadmaps.db"      # saved roadmaps for the demo jobs (see demo_db.py)
 
 MESSAGES = {
     "bad_answer": "The AI gave an answer that could not be used. Please try again.",
@@ -207,10 +208,8 @@ def clean_where(raw):
 
 
 def cached_roadmap(goal):
-    """A saved roadmap (real AI output stored earlier) for one of the example goals, or None."""
-    if not DEMO_CACHE.exists():
-        return None
-    return json.loads(DEMO_CACHE.read_text(encoding="utf-8")).get(" ".join(goal.split()).lower())
+    """A saved roadmap (real AI output stored earlier in the SQLite database) for a demo job, or None."""
+    return demo_db.lookup(DEMO_DB, goal)
 
 
 def demo_lookup(goal):

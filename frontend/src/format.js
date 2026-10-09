@@ -43,10 +43,23 @@ export function assumedBecause(id, nodes, known) {
   return null
 }
 
+// The jobs saved in the backup database (backend/demo_roadmaps.db): technical and non-technical. The first six show as buttons.
 export const EXAMPLES = [
   'Full Stack Developer at a climate tech startup',
-  'UI/UX Designer for fintech apps',
+  'Digital Marketing Manager',
   'Data Analyst in healthcare',
+  'Chartered Accountant',
+  'UI/UX Designer for fintech apps',
+  'Human Resources Manager',
+  'Machine Learning Engineer',
+  'Cybersecurity Analyst',
+  'Cloud DevOps Engineer',
+  'Mobile App Developer',
+  'Product Manager at a SaaS startup',
+  'Content Creator',
+  'Civil Engineer',
+  'Journalist',
+  'Financial Analyst at a bank',
 ]
 
 // How you are really doing: hours of steps you finished since you started, against what your plan expected by now.

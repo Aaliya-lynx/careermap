@@ -56,10 +56,14 @@ export default function SetupForm({ busy, onSubmit, onForget, initial }) {
           onInvalid={(e) => e.target.setCustomValidity('Please type a job title, for example: Data Analyst.')}
           placeholder="e.g. Full Stack Developer at a climate tech startup" autoComplete="off" enterKeyHint="next" />
         <div className="chips" aria-label="Examples">
-          {EXAMPLES.map((example) => (
+          {EXAMPLES.slice(0, 6).map((example) => (
             <button type="button" key={example} className="chip" onClick={() => setGoal(example)}>{example}</button>
           ))}
         </div>
+        <select className="more-examples" aria-label="More example jobs" value="" onChange={(e) => { if (e.target.value) setGoal(e.target.value) }}>
+          <option value="">More example jobs, technical and non-technical…</option>
+          {EXAMPLES.slice(6).map((example) => <option key={example} value={example}>{example}</option>)}
+        </select>
       </div>
 
       <div className="field">
@@ -81,7 +85,7 @@ export default function SetupForm({ busy, onSubmit, onForget, initial }) {
             </div>
           ))}
           <div className="field">
-            <label htmlFor="p-github">GitHub profile link</label>
+            <label htmlFor="p-github">GitHub profile link <span className="optional">(optional, skip it if you do not code)</span></label>
             <input id="p-github" value={profile.github ?? ''} onChange={(e) => setProfile({ ...profile, github: e.target.value })} maxLength={100}
               placeholder="https://github.com/your-name" autoComplete="off" enterKeyHint="next" aria-invalid={githubBad} />
             {githubBad && <small className="field-error" role="alert">Use a link like https://github.com/your-name</small>}

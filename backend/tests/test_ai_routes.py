@@ -102,11 +102,16 @@ def test_node_advice_never_asks_for_invented_links(client, monkeypatch):
     assert "do not invent" in seen["system"].lower() and "url" in seen["system"].lower()
 
 
+def saved_db(monkeypatch, tmp_path):
+    import demo_db
+    db = tmp_path / "demo_roadmaps.db"
+    demo_db.save(db, "Frontend Engineer", "tech", good_roadmap(), [])
+    monkeypatch.setattr(main, "DEMO_DB", db)
+    return db
+
+
 def test_demo_cache_answers_without_calling_the_ai(client, monkeypatch, tmp_path):
-    cache = tmp_path / "demo_cache.json"
-    saved = {"roadmap": good_roadmap(), "known": []}
-    cache.write_text(json.dumps({"frontend engineer": saved}), encoding="utf-8")
-    monkeypatch.setattr(main, "DEMO_CACHE", cache)
+    saved_db(monkeypatch, tmp_path)
     monkeypatch.setenv("DEMO_MODE", "true")
     fake(monkeypatch, RuntimeError("the AI must not be called"))
     body = client.post("/api/roadmap", json={"goal": "  Frontend   ENGINEER ", "hours_per_week": 10}).json()
@@ -114,36 +119,22 @@ def test_demo_cache_answers_without_calling_the_ai(client, monkeypatch, tmp_path
 
 
 def test_demo_cache_is_ignored_when_demo_mode_is_off(client, monkeypatch, tmp_path):
-    cache = tmp_path / "demo_cache.json"
-    cache.write_text(json.dumps({"frontend engineer": {"roadmap": good_roadmap(), "known": []}}), encoding="utf-8")
-    monkeypatch.setattr(main, "DEMO_CACHE", cache)
+    saved_db(monkeypatch, tmp_path)
     seen = fake(monkeypatch, good_roadmap())
     client.post("/api/roadmap", json={"goal": "Frontend Engineer", "hours_per_week": 10})
     assert "system" in seen            # the fake AI was called
 
 
 def test_demo_cache_is_skipped_when_the_user_lists_their_own_skills(client, monkeypatch, tmp_path):
-    cache = tmp_path / "demo_cache.json"
-    cache.write_text(json.dumps({"frontend engineer": {"roadmap": good_roadmap(), "known": []}}), encoding="utf-8")
-    monkeypatch.setattr(main, "DEMO_CACHE", cache)
+    saved_db(monkeypatch, tmp_path)
     monkeypatch.setenv("DEMO_MODE", "true")
     seen = fake(monkeypatch, good_roadmap())
     client.post("/api/roadmap", json={"goal": "Frontend Engineer", "known_skills": ["HTML"], "hours_per_week": 10})
     assert "system" in seen            # the AI was asked, so the user's skills are respected
 
 
-def test_the_real_demo_cache_is_valid_and_answers_the_three_demo_roles(client, monkeypatch):
-    monkeypatch.setenv("DEMO_MODE", "true")
-    fake(monkeypatch, RuntimeError("the AI must not be called"))
-    for goal in ("Full Stack Developer at a climate tech startup", "UI/UX Designer for fintech apps", "Data Analyst in healthcare"):
-        body = client.post("/api/roadmap", json={"goal": goal, "hours_per_week": 10}).json()
-        assert 12 <= len(body["roadmap"]["nodes"]) <= 24 and body["plan"]["summary"]["weeks_needed"] > 0
-
-
 def saved_cache(monkeypatch, tmp_path):
-    cache = tmp_path / "demo_cache.json"
-    cache.write_text(json.dumps({"frontend engineer": {"roadmap": good_roadmap(), "known": []}}), encoding="utf-8")
-    monkeypatch.setattr(main, "DEMO_CACHE", cache)
+    saved_db(monkeypatch, tmp_path)
 
 
 def test_the_live_ai_answers_first_even_when_a_saved_roadmap_exists(client, monkeypatch, tmp_path):

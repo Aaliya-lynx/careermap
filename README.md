@@ -32,7 +32,7 @@ Problem statement: **1 (Reverse-Engineered Career Roadmapper)**.
 - "Listen to my plan": the plan read aloud with the browser's voice. If the device has no voice or the tab is muted, the app says so instead of staying silent.
 - "People who took this path": three typical routes into the job, each a short timeline of roles, rough timing and side projects. They are AI-written patterns, clearly labelled as not real people, and each has a button that highlights its steps on your map.
 - "My roadmaps": every roadmap is saved in the browser, with download as a picture or a PDF (or plain text) checklist, and a short share link (about 45 characters) that opens the roadmap for anyone, with no account. If short links are unavailable, it copies a longer link that carries the whole roadmap in the address instead. A green "Link copied" message confirms the copy.
-- 161 automated backend tests, all passing, using a fake AI so they cost nothing.
+- 168 automated backend tests, all passing, using a fake AI so they cost nothing.
 
 **Left for the next 16 hours, honestly**
 - Checked in desktop Chrome-family browsers (the Chrome and Edge engine) and in phone-sized windows. A pass on a real Android phone (touch gestures, the camera, the voice) is still to do.
@@ -91,7 +91,7 @@ How it works:
 Why these choices:
 - **The AI proposes, code decides.** The AI knows what a role needs. Dates, ordering and re-routing are arithmetic, so they are done in tested code. Results are explainable, instant and cheap, and a confused AI answer cannot crash the planner.
 - **Almost stateless server.** No accounts and no stored user data. Roadmaps and progress stay in the browser. The one thing the server keeps is a roadmap someone chooses to share: it is stored under a random 8-character id in Cloudflare KV and deleted after 90 days. It holds only the steps, hours and your "where you are now" lists, never a name, email, GitHub link or certificate. If that storage is not set up, sharing falls back to a long link that carries the roadmap in the address.
-- **A chain of models across three providers.** Each free tier has its own daily limit, so a chain keeps the app available. As a last resort, if every model is busy, a saved real example is shown for the three example roles, and the screen says so.
+- **A chain of models across three providers.** Each free tier has its own daily limit, so a chain keeps the app available. As a last resort, if every model is busy, a saved real roadmap is shown for any of the 15 demo jobs (technical and non-technical), and the screen says so.
 - **A per-visitor request limit** on the AI routes protects the budget.
 - **React Flow** for the map, because it gives zoom, pan, click and keyboard focus. The exported picture draws the connecting lines itself, because browsers cannot photograph thin SVG lines.
 - **FastAPI and React (Vite)**: fast to build and free to host (Render and Vercel).
@@ -99,6 +99,23 @@ Why these choices:
 ## What we added
 
 Beyond the brief: a game-style skill tree with glowing circles, unlock animations and a level badge; a timeline view; the ready-by planner with a weekly-hours slider, quick hour choices and a deadline (optional steps become dashed "stretch" steps, and a too-short deadline offers a one-tap fix); live pace tracking against what you actually finished; time travel with Play; a "Tell us about yourself" step that personalises the roadmap and a "Where you are now" card; comparing two dream roles side by side; certificate reading with career suggestions; voice narration; typical routes into the job (illustrative, AI-written); saved roadmaps; downloads as a picture, a PDF and a text file; short share links; swiping between the start page and the plan; an Outline view as a plain-list alternative to the map; a legend that explains every line and colour; filters; and a phase-complete celebration. Each makes the roadmap something a student can come back to, not a one-time answer.
+
+## Demo jobs and the SQLite database
+
+`backend/demo_roadmaps.db` is a small SQLite database of 15 saved roadmaps, 8 non-technical and 7 technical jobs. Each one is real AI output that went through the same checks as a live answer (`backend/build_demo_db.py` asks the AI once per job). It is read-only while the app runs, holds no user data, and is used only as the backup when the live AI cannot answer, or when `DEMO_MODE=true`.
+
+| Technical | Non-technical |
+|---|---|
+| Full Stack Developer at a climate tech startup | Product Manager at a SaaS startup |
+| UI/UX Designer for fintech apps | Digital Marketing Manager |
+| Data Analyst in healthcare | Chartered Accountant |
+| Machine Learning Engineer | Human Resources Manager |
+| Cybersecurity Analyst | Content Creator |
+| Cloud DevOps Engineer | Civil Engineer |
+| Mobile App Developer | Journalist |
+| | Financial Analyst at a bank |
+
+Any other job works too: the live AI builds it (job titles of 2 letters or more are accepted, for example "CA"). A job that is not in the list has no saved backup.
 
 ## How to run it
 
@@ -110,7 +127,7 @@ cd backend
 python -m venv venv
 source venv/bin/activate            # Windows: venv\Scripts\activate
 pip install -r requirements-dev.txt
-pytest                              # 161 tests, no AI key needed
+pytest                              # 168 tests, no AI key needed
 cp ../.env.example .env             # then add at least one provider key
 uvicorn main:app --reload           # http://localhost:8000/health
 
@@ -121,7 +138,7 @@ npm run dev                         # http://localhost:5173
 ```
 
 - `.env.example` lists every setting. At least one provider (`AZURE_*`, `GEMINI_*` or `GROQ_*`) needs a key, and `LLM_CHAIN` names the models in the order they are tried.
-- No AI key yet? Set `DEMO_MODE=true` in `backend/.env`: the three example jobs (Full Stack Developer, UI/UX Designer, Data Analyst in healthcare) then answer from saved real roadmaps, with no AI call. Type the job exactly as on the example chips and leave skills and "about you" empty, because a saved roadmap knows nothing about your own details.
+- No AI key yet? Set `DEMO_MODE=true` in `backend/.env`: the 15 demo jobs (listed under "Demo jobs" below) then answer from saved real roadmaps, with no AI call. Type the job exactly as on the example buttons and leave skills and "about you" empty, because a saved roadmap knows nothing about your own details.
 - Optional: `CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID` and `CF_API_TOKEN` turn on short share links (Cloudflare Workers KV). Without them sharing uses the long link.
 - `frontend/.env.example`: `VITE_API_URL` is the backend address (the default is `http://localhost:8000`).
 - No login is needed. **Live URL:** https://careermap-neon.vercel.app. The free backend sleeps when idle, so the very first request after a quiet period can take up to a minute.
@@ -132,7 +149,7 @@ npm run dev                         # http://localhost:5173
 - **Backend:** Python, FastAPI, Uvicorn, Pydantic, the OpenAI Python SDK (used as a generic client for OpenAI-compatible providers), python-dotenv, pytest, httpx.
 - **Frontend:** React 19, Vite, `@xyflow/react` (React Flow), `html-to-image` for the picture download, `jspdf` for the PDF, and the browser's Web Speech API for the voice.
 - **Models:** Azure OpenAI `gpt-5-mini` first, then Google Gemini (`gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`), then Groq (`openai/gpt-oss-20b`, `openai/gpt-oss-120b`). The same models write the roadmap, the step advice, the typical routes, the comparison and the certificate reading.
-- **Hosting and storage:** Vercel (website), Render (backend) and Cloudflare Workers KV (shared roadmaps only).
+- **Hosting and storage:** Vercel (website), Render (backend), Cloudflare Workers KV (shared roadmaps only) and a read-only SQLite file (`demo_roadmaps.db`, the saved demo roadmaps).
 - **AI coding assistance** was used to help write the code.
 - **What users are told:** the start form says answers are sent to an AI service, so private details should be left out. Results carry plain cautions: confirm costs and requirements with official sources, routes are illustrative and not real people, and certificates are self-reported and not verified.
 - **Privacy:** the server stores nothing about users. The only exception is a roadmap you choose to share, kept for 90 days under a random id (anyone with the link can open it). Typed goals and skills, and certificate images, are sent to an AI provider to produce the answer, and the app tells users to leave out private details and to cover their name and ID numbers on certificates. Provider terms differ: do not enter private data.

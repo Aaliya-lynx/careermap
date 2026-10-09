@@ -713,3 +713,6 @@ label { color: #f4eff7; }
 .plan-settings .linklike { color: #f0d6fb; }
 .plan-settings .callout.fix { background: #241a36; border-color: #c99be0; }
 .plan-settings .stretch-note { color: #e6d9f2; }
+
+.more-examples { width: 100%; margin-top: 10px; background: #362d3f; color: #ffffff; border: 1.5px solid #8a7b96; border-radius: 8px; padding: 10px 12px; font: inherit; font-size: 0.9rem; }
+.more-examples:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(201, 155, 224, 0.35); }
