@@ -759,3 +759,5 @@ label { color: #f4eff7; }
 
 .home-hero .hh-cta { background: linear-gradient(180deg, #c3c3c8, #a4a4aa); border-color: #8c8c92; }
 .home-hero .hh-cta:hover { background: linear-gradient(180deg, #cdcdd2, #adadb3); }
+
+.home-hero .hh-lead { color: #000000; }
