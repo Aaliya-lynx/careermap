@@ -761,3 +761,13 @@ label { color: #f4eff7; }
 .home-hero .hh-cta:hover { background: linear-gradient(180deg, #cdcdd2, #adadb3); }
 
 .home-hero .hh-lead { color: #000000; }
+
+.plan-settings { background: linear-gradient(180deg, #c3c3c8, #a4a4aa); border: 1px solid #8c8c92; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.6); }
+.plan-settings h3, .plan-settings label strong { color: #1d1d1f; }
+.plan-settings label { color: #2c2c30; }
+.plan-settings input[type='number'] { border-color: #6c6c74; }
+.plan-settings .hours-presets .chip { background: #dedee2; border-color: #8c8c92; color: #1d1d1f; }
+.plan-settings .hours-presets .chip:hover { background: #ececf0; }
+.plan-settings .hours-presets .chip.is-on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.plan-settings .optional, .plan-settings .muted, .plan-settings .stretch-note { color: #2c2c30; }
+.plan-settings .linklike { color: #3a1f55; }
