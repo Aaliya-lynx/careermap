@@ -797,3 +797,7 @@ label { color: #f4eff7; }
 .setup button.primary:hover:not(:disabled) { background: linear-gradient(180deg, #c6c6cc, #aaaab1); }
 
 .resume-item strong { color: #f0c34e; }
+
+.plan-settings .hours-presets .chip { background: #000000; border-color: #000000; color: #ffffff; }
+.plan-settings .hours-presets .chip:hover { background: #26262a; }
+.plan-settings .hours-presets .chip.is-on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
