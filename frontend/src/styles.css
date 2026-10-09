@@ -784,3 +784,5 @@ label { color: #f4eff7; }
 .home-hero .hh-cta:hover { background: linear-gradient(180deg, #38383e, #1a1a1e); }
 .hh-knob { width: 44px; height: 44px; background: #e8e8ea; color: #1d1d1f; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px 1px #ffffff; }
 .home-hero .hh-cta:hover .hh-knob { transform: translateX(-2px); }
+
+.hh-mark { font-size: 0.5em; border-radius: 0.34em; box-shadow: 0 4px 12px rgba(26, 15, 33, 0.3); }
