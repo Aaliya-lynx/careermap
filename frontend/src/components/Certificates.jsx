@@ -52,7 +52,7 @@ export default function Certificates({ steps, result, evidence, busy, error, onA
         </label>
         <form onSubmit={addTyped} className="cert-typed">
           <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Or type a certificate name" maxLength={120} aria-label="Certificate name" />
-          <button type="submit" className="secondary" disabled={title.trim().length < 2}>Add</button>
+          <button type="submit" className="secondary" disabled={title.trim().length < 2} title={title.trim().length < 2 ? 'Type at least 2 letters' : undefined}>Add</button>
         </form>
       </div>
       <p className="notice">📌 Cover your name and any ID numbers before you upload. The image is shrunk in your browser, sent once to an AI service to be read, never stored by CareerMap, and cleared from this page afterwards. Photos and screenshots only (no PDFs).</p>
@@ -70,7 +70,7 @@ export default function Certificates({ steps, result, evidence, busy, error, onA
           ))}
         </ul>
       )}
-      <button type="button" className="primary" onClick={read} disabled={!ready || busy} aria-busy={Boolean(busy)}>{busy ? 'Reading your certificates…' : 'Read my certificates'}</button>
+      <button type="button" className="primary" onClick={read} disabled={!ready || busy} aria-busy={Boolean(busy)} title={!ready ? 'Add a certificate first: a photo, or type its name' : undefined}>{busy ? 'Reading your certificates…' : 'Read my certificates'}</button>
       {error && <p className="callout warn" role="alert">{error}</p>}
 
       {result && (

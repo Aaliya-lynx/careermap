@@ -96,7 +96,7 @@ export default function Compare({ roadmap, others, hours }) {
             <p className="notice">Building the second roadmap takes about 20 seconds.</p>
           </div>
         )}
-        <button type="submit" className="primary" disabled={!ready} aria-busy={Boolean(busy)}>{busy || 'Compare the two paths'}</button>
+        <button type="submit" className="primary" disabled={!ready} aria-busy={Boolean(busy)} title={!ready ? 'Choose or type the second role first' : undefined}>{busy || 'Compare the two paths'}</button>
         {error && <p className="callout warn" role="alert">{error}</p>}
       </form>
 

@@ -54,7 +54,8 @@ export default function SetupForm({ busy, onSubmit, onForget, initial }) {
         <label htmlFor="goal">Your dream job, as specific as you can</label>
         <input id="goal" value={goal} onChange={(e) => { e.target.setCustomValidity(''); setGoal(e.target.value) }} minLength={2} maxLength={200} required
           onInvalid={(e) => e.target.setCustomValidity('Please type a job title, for example: Data Analyst.')}
-          placeholder="e.g. Full Stack Developer at a climate tech startup" autoComplete="off" enterKeyHint="next" />
+          placeholder="e.g. Full Stack Developer at a climate tech startup" autoComplete="off" enterKeyHint="next" list="job-suggestions" />
+        <datalist id="job-suggestions">{EXAMPLES.map((example) => <option key={example} value={example} />)}</datalist>
         <div className="chips" aria-label="Examples">
           {EXAMPLES.slice(0, 6).map((example) => (
             <button type="button" key={example} className="chip" onClick={() => setGoal(example)}>{example}</button>

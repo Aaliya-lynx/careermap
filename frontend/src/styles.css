@@ -1125,3 +1125,24 @@ button:focus-visible { outline: 2px solid #a78bff; outline-offset: 3px; box-shad
 
 /* no hover glare on any button */
 .ghost::after, .secondary::after, .primary::after, .ready .plan-settings .callout.fix .fix-actions .ghost:first-child::after { display: none; }
+
+
+/* ---- small experience helpers ---- */
+.ghost[data-ico='check'] { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E"); }
+.ghost.is-done { color: #9bf0df; }
+.ghost[aria-busy='true'] { cursor: progress; }
+
+.ps-slide { position: relative; }
+.ps-tip { position: absolute; bottom: calc(100% + 6px); left: calc(12px + (100% - 24px) * var(--p, 0)); transform: translate(-50%, 6px); padding: 3px 9px; border-radius: 8px; font-size: 0.78rem; font-weight: 800; color: #ffffff; background: #35306a; border: 1px solid rgba(167, 139, 255, 0.55); box-shadow: 0 6px 14px rgba(8, 4, 30, 0.5); opacity: 0; pointer-events: none; transition: opacity 0.15s, transform 0.15s; white-space: nowrap; }
+.ps-tip::after { content: ''; position: absolute; left: 50%; bottom: -5px; width: 8px; height: 8px; background: #35306a; border-right: 1px solid rgba(167, 139, 255, 0.55); border-bottom: 1px solid rgba(167, 139, 255, 0.55); transform: translateX(-50%) rotate(45deg); }
+.ps-slide input:active ~ .ps-tip, .ps-slide input:focus-visible ~ .ps-tip { opacity: 1; transform: translate(-50%, 0); }
+
+.skeleton { display: grid; gap: 10px; margin: 14px 0 6px; max-width: 640px; }
+.skeleton span { display: block; border-radius: 10px; background: linear-gradient(100deg, rgba(255, 255, 255, 0.05) 30%, rgba(167, 139, 255, 0.16) 50%, rgba(255, 255, 255, 0.05) 70%) 0 0 / 220% 100%; animation: cm-skeleton 1.4s ease-in-out infinite; }
+.skeleton .sk-head { height: 34px; width: 55%; }
+.skeleton .sk-line { height: 14px; width: 100%; }
+.skeleton .sk-line.short { width: 70%; }
+.skeleton .sk-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.skeleton .sk-card { height: 74px; }
+@keyframes cm-skeleton { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+@media (prefers-reduced-motion: reduce) { .skeleton span { animation: none; } .ps-tip { transition: none; } }

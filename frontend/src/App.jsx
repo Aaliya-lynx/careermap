@@ -411,7 +411,17 @@ export default function App() {
   }
 
   // The link is made while the copy is already under way, so the browser still counts it as the result of the click.
+  const [btnState, setBtnState] = useState({})            // 'working' or 'done' for the copy / PDF / text buttons
+  const btnTimers = useRef({})
+  function markButton(key, value, resetAfter) {
+    clearTimeout(btnTimers.current[key])
+    setBtnState((s) => ({ ...s, [key]: value }))
+    if (resetAfter) btnTimers.current[key] = setTimeout(() => setBtnState((s) => ({ ...s, [key]: undefined })), resetAfter)
+  }
+
   async function copyShareLink() {
+    if (btnState.copy === 'working') return
+    markButton('copy', 'working')
     const data = { roadmap, known, hours, budget }
     const makeLink = async () => {
       try {
@@ -432,21 +442,27 @@ export default function App() {
     } catch {
       copied = copyWithTextarea(await linkPromise)
     }
+    markButton('copy', copied ? 'done' : undefined, 2200)
     if (copied) setToast({ text: 'Link copied', kind: 'success' })
     else setToast({ text: `Could not copy automatically. Your link: ${await linkPromise}` })
   }
 
   async function savePdf() {
+    if (btnState.pdf === 'working') return
+    markButton('pdf', 'working')
     try {
       await downloadPdf(roadmap, plan, known, hours)
+      markButton('pdf', 'done', 2200)
       setToast({ text: 'PDF downloaded.' })
     } catch {
+      markButton('pdf', undefined)
       setToast({ text: 'The PDF could not be made. Refresh the page and try again, or download the text file instead.' })
     }
   }
 
   function saveText() {
     downloadText(fileName(roadmap.title, 'txt'), toPlainText(roadmap, plan, known, hours))
+    markButton('text', 'done', 2000)
     setToast({ text: 'Text file downloaded.' })
   }
 
@@ -536,7 +552,7 @@ export default function App() {
         <main className="hero">
           <HomeHero />
           <SetupForm key={`${formKey}-${roadmap ? 'fresh' : activeId ?? 'new'}`} busy={busy} onSubmit={build} onForget={forgetMe} initial={prefill ?? (roadmap ? freshForm() : form)} />
-          {busy && <p className="loading" role="status">{LOADING_STEPS[loadingStep]}</p>}
+          {busy && <><p className="loading" role="status">{LOADING_STEPS[loadingStep]}</p><div className="skeleton" aria-hidden="true"><span className="sk-head" /><span className="sk-line" /><span className="sk-line short" /><div className="sk-row"><span className="sk-card" /><span className="sk-card" /><span className="sk-card" /></div></div></>}
           {message && <p className="callout warn" role="alert">{message}</p>}
         </main>
       </div>
@@ -560,9 +576,9 @@ export default function App() {
               ) : <p className="muted">Planning…</p>}
               <div className="ready-actions">
                 <Listen getLines={() => buildNarration(roadmap, plan, hours)} disabled={!plan} />
-                <button type="button" className="ghost" data-ico="link" onClick={copyShareLink}>Copy share link</button>
-                <button type="button" className="ghost" data-ico="pdf" onClick={savePdf} disabled={!plan}>Download PDF</button>
-                <button type="button" className="ghost" data-ico="text" onClick={saveText} disabled={!plan}>Download text</button>
+                <button type="button" className={`ghost ${btnState.copy === 'done' ? 'is-done' : ''}`} data-ico={btnState.copy === 'done' ? 'check' : 'link'} aria-busy={btnState.copy === 'working'} onClick={copyShareLink}>{btnState.copy === 'working' ? 'Making link…' : btnState.copy === 'done' ? 'Copied' : 'Copy share link'}</button>
+                <button type="button" className={`ghost ${btnState.pdf === 'done' ? 'is-done' : ''}`} data-ico={btnState.pdf === 'done' ? 'check' : 'pdf'} aria-busy={btnState.pdf === 'working'} onClick={savePdf} disabled={!plan}>{btnState.pdf === 'working' ? 'Preparing PDF…' : btnState.pdf === 'done' ? 'Saved' : 'Download PDF'}</button>
+                <button type="button" className={`ghost ${btnState.text === 'done' ? 'is-done' : ''}`} data-ico={btnState.text === 'done' ? 'check' : 'text'} onClick={saveText} disabled={!plan}>{btnState.text === 'done' ? 'Saved' : 'Download text'}</button>
               </div>
             </div>
 
@@ -570,7 +586,10 @@ export default function App() {
               <h3>Plan settings</h3>
               <div className="ps-hours">
               <label htmlFor="hours-slider">Hours per week <strong key={hours} className="ps-val"><span className="n">{hours}</span><small>h / week</small></strong></label>
-              <input id="hours-slider" type="range" min="1" max="40" value={hours} style={{ '--fill': `${((hours - 1) / 39) * 100}%` }} onChange={(e) => setHours(Number(e.target.value))} />
+              <div className="ps-slide" style={{ '--p': (hours - 1) / 39 }}>
+                <input id="hours-slider" type="range" min="1" max="40" value={hours} style={{ '--fill': `${((hours - 1) / 39) * 100}%` }} onChange={(e) => setHours(Number(e.target.value))} />
+                <output className="ps-tip" aria-hidden="true">{hours} h</output>
+              </div>
               <div className="hours-presets" aria-label="Quick choices">
                 {[5, 10, 15, 20, 30].map((h) => (
                   <button key={h} type="button" className={`chip ${hours === h ? 'is-on' : ''}`} onClick={() => setHours(h)}><b>{h}</b><i>h</i></button>
