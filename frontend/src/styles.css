@@ -915,3 +915,11 @@ label { color: #f4eff7; }
 .viewbar button.explore-tab.is-on { background: #c8c8ce; box-shadow: inset 0 -4px 0 #c99be0; }
 
 .viewbar button.explore-tab + .explore-tab { margin-left: 12px; }
+
+.plan-settings .callout.fix .ghost { background: #ffffff; border-color: #ffffff; border-bottom-color: #c99be0; color: #000000; }
+.plan-settings .callout.fix .ghost:hover { background: #f1ecf5; border-color: #f1ecf5; border-bottom-color: #c99be0; color: #000000; }
+
+.plan-settings .callout.fix .ghost, .plan-settings .callout.fix .ghost:hover { border-bottom-color: #6a6a72; }
+.viewbar button.explore-tab.is-on { box-shadow: inset 0 -4px 0 #000000; }
+
+.plan-settings .callout.fix .ghost:hover { background: #ebebeb; border-color: #ebebeb; border-bottom-color: #6a6a72; }
