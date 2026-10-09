@@ -978,3 +978,80 @@ label { color: #f4eff7; }
 @keyframes cm-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .brand-word-svg .cm-goal, .brand-word-svg .cm-c, .brand-word-svg .cm-start, .brand-word-svg .cm-l { animation: none; }
 @media (prefers-reduced-motion: reduce) { .cm-goal, .cm-c, .cm-start, .cm-l { animation: none; } }
+
+/* ---- Plan settings, redesigned (dark glass, teal to violet, no gold) ---- */
+.ready .plan-settings { background: linear-gradient(160deg, #27233d 0%, #1b1832 58%, #151229 100%); border: 1px solid rgba(167, 139, 255, 0.28); border-radius: 20px; padding: 20px 22px; box-shadow: 0 18px 44px rgba(8, 4, 30, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.07); }
+.ready .plan-settings h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 4px; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #b9aaff; }
+.ready .plan-settings h3::before { content: ''; width: 22px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, #4fe6cb, #a78bff); box-shadow: 0 0 10px rgba(79, 230, 203, 0.6); }
+.ready .plan-settings label { color: #cdc6ee; font-weight: 600; font-size: 0.92rem; align-items: center; }
+.ready .plan-settings label strong { font-size: 1.7rem; font-weight: 800; line-height: 1; background: linear-gradient(100deg, #6ef0d6, #b79cff); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+.ready .plan-settings .optional { color: #8d86b6; font-weight: 500; }
+.ready .plan-settings .muted { color: #a9a2cf; font-weight: 600; }
+
+.ready .plan-settings input[type='range'] { height: 10px; border: 0; border-radius: 999px; background: linear-gradient(90deg, #4fe6cb 0%, #a78bff var(--fill, 50%), #100e26 var(--fill, 50%), #100e26 100%); box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6); }
+.ready .plan-settings input[type='range']::-webkit-slider-thumb { width: 24px; height: 24px; background: #ffffff; border: 0; box-shadow: 0 0 0 5px rgba(167, 139, 255, 0.35), 0 3px 10px rgba(0, 0, 0, 0.55); }
+.ready .plan-settings input[type='range']::-moz-range-thumb { width: 24px; height: 24px; background: #ffffff; border: 0; box-shadow: 0 0 0 5px rgba(167, 139, 255, 0.35), 0 3px 10px rgba(0, 0, 0, 0.55); }
+.ready .plan-settings input[type='range']::-moz-range-progress { background: linear-gradient(90deg, #4fe6cb, #a78bff); height: 10px; border-radius: 999px; }
+
+.ready .plan-settings .hours-presets { gap: 8px; margin-top: 6px; }
+.ready .plan-settings .hours-presets .chip { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.18); color: #dcd6f7; font-weight: 700; box-shadow: none; transition: background 0.15s, border-color 0.15s, transform 0.12s; }
+.ready .plan-settings .hours-presets .chip:hover { background: rgba(255, 255, 255, 0.11); border-color: rgba(167, 139, 255, 0.6); }
+.ready .plan-settings .hours-presets .chip.is-on { background: linear-gradient(135deg, #7c5cff, #2fc8bd); border-color: transparent; color: #ffffff; box-shadow: 0 6px 16px rgba(80, 90, 230, 0.45); transform: translateY(-1px); }
+
+.ready .plan-settings input[type='number'] { background: #100e26; border: 1px solid rgba(167, 139, 255, 0.35); color: #ffffff; font-weight: 700; border-radius: 12px; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5); }
+.ready .plan-settings input[type='number']::placeholder { color: #6f69a0; font-weight: 500; }
+.ready .plan-settings input[type='number']:focus { outline: none; border-color: #a78bff; box-shadow: 0 0 0 3px rgba(167, 139, 255, 0.28); }
+.ready .plan-settings .linklike { color: #6ef0d6; font-weight: 700; text-decoration: none; padding: 4px 10px; border-radius: 999px; background: rgba(79, 230, 203, 0.1); }
+.ready .plan-settings .linklike:hover { background: rgba(79, 230, 203, 0.2); }
+
+.ready .plan-settings .callout.fix { background: rgba(255, 143, 199, 0.09); border: 0; border-left: 3px solid #ff8fc7; border-radius: 12px; padding: 12px 14px; color: #f3e9ff; }
+.ready .plan-settings .callout.fix p { color: #e9e2ff; font-weight: 500; }
+.ready .plan-settings .callout.fix strong { color: #ffb3d9; font-weight: 800; }
+.ready .plan-settings .callout.fix .ghost { border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.25); background: transparent; color: #e9e4ff; font-weight: 700; padding: 7px 16px; box-shadow: none; }
+.ready .plan-settings .callout.fix .ghost:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.45); }
+.ready .plan-settings .callout.fix .fix-actions .ghost:first-child { background: linear-gradient(135deg, #7c5cff, #2fc8bd); border-color: transparent; color: #ffffff; box-shadow: 0 6px 16px rgba(80, 90, 230, 0.4); }
+.ready .plan-settings .callout.fix .fix-actions .ghost:first-child:hover { filter: brightness(1.12); }
+.ready .plan-settings .stretch-note { color: #9d96c4; font-weight: 500; font-size: 0.82rem; }
+.ready .plan-settings .hours-presets { flex-wrap: nowrap; gap: 6px; }
+.ready .plan-settings .hours-presets .chip { padding: 6px 11px; font-size: 0.82rem; }
+@media (max-width: 420px) { .ready .plan-settings .hours-presets { flex-wrap: wrap; } }
+
+/* ---- Plan settings: unit styling and motion ---- */
+.ready .plan-settings .ps-val { display: inline-flex; align-items: baseline; gap: 5px; background: none; -webkit-text-fill-color: initial; color: inherit; animation: ps-bump 0.38s cubic-bezier(.2,1.3,.4,1); }
+.ready .plan-settings .ps-val .n { font-size: 1.9rem; font-weight: 800; line-height: 1; background: linear-gradient(100deg, #6ef0d6, #b79cff); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+.ready .plan-settings .ps-val small { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #8d86b6; -webkit-text-fill-color: #8d86b6; }
+.ready .plan-settings .hours-presets .chip { display: inline-flex; align-items: baseline; gap: 2px; position: relative; overflow: hidden; }
+.ready .plan-settings .hours-presets .chip b { font-size: 1.02rem; font-weight: 800; }
+.ready .plan-settings .hours-presets .chip i { font-style: normal; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+.ready .plan-settings .hours-presets .chip.is-on i { opacity: 0.9; }
+.ready .plan-settings .hours-presets .chip.is-on::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.4) 50%, transparent 65%); transform: translateX(-130%); animation: ps-sheen 4.2s 1.2s ease-in-out infinite; }
+
+.ready .plan-settings { position: relative; overflow: hidden; animation: ps-in 0.6s cubic-bezier(.2,.8,.2,1) both; }
+.ready .plan-settings::before { content: ''; position: absolute; top: -45%; right: -18%; width: 70%; height: 95%; background: radial-gradient(closest-side, rgba(124, 92, 255, 0.38), transparent); filter: blur(10px); animation: ps-drift 12s ease-in-out infinite alternate; pointer-events: none; }
+.ready .plan-settings::after { content: ''; position: absolute; left: -16%; bottom: -50%; width: 62%; height: 85%; background: radial-gradient(closest-side, rgba(47, 200, 189, 0.3), transparent); filter: blur(12px); animation: ps-drift2 15s ease-in-out infinite alternate; pointer-events: none; }
+.ready .plan-settings > * { position: relative; z-index: 1; }
+
+.ready .plan-settings input[type='range']::-webkit-slider-thumb { transition: transform 0.15s, box-shadow 0.15s; cursor: grab; }
+.ready .plan-settings input[type='range']:hover::-webkit-slider-thumb { transform: scale(1.12); }
+.ready .plan-settings input[type='range']:active::-webkit-slider-thumb { transform: scale(1.18); box-shadow: 0 0 0 9px rgba(167, 139, 255, 0.3), 0 3px 12px rgba(0, 0, 0, 0.55); cursor: grabbing; }
+.ready .plan-settings .callout.fix { animation: ps-slide 0.5s cubic-bezier(.2,.8,.2,1) both; }
+.ready .plan-settings .callout.fix .fix-actions .ghost:first-child { position: relative; overflow: hidden; }
+.ready .plan-settings .callout.fix .fix-actions .ghost:first-child::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.35) 50%, transparent 65%); transform: translateX(-130%); transition: transform 0.6s; }
+.ready .plan-settings .callout.fix .fix-actions .ghost:first-child:hover::after { transform: translateX(130%); }
+
+@keyframes ps-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes ps-slide { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
+@keyframes ps-bump { 0% { transform: scale(0.8); opacity: 0.6; } 60% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes ps-sheen { 0%, 55% { transform: translateX(-130%); } 100% { transform: translateX(130%); } }
+@keyframes ps-drift { to { transform: translate(-10%, 14%) scale(1.18); } }
+@keyframes ps-drift2 { to { transform: translate(14%, -10%) scale(1.15); } }
+@media (prefers-reduced-motion: reduce) {
+  .ready .plan-settings, .ready .plan-settings::before, .ready .plan-settings::after, .ready .plan-settings .ps-val,
+  .ready .plan-settings .callout.fix, .ready .plan-settings .hours-presets .chip.is-on::after { animation: none; }
+}
+.ready .plan-settings .hours-presets { flex-wrap: wrap; gap: 6px; }
+.ready .plan-settings .hours-presets .chip { padding: 5px 11px; }
+.ready .plan-settings .ps-hours label { flex-wrap: wrap; row-gap: 2px; }
+@media (min-width: 900px) { .ready .plan-settings { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); } }
+.ready .plan-settings .ps-val small { text-transform: none; letter-spacing: 0.01em; font-size: 0.85rem; font-weight: 600; }
+.ready .plan-settings .hours-presets .chip i { text-transform: none; letter-spacing: 0; font-size: 0.78rem; font-weight: 700; opacity: 0.65; }

@@ -569,11 +569,11 @@ export default function App() {
             <div className="plan-settings" role="group" aria-label="Plan settings">
               <h3>Plan settings</h3>
               <div className="ps-hours">
-              <label htmlFor="hours-slider">Hours per week <strong>{hours} h</strong></label>
+              <label htmlFor="hours-slider">Hours per week <strong key={hours} className="ps-val"><span className="n">{hours}</span><small>h / week</small></strong></label>
               <input id="hours-slider" type="range" min="1" max="40" value={hours} style={{ '--fill': `${((hours - 1) / 39) * 100}%` }} onChange={(e) => setHours(Number(e.target.value))} />
               <div className="hours-presets" aria-label="Quick choices">
                 {[5, 10, 15, 20, 30].map((h) => (
-                  <button key={h} type="button" className={`chip ${hours === h ? 'is-on' : ''}`} onClick={() => setHours(h)}>{h} h</button>
+                  <button key={h} type="button" className={`chip ${hours === h ? 'is-on' : ''}`} onClick={() => setHours(h)}><b>{h}</b><i>h</i></button>
                 ))}
               </div>
               </div>
