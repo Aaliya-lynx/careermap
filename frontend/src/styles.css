@@ -1117,3 +1117,11 @@ button:focus-visible { outline: 2px solid #a78bff; outline-offset: 3px; box-shad
 .primary::after { background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.1) 50%, transparent 65%); }
 .primary:disabled { opacity: 0.6; cursor: default; animation: none; background-image: linear-gradient(135deg, #433c86, #2b5c68); }
 .primary:disabled::after { display: none; }
+
+/* moving stripes only while a main button is really working (not when it is just waiting for input) */
+.primary[aria-busy='true'] { cursor: progress; opacity: 0.92; background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0 10px, transparent 10px 20px), linear-gradient(135deg, #433c86, #2b5c68); background-size: 40px 40px, auto; animation: cm-stripes 1s linear infinite; }
+.setup button.primary[aria-busy='true'] { background-image: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.1) 0 10px, transparent 10px 20px), linear-gradient(180deg, #bcbcc2, #a0a0a7); }
+@media (prefers-reduced-motion: reduce) { .primary[aria-busy='true'] { animation: none; } }
+
+/* no hover glare on any button */
+.ghost::after, .secondary::after, .primary::after, .ready .plan-settings .callout.fix .fix-actions .ghost:first-child::after { display: none; }

@@ -107,7 +107,7 @@ export default function SetupForm({ busy, onSubmit, onForget, initial }) {
         </div>
       </div>
 
-      <button className="primary" type="button" onClick={build} disabled={busy || githubBad}>
+      <button className="primary" type="button" onClick={build} disabled={busy || githubBad} aria-busy={Boolean(busy)}>
         {busy ? 'Building your roadmap…' : 'Build my roadmap'}
       </button>
       <p className="notice">Use your plan as a guide and confirm costs and requirements with official sources. Your answers are sent to an AI service to build it, so please leave out private details.</p>

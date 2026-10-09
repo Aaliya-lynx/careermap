@@ -6,7 +6,7 @@ export default function Paths({ paths, busy, error, onLoad, onShowOnMap }) {
       <section className="card paths-empty" aria-label="People who took this path">
         <h3>People who took this path</h3>
         <p className="muted">See three typical routes people take into this job: the roles in between, roughly how long each stage takes, and the side projects behind each step.</p>
-        <button type="button" className="primary" onClick={onLoad} disabled={busy}>{busy ? 'Looking at typical routes…' : 'Show typical routes'}</button>
+        <button type="button" className="primary" onClick={onLoad} disabled={busy} aria-busy={Boolean(busy)}>{busy ? 'Looking at typical routes…' : 'Show typical routes'}</button>
         {error && <p className="callout warn" role="alert">{error}</p>}
         <p className="notice">These are illustrative routes, not real people. Use them for ideas, and confirm details with official sources.</p>
       </section>

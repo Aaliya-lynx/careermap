@@ -70,7 +70,7 @@ export default function Certificates({ steps, result, evidence, busy, error, onA
           ))}
         </ul>
       )}
-      <button type="button" className="primary" onClick={read} disabled={!ready || busy}>{busy ? 'Reading your certificates…' : 'Read my certificates'}</button>
+      <button type="button" className="primary" onClick={read} disabled={!ready || busy} aria-busy={Boolean(busy)}>{busy ? 'Reading your certificates…' : 'Read my certificates'}</button>
       {error && <p className="callout warn" role="alert">{error}</p>}
 
       {result && (
