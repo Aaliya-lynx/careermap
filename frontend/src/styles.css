@@ -825,3 +825,5 @@ label { color: #f4eff7; }
   .side-rail.is-open .rail-label { opacity: 1; }
   .rail-bottom { margin-top: auto; }
 }
+
+@media (min-width: 900px) { .rail-ico { background: #46464d; color: #d4d4d9; } .rail-item:hover .rail-ico { background: #55555d; } }
