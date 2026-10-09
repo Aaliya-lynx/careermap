@@ -745,3 +745,8 @@ label { color: #f4eff7; }
 
 .hh-pill { color: #000000; -webkit-text-stroke: 0; text-shadow: none; }
 .hh-pill span { color: #000000; }
+
+.home-hero .hh-cta { display: inline-flex; align-items: center; gap: 18px; padding: 7px 7px 7px 26px; border-radius: 999px; background: linear-gradient(180deg, #f4f4f5, #dcdcde); color: #1d1d1f; font-weight: 500; font-size: 1.05rem; border: 1px solid #c4c4c8; box-shadow: 0 6px 16px rgba(26, 15, 33, 0.18), inset 0 1px 1px #ffffff, inset 0 -2px 3px rgba(0, 0, 0, 0.08); transform: none; }
+.home-hero .hh-cta:hover { background: linear-gradient(180deg, #ffffff, #e4e4e6); transform: translateY(-1px); }
+.hh-knob { display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: #1d1d1f; color: #ffffff; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35); transition: transform 0.15s; }
+.home-hero .hh-cta:hover .hh-knob { transform: translateX(2px); }

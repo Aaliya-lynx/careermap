@@ -16,7 +16,7 @@ export default function HomeHero() {
         <p className="hh-brand"><span className="hh-mark" aria-hidden="true">◈</span> CareerMap</p>
         <h1>Your dream job, <span className="grad">reverse-engineered.</span></h1>
         <p className="hh-lead">Tell us the exact role. We build your skill tree and tell you the date you could be ready, then it re-plans live as your hours and skills change.</p>
-        <button type="button" className="primary hh-cta" onClick={startNow}>Get started</button>
+        <button type="button" className="primary hh-cta" onClick={startNow}>Get started <span className="hh-knob" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5l7 7-7 7" /></svg></span></button>
         <ul className="hh-points">
           <li>No sign-up</li>
           <li>Saved only in your browser</li>
