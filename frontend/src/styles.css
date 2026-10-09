@@ -900,3 +900,7 @@ label { color: #f4eff7; }
 .plan-settings .hours-presets .chip.is-on { background: #000000; color: #ffffff; }
 
 .plan-settings .hours-presets .chip.is-on { border-color: #f0c34e; box-shadow: 0 0 0 2px #f0c34e; }
+
+.plan-settings .callout.fix .ghost { border-radius: 6px; padding: 7px 16px; border-bottom: 3px solid #8c5fae; }
+
+.plan-settings .fix-actions { gap: 12px; }
