@@ -896,3 +896,7 @@ label { color: #f4eff7; }
 
 .plan-settings input[type='range'] { background: linear-gradient(90deg, #22c55e var(--fill, 50%), #000000 var(--fill, 50%)); border: 1px solid #000000; }
 .plan-settings input[type='range']::-moz-range-progress { background: #22c55e; height: 8px; border-radius: 999px; }
+
+.plan-settings .hours-presets .chip.is-on { background: #000000; color: #ffffff; }
+
+.plan-settings .hours-presets .chip.is-on { border-color: #f0c34e; box-shadow: 0 0 0 2px #f0c34e; }
