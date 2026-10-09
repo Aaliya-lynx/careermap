@@ -8,7 +8,7 @@ export function installButtonEffects() {
   document.addEventListener('pointerdown', (event) => {
     if (calm?.matches) return
     const button = event.target.closest?.(RIPPLE)
-    if (!button || button.disabled) return
+    if (!button || button.disabled || button.matches('.listen, .ghost[data-ico]')) return   // the action buttons stay calm
     if (event.pointerType === 'touch' && navigator.vibrate) navigator.vibrate(8)
     const box = button.getBoundingClientRect()
     const size = Math.max(box.width, box.height) * 2

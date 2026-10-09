@@ -160,7 +160,7 @@ export default function Listen({ getLines, disabled }) {
     <>
       <button type="button" className={`ghost listen ${playing ? 'is-playing' : ''}`} data-ico={playing ? undefined : 'speaker'} onClick={playing ? stop : play} disabled={disabled}
         aria-pressed={playing} aria-label={playing ? 'Stop reading the plan aloud' : 'Listen to your plan read aloud'}>
-        {playing ? (starting ? '⏳ Starting… tap to cancel' : <><span className="eq" aria-hidden="true"><i /><i /><i /><i /></span>Stop</>) : 'Listen to my plan'}
+        {playing ? (starting ? '⏳ Starting… tap to cancel' : '⏹ Stop') : 'Listen to my plan'}
       </button>
       {note && <p className="listen-note callout warn" role="status">{note}</p>}
     </>
