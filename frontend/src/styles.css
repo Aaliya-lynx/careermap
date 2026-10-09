@@ -728,3 +728,5 @@ label { color: #f4eff7; }
 
 .hh-pill { border: 0; border-radius: 0; padding: 9px 26px 9px 20px; background: #1a0f21; color: #f6e7ff; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.76rem; clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 12px 100%, 0 50%); }
 .hh-pill span { color: #f0c34e; }
+
+.hh-pill { font-weight: 400; }
