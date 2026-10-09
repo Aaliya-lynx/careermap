@@ -733,3 +733,6 @@ label { color: #f4eff7; }
 
 .hh-pill { background: none; clip-path: none; padding: 0; color: #1a0f21; }
 .hh-pill span { color: #1a0f21; }
+
+.hh-pill { font-weight: 800; color: #a06c00; }
+.hh-pill span { color: #a06c00; }
